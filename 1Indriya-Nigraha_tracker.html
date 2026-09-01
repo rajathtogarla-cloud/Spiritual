@@ -1,0 +1,2395 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Indriya-Nigraha 🌺</title>
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <style>
+ :root[data-theme="dark"] {
+ --bg: #000000;
+ --card-bg: #111111;
+ --card-sub-bg: #18181b;
+ --text-main: #f8fafc;
+ --text-sub: #a1a1aa;
+ --accent-jnan: #38bdf8;
+ --accent-karm: #f43f5e;
+ --accent-gold: #fbbf24;
+ --border: #27272a;
+ --success: #10b981;
+ --input-bg: #000000;
+ --chip-bg: #18181b;
+ --nav-btn-bg: #27272a;
+ }
+
+ :root[data-theme="light"] {
+ --bg: #f8fafc;
+ --card-bg: #ffffff;
+ --card-sub-bg: #f1f5f9;
+ --text-main: #0f172a;
+ --text-sub: #64748b;
+ --accent-jnan: #0284c7;
+ --accent-karm: #e11d48;
+ --accent-gold: #d97706;
+ --border: #e2e8f0;
+ --success: #059669;
+ --input-bg: #ffffff;
+ --chip-bg: #f1f5f9;
+ --nav-btn-bg: #e2e8f0;
+ }
+
+ * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+ 
+ body { 
+   background-color: var(--bg); 
+   color: var(--text-main); 
+   line-height: 1.5; 
+   transition: background-color 0.3s, color 0.3s;
+   height: 100vh;
+   overflow: hidden;
+ }
+
+ .app-dashboard-layout {
+   display: grid;
+   grid-template-columns: auto 1fr;
+   grid-template-rows: 70px 1fr;
+   grid-template-areas:
+     "header header"
+     "sidebar content";
+   height: 100vh;
+   width: 100vw;
+   position: relative;
+ }
+
+ header { 
+   grid-area: header;
+   position: sticky;
+   top: 0;
+   z-index: 100;
+   display: flex; 
+   justify-content: space-between; 
+   align-items: center; 
+   padding: 0 20px;
+   background: var(--card-bg);
+   border-bottom: 1px solid var(--border); 
+ }
+ header h1 { font-size: 1.8rem; color: var(--accent-gold); }
+
+ .container { 
+   grid-area: content;
+   overflow-y: auto;
+   padding: 20px 20px 90px 20px;
+   max-width: 1000px; 
+   margin: 0 auto; 
+   width: 100%;
+ }
+
+ .sidebar-overlay {
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100vw;
+ height: 100vh;
+ background: rgba(0, 0, 0, 0.5);
+ backdrop-filter: blur(3px);
+ z-index: 999;
+ opacity: 0;
+ pointer-events: none;
+ transition: opacity 0.3s ease;
+ }
+
+ .sidebar-overlay.open {
+ opacity: 1;
+ pointer-events: auto;
+ }
+
+ .sidebar {
+ position: fixed;
+ top: 0;
+ left: -280px;
+ width: 280px;
+ height: 100%;
+ background: var(--card-bg);
+ border-right: 1px solid var(--border);
+ z-index: 1000;
+ transition: left 0.3s ease;
+ display: flex;
+ flex-direction: column;
+ justify-content: space-between;
+ padding: 20px;
+ box-shadow: 2px 0 12px rgba(0,0,0,0.4);
+ }
+
+ .sidebar.open {
+ left: 0;
+ }
+
+ .sidebar-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 25px;
+ padding-bottom: 15px;
+ border-bottom: 1px solid var(--border);
+ }
+
+ .sidebar-header h2 {
+ font-size: 1.2rem;
+ color: var(--accent-gold);
+ }
+
+ .sidebar-close-btn {
+ background: transparent;
+ border: none;
+ color: var(--text-main);
+ font-size: 1.8rem;
+ cursor: pointer;
+ line-height: 1;
+ }
+
+ .sidebar-nav {
+ display: flex;
+ flex-direction: column;
+ gap: 10px;
+ }
+
+ .nav-item {
+ display: flex;
+ align-items: center;
+ padding: 12px 16px;
+ color: var(--text-main);
+ text-decoration: none;
+ font-weight: 600;
+ border-radius: 8px;
+ border: 1px solid transparent;
+ transition: background 0.2s, border-color 0.2s;
+ cursor: pointer;
+ font-size: 0.95rem;
+ width: 100%;
+ text-align: left;
+ }
+
+ .nav-item:hover {
+ background: var(--card-sub-bg);
+ border-color: var(--border);
+ }
+
+ .nav-item.active {
+ background: var(--card-sub-bg);
+ border-color: var(--accent-gold);
+ color: var(--accent-gold);
+ }
+
+ .sidebar-toggle-btn {
+ background: var(--card-bg);
+ color: var(--text-main);
+ border: 1px solid var(--border);
+ padding: 8px 12px;
+ border-radius: 8px;
+ cursor: pointer;
+ font-size: 1.2rem;
+ margin-right: 10px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ }
+
+ /* Colorful Theme-Adaptive Static Bottom Navigation Bar */
+ .main-footnote-nav {
+ position: fixed;
+ bottom: 0;
+ left: 0;
+ width: 100%;
+ height: 70px;
+ background: var(--card-bg);
+ border-top: 1px solid var(--border);
+ display: flex;
+ justify-content: space-around;
+ align-items: center;
+ z-index: 1000;
+ padding: 0 10px;
+ box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+ }
+
+ .main-footnote-nav .nav-item:nth-child(1) { --nav-accent: var(--accent-gold); }
+ .main-footnote-nav .nav-item:nth-child(2) { --nav-accent: var(--accent-jnan); }
+ .main-footnote-nav .nav-item:nth-child(3) { --nav-accent: var(--accent-karm); }
+ .main-footnote-nav .nav-item:nth-child(4) { --nav-accent: var(--success); }
+
+ .main-footnote-nav .nav-item {
+ flex: 1;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ text-align: center;
+ font-size: 0.75rem;
+ font-weight: 600;
+ padding: 6px 0;
+ border: none;
+ background: transparent;
+ color: var(--text-sub);
+ gap: 3px;
+ border-radius: 8px;
+ margin: 0 4px;
+ transition: all 0.25s ease;
+ }
+
+ .main-footnote-nav .nav-item:hover {
+ background: var(--card-sub-bg);
+ color: var(--nav-accent);
+ transform: translateY(-2px);
+ }
+
+ .main-footnote-nav .nav-item.active {
+ background: var(--card-sub-bg);
+ border-top: 2px solid var(--nav-accent);
+ color: var(--nav-accent);
+ box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+ }
+
+ .top-toolbar {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ flex-wrap: wrap;
+ gap: 15px;
+ margin-bottom: 20px;
+ }
+
+ .date-controls { 
+ display: flex; 
+ align-items: center; 
+ gap: 8px; 
+ background: var(--card-bg);
+ padding: 6px 12px;
+ border-radius: 8px;
+ border: 1px solid var(--border);
+ position: relative;
+ flex-wrap: wrap;
+ }
+
+ .formatted-date-display {
+ font-size: 0.9rem;
+ font-weight: 600;
+ padding: 6px 10px;
+ border-radius: 6px;
+ background: var(--input-bg);
+ border: 1px solid var(--border);
+ color: var(--text-main);
+ cursor: pointer;
+ }
+
+ input[type="date"] {
+ background: var(--input-bg);
+ color: var(--text-main);
+ border: 1px solid var(--border);
+ padding: 6px 10px;
+ border-radius: 6px;
+ font-size: 0.9rem;
+ outline: none;
+ color-scheme: dark;
+ }
+
+ [data-theme="light"] input[type="date"] {
+ color-scheme: light;
+ }
+
+ .date-nav-btn {
+ background: var(--nav-btn-bg);
+ color: var(--text-main);
+ border: none;
+ padding: 6px 10px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-weight: bold;
+ font-size: 0.85rem;
+ }
+
+ .search-box-home {
+ display: flex;
+ align-items: center;
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ padding: 10px 16px;
+ gap: 10px;
+ max-width: 500px;
+ margin: 20px auto 0 auto;
+ }
+
+ .search-box-home input {
+ background: transparent;
+ border: none;
+ color: var(--text-main);
+ font-size: 1rem;
+ outline: none;
+ width: 100%;
+ }
+
+ .search-icon {
+ font-size: 1.1rem;
+ opacity: 0.7;
+ }
+
+ .hub-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+ gap: 20px;
+ margin-top: 30px;
+ }
+
+ .hub-card {
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ border-radius: 16px;
+ padding: 30px 20px;
+ text-align: center;
+ cursor: pointer;
+ transition: transform 0.2s, box-shadow 0.2s;
+ }
+
+ .hub-card:hover {
+ transform: translateY(-4px);
+ border-color: var(--accent-gold);
+ }
+
+ .hub-icon { font-size: 3.5rem; margin-bottom: 15px; }
+ .hub-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 8px; }
+ .hub-desc { color: var(--text-sub); font-size: 0.9rem; }
+
+ .view-section { display: none; }
+ .view-section.active { display: block; }
+
+ .section-title-wrapper {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ flex-wrap: wrap;
+ gap: 10px;
+ margin-bottom: 20px;
+ padding-bottom: 8px;
+ border-bottom: 1px solid var(--border);
+ }
+
+ .section-title {
+ font-size: 1.5rem;
+ font-weight: bold;
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ margin: 0;
+ border-bottom: none;
+ padding-bottom: 0;
+ }
+
+ .indriya-dropdown {
+ background: var(--input-bg);
+ color: var(--text-main);
+ border: 1px solid var(--border);
+ padding: 1px 5px;
+ border-radius: 8px;
+ font-size: 0.9rem;
+ font-weight: 600;
+ outline: none;
+ cursor: pointer;
+ }
+
+ .indriya-dropdown option {
+ background-color: var(--card-bg);
+ color: var(--text-main);
+ }
+
+ .indriya-card {
+ background: var(--card-bg);
+ border-radius: 12px;
+ margin-bottom: 20px;
+ border: 1px solid var(--border);
+ overflow: hidden;
+ }
+
+ .indriya-header {
+ padding: 12px 20px;
+ background: var(--card-sub-bg);
+ font-weight: bold;
+ font-size: 1.1rem;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ border-bottom: 1px solid var(--border);
+ }
+ 
+ .practice-list { list-style: none; }
+ .practice-item {
+ padding: 12px 20px;
+ border-bottom: 1px solid var(--border);
+ display: flex;
+ flex-direction: column;
+ gap: 8px;
+ }
+ .practice-item:last-child { border-bottom: none; }
+ 
+ .practice-main {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ gap: 15px;
+ }
+
+ .checkbox-label {
+ display: flex;
+ align-items: flex-start;
+ gap: 12px;
+ cursor: pointer;
+ flex: 1;
+ }
+ .checkbox-label input[type="checkbox"] {
+ width: 18px;
+ height: 18px;
+ margin-top: 3px;
+ accent-color: var(--success);
+ cursor: pointer;
+ }
+ .practice-name { font-weight: 600; }
+ .practice-desc { font-size: 0.85rem; color: var(--text-sub); margin-top: 2px; }
+ .badge {
+ font-size: 0.7rem;
+ padding: 2px 6px;
+ border-radius: 4px;
+ text-transform: uppercase;
+ font-weight: bold;
+ margin-right: 5px;
+ }
+ .badge-ext { background: #0369a1; color: #e0f2fe; }
+ .badge-int { background: #6b21a8; color: #f3e8ff; }
+
+ .duration-section {
+ display: flex;
+ flex-wrap: wrap;
+ align-items: center;
+ gap: 10px;
+ padding-left: 30px;
+ font-size: 0.85rem;
+ color: var(--text-sub);
+ position: relative;
+ }
+ .durations-wrapper { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+ .duration-chip {
+ background: var(--chip-bg);
+ border: 1px solid var(--border);
+ padding: 2px 8px;
+ border-radius: 4px;
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ color: var(--accent-gold);
+ }
+ .duration-chip .remove-btn {
+ cursor: pointer;
+ color: var(--accent-karm);
+ font-weight: bold;
+ }
+
+ .add-duration-btn {
+ background: var(--nav-btn-bg);
+ color: var(--text-main);
+ border: none;
+ padding: 4px 10px;
+ border-radius: 4px;
+ cursor: pointer;
+ font-size: 0.8rem;
+ }
+ .total-duration { font-weight: bold; color: var(--success); }
+ .completed-text { text-decoration: line-through; opacity: 0.6; }
+
+ .unchecked-dimmed {
+ opacity: 0.3;
+ filter: grayscale(100%);
+ pointer-events: none;
+ }
+
+ .info-tooltip-container {
+ position: relative;
+ display: inline-flex;
+ align-items: center;
+ margin-left: 6px;
+ vertical-align: middle;
+ }
+ .info-icon {
+ cursor: pointer;
+ font-size: 0.95rem;
+ opacity: 0.7;
+ transition: opacity 0.2s;
+ user-select: none;
+ }
+ .info-icon:hover {
+ opacity: 1;
+ }
+ .info-tooltip-content {
+ visibility: hidden;
+ width: 260px;
+ background-color: var(--card-sub-bg);
+ color: var(--text-main);
+ text-align: left;
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ padding: 10px;
+ position: absolute;
+ z-index: 10;
+ bottom: 125%;
+ left: 50%;
+ transform: translateX(-50%);
+ opacity: 0;
+ transition: opacity 0.2s ease;
+ font-size: 0.78rem;
+ font-weight: normal;
+ line-height: 1.4;
+ box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+ pointer-events: none;
+ }
+ .info-tooltip-container.active .info-tooltip-content {
+ visibility: visible;
+ opacity: 1;
+ pointer-events: auto;
+ }
+
+ .analytics-controls {
+ background: var(--card-bg);
+ padding: 12px 15px;
+ border-radius: 12px;
+ border: 1px solid var(--border);
+ margin-bottom: 20px;
+ display: flex;
+ align-items: center;
+ flex-wrap: wrap;
+ gap: 10px;
+ }
+ .analytics-controls select {
+ background: var(--input-bg);
+ color: var(--text-main);
+ border: 1px solid var(--border);
+ padding: 5px 8px;
+ border-radius: 6px;
+ outline: none;
+ box-shadow: none;
+ margin: 0;
+ font-size: 0.85rem;
+ width: auto;
+ max-width: 135px;
+ cursor: pointer;
+ }
+ .analytics-controls select:focus,
+ .analytics-controls select:active {
+ outline: none;
+ box-shadow: none;
+ border-color: var(--border);
+ }
+ .analytics-controls select option {
+ color: #000000;
+ background-color: #ffffff;
+ }
+
+ .stats-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+ gap: 15px;
+ margin-bottom: 25px;
+ }
+
+ .stat-card {
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ padding: 20px;
+ text-align: center;
+ }
+ .stat-val { font-size: 2rem; font-weight: bold; color: var(--accent-gold); }
+ .stat-lbl { font-size: 0.85rem; color: var(--text-sub); }
+
+ .analytics-buttons-wrapper {
+ display: flex;
+ gap: 20px;
+ width: 100%;
+ margin-top: 10px;
+ flex-wrap: wrap;
+ }
+
+ .analytics-section-wrapper {
+ display: flex;
+ flex-direction: column;
+ gap: 12px;
+ flex: 1;
+ min-width: 280px;
+ }
+
+ .analytics-btn {
+ width: 100%;
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ padding: 20px 15px;
+ font-size: 1.2rem;
+ font-weight: bold;
+ cursor: pointer;
+ transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 10px;
+ }
+
+ .analytics-btn:hover {
+ transform: translateY(-3px);
+ border-color: var(--accent-gold);
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+ }
+
+ .analytics-btn.jnan-btn {
+ color: var(--accent-jnan);
+ }
+
+ .analytics-btn.karm-btn {
+ color: var(--accent-karm);
+ }
+
+ .date-picker-wrapper {
+ position: relative;
+ display: inline-block;
+ }
+
+ .hidden-date-input {
+ position: absolute;
+ opacity: 0;
+ width: 100%;
+ height: 100%;
+ left: 0;
+ top: 0;
+ cursor: pointer;
+ }
+
+ .slicer-toolbar {
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ gap: 8px;
+ margin-bottom: 15px;
+ }
+
+ .slicer-btn {
+ background: var(--card-sub-bg);
+ color: var(--text-main);
+ border: 1px solid var(--border);
+ border-radius: 6px;
+ padding: 6px 14px;
+ font-size: 0.85rem;
+ font-weight: bold;
+ cursor: pointer;
+ transition: all 0.2s ease;
+ }
+
+ .slicer-btn:hover {
+ border-color: var(--accent-gold);
+ background: var(--card-bg);
+ }
+
+ .slicer-btn.active {
+ background: var(--accent-gold);
+ color: #000000;
+ border-color: var(--accent-gold);
+ }
+
+ .chart-modal-overlay {
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100vw;
+ height: 100vh;
+ background: rgba(0, 0, 0, 0.7);
+ backdrop-filter: blur(4px);
+ z-index: 1001;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ opacity: 0;
+ pointer-events: none;
+ transition: opacity 0.3s ease;
+ padding: 15px;
+ }
+
+ .chart-modal-overlay.active {
+ opacity: 1;
+ pointer-events: auto;
+ }
+
+ .chart-modal-container {
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ border-radius: 16px;
+ width: 100%;
+ max-width: 900px;
+ max-height: 90vh;
+ overflow-y: auto;
+ padding: 25px;
+ position: relative;
+ box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+ }
+
+ .chart-modal-close {
+ position: absolute;
+ top: 15px;
+ right: 20px;
+ background: transparent;
+ border: none;
+ font-size: 1.8rem;
+ color: var(--text-main);
+ cursor: pointer;
+ line-height: 1;
+ z-index: 2;
+ }
+
+ .chart-modal-header {
+ margin-bottom: 15px;
+ text-align: center;
+ padding-right: 25px;
+ }
+
+ .chart-modal-header h2 {
+ font-size: 1.4rem;
+ }
+
+ .canvas-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  height: 60vh;
+  margin-bottom: 25px;
+}
+
+ .chart-scroll-box {
+ width: 100%;
+ height: 100%;
+ overflow-x: auto;
+ overflow-y: hidden;
+ }
+
+ .chart-scroll-inner {
+ height: 100%;
+ min-width: 100%;
+ position: relative;
+ }
+
+ .chart-details-card {
+ background: var(--card-sub-bg);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ padding: 18px;
+ font-size: 0.85rem;
+ color: var(--text-sub);
+ line-height: 1.6;
+ }
+
+ .chart-details-card h3 {
+ color: var(--text-main);
+ font-size: 1rem;
+ margin-bottom: 8px;
+ }
+
+ .chart-details-card ul {
+ padding-left: 18px;
+ margin: 0;
+ }
+
+ .chart-details-card li {
+ margin-bottom: 6px;
+ }
+
+ .settings-container {
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ padding: 20px;
+ display: flex;
+ flex-direction: column;
+ gap: 15px;
+ max-width: 500px;
+ }
+
+ .settings-row {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding-bottom: 15px;
+ border-bottom: 1px solid var(--border);
+ }
+
+ .settings-row:last-child {
+ border-bottom: none;
+ padding-bottom: 0;
+ }
+
+ /* Auth and Sync Overlay Styles */
+ .auth-card {
+ max-width: 400px;
+ margin: 40px auto;
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ padding: 25px;
+ border-radius: 12px;
+ box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+ }
+ .auth-card h2 { margin-bottom: 20px; color: var(--accent-gold); text-align: center; }
+ .auth-input {
+ width: 100%;
+ padding: 10px 14px;
+ background: var(--input-bg);
+ color: var(--text-main);
+ border: 1px solid var(--border);
+ border-radius: 6px;
+ margin-bottom: 15px;
+ outline: none;
+ }
+ .auth-btn {
+ width: 100%;
+ background: var(--accent-gold);
+ color: #000000;
+ border: none;
+ padding: 10px;
+ border-radius: 6px;
+ font-weight: bold;
+ cursor: pointer;
+ margin-bottom: 10px;
+ }
+ .auth-btn:hover { opacity: 0.9; }
+ .error-msg { color: var(--accent-karm); font-size: 0.85rem; margin-bottom: 15px; text-align: center; }
+ .hidden { display: none !important; }
+
+ @media (max-width: 600px) {
+ body { padding: 0; }
+ header h1 { font-size: 1.4rem; }
+ .analytics-btn { width: 100%; }
+ .canvas-wrapper { 
+    min-height: 260px;
+    height: 50vh;
+  }
+ .chart-modal-container { padding: 15px; }
+ }
+ </style>
+</head>
+<body onclick="handleBodyClick(event)">
+
+<!-- Authentication Container (Visible when logged out) -->
+<div id="auth-wrapper" class="container" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+  <div class="auth-card">
+    <h2>Firebase Login 🌺</h2>
+    <div id="error-message" class="error-msg"></div>
+    <input type="email" id="email" class="auth-input" placeholder="Email address" required>
+    <input type="password" id="password" class="auth-input" placeholder="Password" required>
+    <button id="loginBtn" class="auth-btn">Sign In</button>
+  </div>
+</div>
+
+<!-- Main App Dashboard Layout (Hidden until authenticated) -->
+<div id="app-wrapper" class="app-dashboard-layout hidden">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+   <div>
+   <div class="sidebar-header">
+   <h2>Navigation Menu</h2>
+   <button class="sidebar-close-btn" onclick="closeSidebar()">&times;</button>
+   </div>
+   <nav class="sidebar-nav">
+   <div class="nav-item" id="themeBtn" onclick="toggleTheme()">☀️ Light</div>
+   </nav>
+   </div>
+  </aside>
+
+  <header>
+   <div style="display: flex; align-items: center;">
+   <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()">☰</button>
+   <h1>Indriya-Nigraha 🌺</h1>
+   </div>
+   <button onclick="handleLogout()" style="background: transparent; border: none; cursor: pointer; font-size: 1.4rem;" title="Logout">💔</button>
+  </header>
+
+  <main class="container">
+   <div id="hub-view" class="view-section active">
+   <div class="search-box-home">
+   <span class="search-icon">🔍</span>
+   <input type="search" id="homeSearchInput" placeholder="Search across all practices..." oninput="handleSearch(this.value)">
+   </div>
+
+   <div id="search-results-container" style="display: none; margin-top: 25px;"></div>
+
+   <div class="hub-grid" id="main-hub-grid">
+   <div class="hub-card" onclick="openView('jnan-view')">
+   <div class="hub-icon">🧠</div>
+   <div class="hub-title" style="color: var(--accent-jnan);">Jnanendriyas</div>
+   <div class="hub-desc">5 Cognitive Senses — Sight (Chakṣu), Hearing (Śrotra), Smell (Ghrāṇa), Taste (Rasa), Touch (Tvak)</div>
+   </div>
+   <div class="hub-card" onclick="openView('karm-view')">
+   <div class="hub-icon">🛠️</div>
+   <div class="hub-title" style="color: var(--accent-karm);">Karmendriyas</div>
+   <div class="hub-desc">5 Executive Senses — Speech (Vāk), Grasping (Pāṇi), Movement (Pāda), Generation (Upastha), Elimination (Pāyu)</div>
+   </div>
+   <div class="hub-card" onclick="openView('analytics-view')">
+   <div class="hub-icon">📊</div>
+   <div class="hub-title" style="color: var(--accent-gold);">Data Analytics</div>
+   <div class="hub-desc">View reports across dates, ranges, and total summaries</div>
+   </div>
+   </div>
+   </div>
+
+   <div id="jnan-view" class="view-section">
+   <div class="top-toolbar">
+   <div class="date-controls">
+   <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
+   <div class="date-picker-wrapper">
+   <span class="formatted-date-display global-date-display"></span>
+   <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
+   </div>
+   <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+   <button class="date-nav-btn" onclick="resetToToday()">Today</button>
+   <button class="date-nav-btn" onclick="resetContextualJnan()" title="Reset Selection">📛</button>
+   </div>
+   </div>
+
+   <div class="section-title-wrapper">
+   <h2 class="section-title" style="color: var(--accent-jnan);">🧠 Jnanendriyas 👇</h2>
+   <select id="jnan-dropdown" class="indriya-dropdown" onchange="filterCategory('jnan', this.value)"></select>
+   </div>
+   <div id="jnanendriyas-container"></div>
+   </div>
+
+   <div id="karm-view" class="view-section">
+   <div class="top-toolbar">
+   <div class="date-controls">
+   <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
+   <div class="date-picker-wrapper">
+   <span class="formatted-date-display global-date-display"></span>
+   <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
+   </div>
+   <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+   <button class="date-nav-btn" onclick="resetToToday()">Today</button>
+   <button class="date-nav-btn" onclick="resetContextualKarm()" title="Reset Selection">📛</button>
+   </div>
+   </div>
+
+   <div class="section-title-wrapper">
+   <h2 class="section-title" style="color: var(--accent-karm);">🛠️ Karmendriyas 👇</h2>
+   <select id="karm-dropdown" class="indriya-dropdown" onchange="filterCategory('karm', this.value)"></select>
+   </div>
+   <div id="karmendriyas-container"></div>
+   </div>
+
+   <div id="analytics-view" class="view-section">
+   <div class="analytics-controls">
+   <select id="analyticsMode" onchange="updateAnalytics()">
+   <option value="current">Date Only</option>
+   <option value="range">Date Range</option>
+   <option value="all">All-Time</option>
+   </select>
+
+   <span id="singleDateInput" style="display: inline-block;">
+   <div class="date-picker-wrapper">
+   <span class="formatted-date-display" id="analyticsSingleDateDisplay"></span>
+   <input type="date" class="hidden-date-input" id="analyticsSingleDate" onchange="updateAnalyticsDisplay()">
+   </div>
+   </span>
+
+   <span id="rangeInputs" style="display: none;">
+   <div class="date-picker-wrapper">
+   <span class="formatted-date-display" id="startDateDisplay"></span>
+   <input type="date" class="hidden-date-input" id="startDate" onchange="updateAnalyticsDisplay()">
+   </div>
+   to 
+   <div class="date-picker-wrapper">
+   <span class="formatted-date-display" id="endDateDisplay"></span>
+   <input type="date" class="hidden-date-input" id="endDate" onchange="updateAnalyticsDisplay()">
+   </div>
+   </span>
+   </div>
+
+   <h2 class="section-title" style="color: var(--accent-gold);">📊 Data Analytics 👇</h2>
+
+   <div class="stats-grid">
+   <div class="stat-card">
+   <div class="stat-val" id="statCompleted">0</div>
+   <div class="stat-lbl">Practices Completed</div>
+   </div>
+   <div class="stat-card">
+   <div class="stat-val" id="statEfficiency">0%</div>
+   <div class="stat-lbl">Avg. Practice Efficiency</div>
+   </div>
+   <div class="stat-card">
+   <div class="stat-val" id="statDays">0</div>
+   <div class="stat-lbl">Active Days Recorded</div>
+   </div>
+   </div>
+
+   <div class="analytics-buttons-wrapper">
+   <div class="analytics-section-wrapper">
+   <button class="analytics-btn jnan-btn" onclick="openAnalyticsChart('jnan')">
+   🧠 Jnanendriyas Chart
+   </button>
+   </div>
+
+   <div class="analytics-section-wrapper">
+   <button class="analytics-btn karm-btn" onclick="openAnalyticsChart('karm')">
+   🛠️ Karmendriyas Chart
+   </button>
+   </div>
+   </div>
+   </div>
+
+   <div id="settings-view" class="view-section">
+   <h2 class="section-title" style="color: var(--text-main);">⚙️ Settings</h2>
+   
+   <div class="settings-container">
+   <div class="settings-row">
+   <span>Theme Mode</span>
+   <div class="nav-item" id="themeBtnSettings" style="width: auto; padding: 8px 16px;" onclick="toggleTheme()">☀️ Light</div>
+   </div>
+   <div class="settings-row">
+   <span>Account Action</span>
+   <div class="nav-item" style="width: auto; padding: 8px 16px; color: var(--accent-karm);" onclick="handleLogout()">🚪 Logout</div>
+   </div>
+   </div>
+   </div>
+  </main>
+
+  <!-- Colorful Theme-Adaptive Static Fixed Bottom Navigation Bar -->
+  <div class="main-footnote-nav">
+    <div class="nav-item active" id="bottom-nav-home" onclick="navTo('hub-view')">
+      <span style="font-size: 1.1rem;">🏠</span> Home
+    </div>
+    <div class="nav-item" id="bottom-nav-jnan" onclick="navTo('jnan-view')">
+      <span style="font-size: 1.1rem;">🧠</span> Jnanendriyas
+    </div>
+    <div class="nav-item" id="bottom-nav-karm" onclick="navTo('karm-view')">
+      <span style="font-size: 1.1rem;">🛠️</span> Karmendriyas
+    </div>
+    <div class="nav-item" id="bottom-nav-analytics" onclick="navTo('analytics-view')">
+      <span style="font-size: 1.1rem;">📊</span> Analytics
+    </div>
+  </div>
+</div>
+
+<!-- Dynamic In-App Mobile Chart Modal -->
+<div class="chart-modal-overlay" id="chartModalOverlay" onclick="closeChartModal(event)">
+ <div class="chart-modal-container" onclick="event.stopPropagation()">
+ <button class="chart-modal-close" onclick="handleChartClose()">&times;</button>
+ <div class="chart-modal-header">
+ <h2 id="chartModalTitle">Efficiency Chart</h2>
+ </div>
+ 
+ <div class="slicer-toolbar">
+ <button class="slicer-btn" id="slicer-1D" onclick="applySlicer('1D')">1D</button>
+ <button class="slicer-btn" id="slicer-1W" onclick="applySlicer('1W')">1W</button>
+ <button class="slicer-btn" id="slicer-1M" onclick="applySlicer('1M')">1M</button>
+ <button class="slicer-btn" id="slicer-1Y" onclick="applySlicer('1Y')">1Y</button>
+ </div>
+
+ <div class="canvas-wrapper">
+   <div class="chart-scroll-box" id="chartScrollBox">
+     <div class="chart-scroll-inner" id="chartScrollInner">
+       <canvas id="modalOpeChart"></canvas>
+     </div>
+   </div>
+ </div>
+ 
+ <div class="chart-details-card" id="chartDetailsCard">
+ <h3>Formula & Methodology Details</h3>
+ <ul id="chartDetailsContent">
+ <li><strong>X-Axis (Senses):</strong> Lists individual sense organ groups using Sanskrit English titles. Click any bar to open line chart.</li>
+ <li><strong>Y-Axis (OPE):</strong> Overall Practice Efficiency averaged across all active days in range.</li>
+ <li><strong>Accomplishment Ratio:</strong> Completed practices count divided by total available practices in that sense.</li>
+ <li><strong>APE:</strong> Daily average efficiency across practices, simply averaged over active days.</li>
+ </ul>
+ </div>
+ </div>
+</div>
+
+<!-- Firebase Modular SDK Integration Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBHlw_kjAtZlCZHFeTLaSjBpEEOjDsi7Pk",
+        authDomain: "indriya-ha.firebaseapp.com",
+        projectId: "indriya-ha",
+        storageBucket: "indriya-ha.firebasestorage.app",
+        messagingSenderId: "245692789323",
+        appId: "1:245692789323:web:4ce5cc90813ca1f0cc53ce",
+        measurementId: "G-ZFXEGB8K74"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements for Auth & App Containers
+    const authWrapper = document.getElementById("auth-wrapper");
+    const appWrapper = document.getElementById("app-wrapper");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const errorMessage = document.getElementById("error-message");
+
+    let unsubscribeFirestore = null;
+    let isRemoteSyncing = false; // Flag to prevent write loops during real-time load
+
+    // Monitor Auth State Changes
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            authWrapper.classList.add("hidden");
+            appWrapper.classList.remove("hidden");
+            
+            // Start Auto-Listening / Loading Firestore Data for this user
+            startFirestoreListener(user.uid);
+        } else {
+            authWrapper.classList.remove("hidden");
+            appWrapper.classList.add("hidden");
+            logs = {};
+            if (unsubscribeFirestore) {
+                unsubscribeFirestore();
+                unsubscribeFirestore = null;
+            }
+            renderUI();
+        }
+    });
+
+    // Login Event Handler
+    loginBtn.addEventListener("click", async () => {
+        errorMessage.textContent = "";
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+            errorMessage.textContent = error.message;
+        }
+    });
+
+    // Global Logout Function attached to UI
+    window.handleLogout = async () => {
+        try {
+            await signOut(auth);
+            closeSidebar();
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
+    };
+
+    // Firestore Real-time Listener (Auto Syncs on Reload and Real-time updates)
+    function startFirestoreListener(uid) {
+        const docRef = doc(db, "userLogs", uid);
+        
+        unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
+            isRemoteSyncing = true;
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                logs = data.logs || {};
+            } else {
+                logs = {};
+            }
+            saveLogsToLocal(); // Backup state locally
+            renderUI();
+            updateAnalytics();
+            isRemoteSyncing = false;
+        }, (error) => {
+            console.error("Firestore listener error:", error);
+            isRemoteSyncing = false;
+        });
+    }
+
+    // Manual / Auto Save function to write state changes to Firestore
+    window.saveLogsToFirestore = async function() {
+        if (isRemoteSyncing || !auth.currentUser) return;
+        saveLogsToLocal(); // Save locally first
+        
+        const uid = auth.currentUser.uid;
+        const docRef = doc(db, "userLogs", uid);
+        try {
+            await setDoc(docRef, { logs: logs, updatedAt: new Date().toISOString() }, { merge: true });
+        } catch (error) {
+            console.error("Error writing logs to Firestore:", error);
+        }
+    };
+</script>
+
+<script>
+const dataset = {
+ jnanendriyas: [
+ {
+ name: "Chakṣu (Sight) 👁️",
+ sanskritLabel: "Chakṣu",
+ practices: [
+ { id: "j1_1", syncKey: "trataka", type: "ext", name: "Trataka 🔥", desc: "Steady gazing at a fixed object." },
+ { id: "j1_2", syncKey: "visual_pratyahara", type: "ext", name: "Visual Pratyahara 🧘", desc: "Withdraw visual attention without reacting." },
+ { id: "j1_3", syncKey: "screen_discipline", type: "ext", name: "Screen Discipline 📱", desc: "Predetermined screen windows, no feeds/reels." },
+ { id: "j1_4", syncKey: "conscious_darshana", type: "ext", name: "Conscious Darsana 🙏", desc: "Contemplative visual focus on deity/symbol." },
+ { id: "j1_5", syncKey: "nature_observation", type: "ext", name: "Nature Observation 🌿", desc: "Observing nature without seeking entertainment." },
+ { id: "j1_6", syncKey: "visual_fasting", type: "ext", name: "Visual Fasting 🌑", desc: "Periods with minimal visual input/novelty." },
+ { id: "j1_7", syncKey: "witness_imagery", type: "int", name: "Witnessing Mental Imagery 👁️", desc: "Observing mental images without elaboration." },
+ { id: "j1_8", syncKey: "mantra_japa", type: "int", name: "Mantra Redirection 📿", desc: "Redirecting active daydreams/fantasies to mantra." },
+ { id: "j1_9", syncKey: "ishta_devata", type: "int", name: "Ishta Devata Visualization 🕉️", desc: "Constructive sacred visual generation." },
+ { id: "j1_10", syncKey: "sakshi_bhava", type: "int", name: "Sakshi Bhava 👁️", desc: "Abiding as witness distinct from visual memory." },
+ { id: "j1_11", syncKey: "vairagya_contemplation", type: "int", name: "Vairagya Contemplation 🍃", desc: "Contemplating impermanence of physical beauty." },
+ { id: "j1_12", syncKey: "self_inquiry", type: "int", name: "Self-Inquiry 🔎", desc: "Asking 'Who is aware of this attraction?'" }
+ ]
+ },
+ {
+ name: "Śrotra (Hearing) 👂",
+ sanskritLabel: "Śrotra",
+ practices: [
+ { id: "j2_1", syncKey: "mauna", type: "ext", name: "Mauna 🤫", desc: "Observing periods of silence." },
+ { id: "j2_2", syncKey: "auditory_pratyahara", type: "ext", name: "Auditory Pratyahara 🧘", desc: "Letting sounds pass without following them." },
+ { id: "j2_3", syncKey: "satsanga_shravana", type: "ext", name: "Satsanga Sravana 📖", desc: "Intentional listening to teachings/mantras." },
+ { id: "j2_4", syncKey: "conscious_listening", type: "ext", name: "Conscious Listening 👂", desc: "Listening fully without preparing a response." },
+ { id: "j2_5", syncKey: "sound_fasting", type: "ext", name: "Sound Fasting 🔇", desc: "Periods without music, podcasts, or background noise." },
+ { id: "j2_6", syncKey: "speech_discipline", type: "ext", name: "Speech Discipline 🗣️", desc: "Truthful, measured, non-gossiping speech." },
+ { id: "j2_7", syncKey: "antar_mauna", type: "int", name: "Antar Mauna 🤫", desc: "Observing internal dialogue without participation." },
+ { id: "j2_8", syncKey: "mantra_japa", type: "int", name: "Mantra Japa 📿", desc: "Shifting from audible to whisper/mental japa." },
+ { id: "j2_9", syncKey: "witness_speech", type: "int", name: "Witnessing Mental Speech 👁️", desc: "Noticing 'This thought is being heard'." },
+ { id: "j2_10", syncKey: "thought_interruption", type: "int", name: "Thought Interruption 🔄", desc: "Halting repetitive internal arguments/dialogue." },
+ { id: "j2_11", syncKey: "shravana_manana", type: "int", name: "Sravana → Manana → Nididhyasana 🕉️", desc: "Hear, reflect, and abide in Vedantic truth." },
+ { id: "j2_12", syncKey: "inner_silence", type: "int", name: "Inner Silence 🌌", desc: "Resting in awareness when mental speech subsides." }
+ ]
+ },
+ {
+ name: "Ghrāṇa (Smell) 👃",
+ sanskritLabel: "Ghrāṇa",
+ practices: [
+ { id: "j3_1", syncKey: "mindful_smelling", type: "ext", name: "Mindful Smelling 👃", desc: "Noticing smell without immediate pursuit/avoidance." },
+ { id: "j3_2", syncKey: "equanimity_smell", type: "ext", name: "Equanimity Practice ⚖️", desc: "Pleasant/unpleasant smells do not control reaction." },
+ { id: "j3_3", syncKey: "env_regulation", type: "ext", name: "Environmental Regulation 🌿", desc: "Avoiding smell triggers for compulsive behavior." },
+ { id: "j3_4", syncKey: "fragrance_contemplation", type: "ext", name: "Natural Fragrance Contemplation 🌸", desc: "Mild natural scents used for mindful awareness." },
+ { id: "j3_5", syncKey: "breath_awareness", type: "ext", name: "Breath Awareness 🌬️", desc: "Nasal breath as an anchor." },
+ { id: "j3_6", syncKey: "anapanasati", type: "int", name: "Anapanasati 🌬️", desc: "Observing natural breath at nostrils." },
+ { id: "j3_7", syncKey: "memory_observation", type: "int", name: "Memory Observation 🧠", desc: "Observing smell-triggered memories without reconstruction." },
+ { id: "j3_8", syncKey: "association_deconditioning", type: "int", name: "Association Deconditioning 🔓", desc: "Breaking smell → desire → automatic action link." },
+ { id: "j3_9", syncKey: "craving_observation", type: "int", name: "Craving Observation 👁️", desc: "Intervening early in the craving chain." },
+ { id: "j3_10", syncKey: "sakshi_bhava", type: "int", name: "Sakshi Bhava 🕉️", desc: "Smell & memory seen as changing phenomena in awareness." }
+ ]
+ },
+ {
+ name: "Rasa (Taste) 👅",
+ sanskritLabel: "Rasa",
+ practices: [
+ { id: "j4_1", syncKey: "mindful_eating", type: "ext", name: "Mindful Eating 🧘", desc: "Pausing, observing hunger, eating without distraction." },
+ { id: "j4_2", syncKey: "deliberate_chewing", type: "ext", name: "Deliberate Chewing 🦷", desc: "Chewing slowly to experience food consciously." },
+ { id: "j4_3", syncKey: "portion_discipline", type: "ext", name: "Portion Discipline ⚖️", desc: "Serving predetermined amount." },
+ { id: "j4_4", syncKey: "hunger_craving_discrim", type: "ext", name: "Hunger–Craving Discrimination 🧠", desc: "Distinguishing physiological hunger from stimulation." },
+ { id: "j4_5", syncKey: "simple_eating", type: "ext", name: "Simple Eating 🥗", desc: "Reducing dependence on intense salt/sugar/fat combinations." },
+ { id: "j4_6", syncKey: "eating_windows", type: "ext", name: "Eating Windows ⏰", desc: "Consistent timings; no continuous grazing." },
+ { id: "j4_7", syncKey: "upavasa", type: "ext", name: "Upavasa 🙏", desc: "Periodic discipline fasting." },
+ { id: "j4_8", syncKey: "naivedya", type: "ext", name: "Naivedya / Ishvara-Arpana 🪔", desc: "Offering food to Divine before eating." },
+ { id: "j4_9", syncKey: "craving_observation", type: "int", name: "Craving Observation 👁️", desc: "Watching taste urge rise and fall." },
+ { id: "j4_10", syncKey: "mantra_japa", type: "int", name: "Mantra During Craving 📿", desc: "Creating space between urge and eating." },
+ { id: "j4_11", syncKey: "taste_equanimity", type: "int", name: "Taste Equanimity ⚖️", desc: "Experiencing plain food without complaint." },
+ { id: "j4_12", syncKey: "santosha", type: "int", name: "Santosha 🌿", desc: "Cultivating 'What is sufficient is enough'." },
+ { id: "j4_13", syncKey: "rasa_transformation", type: "int", name: "Rasa Transformation 🕉️", desc: "Redirecting enjoyment toward devotion/meditation." },
+ { id: "j4_14", syncKey: "food_contemplation", type: "int", name: "Contemplation of Food 🌾", desc: "Seeing food as transformed matter sustaining body." }
+ ]
+ },
+ {
+ name: "Tvak (Touch) ✋",
+ sanskritLabel: "Tvak",
+ practices: [
+ { id: "j5_1", syncKey: "kaya_sthairyam", type: "ext", name: "Kaya Sthairyam 🧘", desc: "Sitting still; observing sensations without moving." },
+ { id: "j5_2", syncKey: "moderate_tapas", type: "ext", name: "Moderate Tapas 🔥", desc: "Tolerance toward manageable physical discomfort." },
+ { id: "j5_3", syncKey: "comfort_reduction", type: "ext", name: "Comfort Reduction 🌿", desc: "Choosing simpler posture/option occasionally." },
+ { id: "j5_4", syncKey: "cold_exposure", type: "ext", name: "Cold/Temperature Exposure ❄️", desc: "Controlled exposure to avoid compulsive reaction." },
+ { id: "j5_5", syncKey: "simplicity_env", type: "ext", name: "Simplicity of Environment 🏡", desc: "Reducing luxury textures/conveniences." },
+ { id: "j5_6", syncKey: "conscious_touch", type: "ext", name: "Conscious Touch 🤲", desc: "Direct sensory contact without fantasy/craving." },
+ { id: "j5_7", syncKey: "sensation_meditation", type: "int", name: "Sensation Meditation 👁️", desc: "Observing itching, pressure, temperature objectively." },
+ { id: "j5_8", syncKey: "pleasure_pain_eq", type: "int", name: "Pleasure–Pain Equanimity ⚖️", desc: "Recognizing both as temporary sensations." },
+ { id: "j5_9", syncKey: "urge_surfing", type: "int", name: "Urge Surfing 🌊", desc: "Surfing the impulse to move/scratch/seek comfort." },
+ { id: "j5_10", syncKey: "body_scan", type: "int", name: "Body Scan 🧘", desc: "Moving awareness through body without judgment." },
+ { id: "j5_11", syncKey: "deidentification", type: "int", name: "De-identification 👁️", desc: "'Discomfort is in body' vs 'I am uncomfortable'." },
+ { id: "j5_12", syncKey: "kaya_anitya", type: "int", name: "Kaya Anitya Bhavana 🍂", desc: "Contemplating bodily impermanence." },
+ { id: "j5_13", syncKey: "pranayama", type: "int", name: "Pranayama 🌬️", desc: "Breath regulation during intense sensations." },
+ { id: "j5_14", syncKey: "dhyana", type: "int", name: "Dhyana 🧘", desc: "Remaining aware as sensations arise and disappear." }
+ ]
+ }
+ ],
+ karmendriyas: [
+ {
+ name: "Vāk (Speech) 🗣️",
+ sanskritLabel: "Vāk",
+ practices: [
+ { id: "k1_1", syncKey: "mauna", type: "ext", name: "Mauna — Deliberate Silence 🤫", desc: "Observing impulse to speak during silence." },
+ { id: "k1_2", syncKey: "vak_tapas", type: "ext", name: "Vak Tapas 🔥", desc: "Satya (true), Priya (pleasant), Hita (beneficial), Kala-yukta." },
+ { id: "k1_3", syncKey: "pause_speech", type: "ext", name: "Pause Before Speaking ⏸️", desc: "Impulse → Pause → Discernment → Speech." },
+ { id: "k1_4", syncKey: "conscious_listening", type: "ext", name: "Conscious Listening 👂", desc: "Listening completely before responding." },
+ { id: "k1_5", syncKey: "speech_economy", type: "ext", name: "Speech Economy ✂️", desc: "Expressing ideas clearly with fewer words." },
+ { id: "k1_6", syncKey: "difficult_speech", type: "ext", name: "Difficult-Speech Practice 🧘", desc: "Delaying reaction when provoked." },
+ { id: "k1_7", syncKey: "sacred_speech", type: "ext", name: "Sacred Speech 🕉️", desc: "Japa, Stotra, prayer, and helpful speech." },
+ { id: "k1_8", syncKey: "antar_mauna", type: "int", name: "Antar Mauna 🤫", desc: "Not continuing inner arguments/rehearsals." },
+ { id: "k1_9", syncKey: "mantra_japa", type: "int", name: "Mantra Japa 📿", desc: "Replacing unnecessary speech impulses with mantra." },
+ { id: "k1_10", syncKey: "witness_speech_impulse", type: "int", name: "Witnessing Speaking Impulse 👁️", desc: "Observing 'An impulse to speak has arisen'." },
+ { id: "k1_11", syncKey: "ego_watch", type: "int", name: "Ego-Watch 👤", desc: "Noticing desire to prove, correct, or have last word." },
+ { id: "k1_12", syncKey: "self_inquiry", type: "int", name: "Self-Inquiry 🔎", desc: "Asking 'Who wants to speak?'" },
+ { id: "k1_13", syncKey: "silence_thoughts", type: "int", name: "Silence Between Thoughts 🌌", desc: "Awareness of space between mental speech." }
+ ]
+ },
+ {
+ name: "Pāṇi (Grasping) 🤲",
+ sanskritLabel: "Pāṇi",
+ practices: [
+ { id: "k2_1", syncKey: "karma_yoga", type: "ext", name: "Karma Yoga 🛠️", desc: "Selfless service, cleaning, helping." },
+ { id: "k2_2", syncKey: "conscious_action", type: "ext", name: "Conscious Action 🎯", desc: "Intention → Awareness → Deliberate physical action." },
+ { id: "k2_3", syncKey: "kaya_sthairyam", type: "ext", name: "Kaya Sthairyam 🧘", desc: "Keeping hands completely still for set period." },
+ { id: "k2_4", syncKey: "fidget_discipline", type: "ext", name: "Fidgeting Discipline ✋", desc: "Reducing tapping, touching, unnecessary movement." },
+ { id: "k2_5", syncKey: "digital_hand", type: "ext", name: "Digital-Hand Discipline 📱", desc: "No unconscious scrolling/checking." },
+ { id: "k2_6", syncKey: "dana", type: "ext", name: "Dana 🎁", desc: "Training hands to give resources/time." },
+ { id: "k2_7", syncKey: "creative_action", type: "ext", name: "Creative Action 🎨", desc: "Creating/writing/building vs consuming." },
+ { id: "k2_8", syncKey: "aparigraha", type: "int", name: "Aparigraha 🪷", desc: "Observing desire to possess/hold." },
+ { id: "k2_9", syncKey: "ishvara_arpana", type: "int", name: "Ishvara-Arpana Buddhi 🙏", desc: "Offering action results to the Divine." },
+ { id: "k2_10", syncKey: "outcome_detachment", type: "int", name: "Outcome Detachment 🍃", desc: "Action is my duty, result is not in my control." },
+ { id: "k2_11", syncKey: "possessiveness_obs", type: "int", name: "Possessiveness Observation 👁️", desc: "Watching impulse to grab/control." },
+ { id: "k2_12", syncKey: "generosity_med", type: "int", name: "Generosity Meditation 💝", desc: "Contemplating stewardship over ownership." }
+ ]
+ },
+ {
+ name: "Pāda (Movement) 👣",
+ sanskritLabel: "Pāda",
+ practices: [
+ { id: "k3_1", syncKey: "walking_meditation", type: "ext", name: "Walking Meditation 🚶", desc: "Awareness of lifting, placing, ground contact." },
+ { id: "k3_2", syncKey: "mantra_japa", type: "ext", name: "Mantra Walking 📿", desc: "Synchronizing step with mantra." },
+ { id: "k3_3", syncKey: "purposeful_movement", type: "ext", name: "Purposeful Movement 🎯", desc: "Asking 'Why am I moving?' before getting up." },
+ { id: "k3_4", syncKey: "kaya_sthairyam", type: "ext", name: "Stillness Practice 🧘", desc: "Remaining physically present despite restlessness." },
+ { id: "k3_5", syncKey: "pradakshina", type: "ext", name: "Pradakshina 🛕", desc: "Conscious sacred circumambulation." },
+ { id: "k3_6", syncKey: "grounding_practice", type: "ext", name: "Grounding Practice 🌍", desc: "Awareness of soles of feet during standing." },
+ { id: "k3_7", syncKey: "restlessness_obs", type: "int", name: "Restlessness Observation 👁️", desc: "Observing urge to move before reacting." },
+ { id: "k3_8", syncKey: "escape_obs", type: "int", name: "Escape-Impulse Observation 🚪", desc: "Investigating 'I need to leave' escape tendencies." },
+ { id: "k3_9", syncKey: "present_grounding", type: "int", name: "Present-Moment Grounding 🌿", desc: "Bringing awareness back to immediate space." },
+ { id: "k3_10", syncKey: "contentment_practice", type: "int", name: "Contentment Practice 🌸", desc: "No need to move just because mind is restless." },
+ { id: "k3_11", syncKey: "delayed_reaction", type: "int", name: "Delayed Reaction ⏳", desc: "Introducing brief delay before changing location." }
+ ]
+ },
+ {
+ name: "Upastha (Generation) 🔻",
+ sanskritLabel: "Upastha",
+ practices: [
+ { id: "k4_1", syncKey: "brahmacharya", type: "ext", name: "Brahmacharya 🕉️", desc: "Governing sexual energy consciously, not compulsively." },
+ { id: "k4_2", syncKey: "stimulus_reg", type: "ext", name: "Stimulus Regulation 🛡️", desc: "Reducing exposure to triggering content." },
+ { id: "k4_3", syncKey: "digital_sexual", type: "ext", name: "Digital Sexual Discipline 📱", desc: "Strict boundaries on erotic content/browsing." },
+ { id: "k4_4", syncKey: "physical_exercise", type: "ext", name: "Physical Exercise 🏃", desc: "Constructive channeling of physical energy." },
+ { id: "k4_5", syncKey: "structured_daily", type: "ext", name: "Structured Daily Activity 📅", desc: "Meaningful engagement to avoid idle compulsion." },
+ { id: "k4_6", syncKey: "conscious_celibacy", type: "ext", name: "Conscious Celibacy/Sexuality ⚖️", desc: "Ethical, non-compulsive relationship to energy." },
+ { id: "k4_7", syncKey: "urge_surfing", type: "int", name: "Urge Observation 👁️", desc: "Observing stimulus → sensation → impulse chain." },
+ { id: "k4_8", syncKey: "urge_surfing", type: "int", name: "Urge Surfing 🌊", desc: "Riding the desire wave without acting." },
+ { id: "k4_9", syncKey: "mantra_japa", type: "int", name: "Mantra Japa 📿", desc: "Shifting from audible to strong impulses." },
+ { id: "k4_10", syncKey: "fantasy_interruption", type: "int", name: "Fantasy Interruption ✋", desc: "Withdrawing participation when fantasy starts." },
+ { id: "k4_11", syncKey: "kama_vicara", type: "int", name: "Kama-Vicara 🔎", desc: "Examining true underlying need (intimacy, escape, etc.)." },
+ { id: "k4_12", syncKey: "kama_prema", type: "int", name: "Kama → Prema ❤️", desc: "Redirecting attachment capacity toward devotion/love." },
+ { id: "k4_13", syncKey: "sakshi_bhava", type: "int", name: "Sakshi Bhava 👁️", desc: "Observing sexual sensations as objects in awareness." },
+ { id: "k4_14", syncKey: "vairagya_contemplation", type: "int", name: "Vairagya Contemplation 🍂", desc: "Contemplating impermanent nature of pleasure." },
+ { id: "k4_15", syncKey: "ojas_trans", type: "int", name: "Ojas Transformation 🪷", desc: "Traditional focus on vitality preservation." }
+ ]
+ },
+ {
+ name: "Pāyu (Elimination) 💨",
+ sanskritLabel: "Pāyu",
+ practices: [
+ { id: "k5_1", syncKey: "elimination_routine", type: "ext", name: "Regular Elimination Routine ⏰", desc: "Respecting natural signals without suppression." },
+ { id: "k5_2", syncKey: "shaucha", type: "ext", name: "Shaucha 🧼", desc: "Appropriate physical cleanliness without obsession." },
+ { id: "k5_3", syncKey: "natural_elimination", type: "ext", name: "Natural Elimination 🌿", desc: "Supporting body without unnecessary interference." },
+ { id: "k5_4", syncKey: "body_awareness", type: "ext", name: "Body Awareness 🧘", desc: "Familiarity with elimination signals." },
+ { id: "k5_5", syncKey: "diet_lifestyle", type: "ext", name: "Appropriate Diet/Lifestyle 🥗", desc: "Supporting bowel function naturally." },
+ { id: "k5_6", syncKey: "non_obsessive_cleansing", type: "ext", name: "Non-Obsessive Cleansing 🧼", desc: "Cleanliness without compulsive ritual." },
+ { id: "k5_7", syncKey: "letting_go_med", type: "int", name: "Letting-Go Meditation 🍃", desc: "Using elimination to reflect on releasing the old." },
+ { id: "k5_8", syncKey: "emotional_release", type: "int", name: "Emotional Release 💭", desc: "Processing & releasing resentment, guilt, anger." },
+ { id: "k5_9", syncKey: "forgiveness_practice", type: "int", name: "Forgiveness Practice ❤️", desc: "Ending continued internal possession of past events." },
+ { id: "k5_10", syncKey: "non_clinging", type: "int", name: "Non-Clinging Contemplation 🍂", desc: "Asking 'What am I holding that no longer serves me?'" },
+ { id: "k5_11", syncKey: "acceptance_practice", type: "int", name: "Acceptance Practice 🌊", desc: "Contemplating arising → passing away → release." },
+ { id: "k5_12", syncKey: "sakshi_bhava", type: "int", name: "Sakshi Bhava 👁️", desc: "Observing emotional states without feeding/suppressing." },
+ { id: "k5_13", syncKey: "aparigraha", type: "int", name: "Aparigraha 🪷", desc: "Non-possessiveness applied to grievances and memories." }
+ ]
+ }
+ ]
+};
+
+let currentDate = new Date().toISOString().split('T')[0];
+let currentTheme = 'dark';
+let logs = {}; 
+let activeFilter = { jnan: 'All', karm: 'All' };
+let searchQuery = '';
+let activeChartInstance = null;
+let currentChartContext = { type: null, senseIndex: null, practiceIndex: null };
+
+function formatDateDDMMYY(isoDateStr) {
+ if (!isoDateStr) return '';
+ const [year, month, day] = isoDateStr.split('-');
+ return `${day}/${month}/${year.slice(-2)}`;
+}
+
+window.onload = () => {
+ const savedTheme = localStorage.getItem('indriya_theme') || 'dark';
+ setTheme(savedTheme);
+
+ updateGlobalDateInputs(currentDate);
+ document.getElementById('analyticsSingleDate').value = currentDate;
+ document.getElementById('startDate').value = currentDate;
+ document.getElementById('endDate').value = currentDate;
+ updateAnalyticsDisplay();
+
+ loadLogsLocal();
+ renderSubCategoryDropdowns();
+ renderUI();
+};
+
+window.addEventListener('popstate', (event) => {
+  const overlay = document.getElementById('chartModalOverlay');
+  
+  if (overlay.classList.contains('active')) {
+    if (currentChartContext.practiceIndex !== null) {
+      openSubAnalyticsChart(currentChartContext.type, currentChartContext.senseIndex);
+    } else if (currentChartContext.senseIndex !== null) {
+      openAnalyticsChart(currentChartContext.type);
+    } else {
+      overlay.classList.remove('active');
+    }
+  }
+});
+
+function pushModalHistoryState() {
+  history.pushState({ modalOpen: true }, '');
+}
+
+function toggleSidebar() {
+ document.getElementById('sidebar').classList.toggle('open');
+ document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+function closeSidebar() {
+ document.getElementById('sidebar').classList.remove('open');
+ document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+function navTo(viewId) {
+ openView(viewId);
+ closeSidebar();
+}
+
+function updateGlobalDateInputs(val) {
+ document.querySelectorAll('.global-date-input').forEach(input => {
+ input.value = val;
+ });
+ document.querySelectorAll('.global-date-display').forEach(display => {
+ display.textContent = formatDateDDMMYY(val);
+ });
+}
+
+function updateAnalyticsDisplay() {
+ const singleVal = document.getElementById('analyticsSingleDate').value;
+ const startVal = document.getElementById('startDate').value;
+ const endVal = document.getElementById('endDate').value;
+
+ if (singleVal) document.getElementById('analyticsSingleDateDisplay').textContent = formatDateDDMMYY(singleVal);
+ if (startVal) document.getElementById('startDateDisplay').textContent = formatDateDDMMYY(startVal);
+ if (endVal) document.getElementById('endDateDisplay').textContent = formatDateDDMMYY(endVal);
+
+ updateAnalytics();
+}
+
+function setDateFromInput(val) {
+ if (val) {
+ currentDate = val;
+ updateGlobalDateInputs(currentDate);
+ renderUI();
+ }
+}
+
+function toggleInfoTooltip(event, element) {
+ event.stopPropagation();
+ const container = element.closest('.info-tooltip-container');
+ const wasActive = container.classList.contains('active');
+ 
+ document.querySelectorAll('.info-tooltip-container.active').forEach(el => {
+ el.classList.remove('active');
+ });
+
+ if (!wasActive) {
+ container.classList.add('active');
+ }
+}
+
+function handleBodyClick(event) {
+ if (!event.target.closest('.info-tooltip-container')) {
+ document.querySelectorAll('.info-tooltip-container.active').forEach(el => {
+ el.classList.remove('active');
+ });
+ }
+}
+
+function handleSearch(query) {
+ searchQuery = query.trim().toLowerCase();
+ const resultsContainer = document.getElementById('search-results-container');
+ const hubGrid = document.getElementById('main-hub-grid');
+
+ if (!searchQuery) {
+ resultsContainer.style.display = 'none';
+ resultsContainer.innerHTML = '';
+ hubGrid.style.display = 'grid';
+ return;
+ }
+
+ hubGrid.style.display = 'none';
+ resultsContainer.style.display = 'block';
+ resultsContainer.innerHTML = '';
+
+ const allCategories = [
+ ...dataset.jnanendriyas.map(g => ({ ...g, categoryType: 'Jnanendriyas' })),
+ ...dataset.karmendriyas.map(g => ({ ...g, categoryType: 'Karmendriyas' }))
+ ];
+
+ let hasMatches = false;
+
+ allCategories.forEach(group => {
+ const matchingPractices = group.practices.filter(p => 
+ p.name.toLowerCase().includes(searchQuery) || p.desc.toLowerCase().includes(searchQuery)
+ );
+
+ if (matchingPractices.length > 0) {
+ hasMatches = true;
+ const card = document.createElement('div');
+ card.className = 'indriya-card';
+
+ let html = `<div class="indriya-header"><span>${group.categoryType} — ${group.name}</span></div><ul class="practice-list">`;
+
+ matchingPractices.forEach(p => {
+ const data = getSyncData(p.syncKey);
+ const isDone = data.done;
+ const efficiencies = data.efficiencies || [];
+ const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
+
+ const badgeText = p.type === 'ext' ? 'External' : 'Internal';
+ const badgeClass = p.type === 'ext' ? 'badge-ext' : 'badge-int';
+ const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
+
+ html += `
+ <li class="practice-item">
+ <div class="practice-main">
+ <label class="checkbox-label">
+ <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
+ <div>
+ <div class="practice-name ${isDone ? 'completed-text' : ''}">
+ <span class="badge ${badgeClass}">${badgeText}</span>${p.name}
+ </div>
+ <div class="practice-desc">${p.desc}</div>
+ </div>
+ </label>
+ </div>
+ 
+ <div class="duration-section ${dimmedClass}">
+ <span style="display:inline-flex; align-items:center;">
+ Practice Efficiency:
+ <span class="info-tooltip-container">
+ <span class="info-icon" onclick="toggleInfoTooltip(event, this)">ⓘ</span>
+ <div class="info-tooltip-content">Post-practice, gauge efficiency solely by objective fulfillment—ignoring time, effort, difficulty, and self-image: how completely did behavior and mind align with the define practice objective?</div>
+ </span>
+ </span>
+ <div class="durations-wrapper">
+ ${efficiencies.map((eff, idx) => `
+ <div class="duration-chip">
+ <span>${eff}%</span>
+ <span class="remove-btn" onclick="removeEfficiency('${p.syncKey}', ${idx})">&times;</span>
+ </div>
+ `).join('')}
+ <button class="add-duration-btn" onclick="addEfficiency('${p.syncKey}')">+ Add</button>
+ </div>
+ ${efficiencies.length > 0 ? `<span class="total-duration">(Avg: ${avgEff}%)</span>` : ''}
+ </div>
+ </li>
+ `;
+ });
+
+ html += `</ul>`;
+ card.innerHTML = html;
+ resultsContainer.appendChild(card);
+ }
+ });
+
+ if (!hasMatches) {
+ resultsContainer.innerHTML = '';
+ }
+}
+
+function openView(viewId) {
+ document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+ document.getElementById(viewId).classList.add('active');
+
+ document.querySelectorAll('.main-footnote-nav .nav-item').forEach(item => {
+ item.classList.remove('active');
+ });
+ if (viewId === 'hub-view') document.getElementById('bottom-nav-home').classList.add('active');
+ if (viewId === 'jnan-view') document.getElementById('bottom-nav-jnan').classList.add('active');
+ if (viewId === 'karm-view') document.getElementById('bottom-nav-karm').classList.add('active');
+ if (viewId === 'analytics-view') document.getElementById('bottom-nav-analytics').classList.add('active');
+
+ if (viewId === 'analytics-view') {
+ updateAnalyticsDisplay();
+ }
+}
+
+function setTheme(theme) {
+ currentTheme = theme;
+ document.documentElement.setAttribute('data-theme', theme);
+ const themeBtnEl = document.getElementById('themeBtn');
+ if (themeBtnEl) {
+ themeBtnEl.innerHTML = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+ }
+ localStorage.setItem('indriya_theme', theme);
+
+ if (activeChartInstance) {
+ const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+ const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+ activeChartInstance.options.scales.x.ticks.color = textTheme;
+ activeChartInstance.options.scales.x.title.color = textTheme;
+ activeChartInstance.options.scales.x.grid.color = borderTheme;
+ activeChartInstance.options.scales.y.ticks.color = textTheme;
+ activeChartInstance.options.scales.y.title.color = textTheme;
+ activeChartInstance.options.scales.y.grid.color = borderTheme;
+ activeChartInstance.options.plugins.legend.labels.color = textTheme;
+ activeChartInstance.update();
+ }
+}
+
+function toggleTheme() {
+ setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+}
+
+function shiftDate(offset) {
+ let [y, m, d] = currentDate.split('-').map(Number);
+ let dateObj = new Date(y, m - 1, d);
+ dateObj.setDate(dateObj.getDate() + offset);
+ const year = dateObj.getFullYear();
+ const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+ const day = String(dateObj.getDate()).padStart(2, '0');
+ currentDate = `${year}-${month}-${day}`;
+ updateGlobalDateInputs(currentDate);
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+}
+
+function resetToToday() {
+ currentDate = new Date().toISOString().split('T')[0];
+ updateGlobalDateInputs(currentDate);
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+}
+
+function resetContextualJnan() {
+ const filterVal = activeFilter.jnan;
+ const targetName = filterVal === 'All' ? 'All Jnanendriyas' : filterVal;
+ if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ if (logs[currentDate]) {
+ dataset.jnanendriyas.forEach(group => {
+ if (filterVal === 'All' || group.name === filterVal) {
+ group.practices.forEach(p => {
+ if (logs[currentDate][p.syncKey]) {
+ delete logs[currentDate][p.syncKey];
+ }
+ });
+ }
+ });
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+ }
+ }
+}
+
+function resetContextualKarm() {
+ const filterVal = activeFilter.karm;
+ const targetName = filterVal === 'All' ? 'All Karmendriyas' : filterVal;
+ if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ if (logs[currentDate]) {
+ dataset.karmendriyas.forEach(group => {
+ if (filterVal === 'All' || group.name === filterVal) {
+ group.practices.forEach(p => {
+ if (logs[currentDate][p.syncKey]) {
+ delete logs[currentDate][p.syncKey];
+ }
+ });
+ }
+ });
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+ }
+ }
+}
+
+function loadLogsLocal() {
+ const data = localStorage.getItem('indriya_nigraha_v2_logs');
+ if (data) logs = JSON.parse(data);
+}
+
+function saveLogsToLocal() {
+ localStorage.setItem('indriya_nigraha_v2_logs', JSON.stringify(logs));
+}
+
+function getSyncData(syncKey) {
+ if (!logs[currentDate]) logs[currentDate] = {};
+ if (!logs[currentDate][syncKey]) {
+ logs[currentDate][syncKey] = { done: false, efficiencies: [] };
+ }
+ if (logs[currentDate][syncKey].durations && !logs[currentDate][syncKey].efficiencies) {
+ logs[currentDate][syncKey].efficiencies = [];
+ }
+ return logs[currentDate][syncKey];
+}
+
+function toggleDone(syncKey) {
+ const item = getSyncData(syncKey);
+ 
+ if (!item.done) {
+ const input = prompt("Enter Execution/Practice efficiency (0-100%):");
+ const eff = parseInt(input, 10);
+ 
+ if (!isNaN(eff) && eff >= 0 && eff <= 100) {
+ item.done = true;
+ item.efficiencies.push(eff);
+ } else {
+ if (input !== null) {
+ alert("Please enter a valid number between 0 and 100 to complete this practice.");
+ }
+ item.done = false;
+ }
+ } else {
+ item.done = false;
+ item.efficiencies = [];
+ }
+ 
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+}
+
+function addEfficiency(syncKey) {
+ const item = getSyncData(syncKey);
+ if (!item.done) {
+ alert("Please check the practice first before adding efficiency percentages.");
+ return;
+ }
+ const input = prompt("Enter Execution/Practice efficiency (0-100%):");
+ const eff = parseInt(input, 10);
+ if (!isNaN(eff) && eff >= 0 && eff <= 100) {
+ item.efficiencies.push(eff);
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+ } else if (input !== null) {
+ alert("Please enter a valid number between 0 and 100.");
+ }
+}
+
+function removeEfficiency(syncKey, index) {
+ const item = getSyncData(syncKey);
+ item.efficiencies.splice(index, 1);
+ 
+ if (item.efficiencies.length === 0) {
+ item.done = false;
+ }
+ 
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+}
+
+function renderSubCategoryDropdowns() {
+ const jnanDropdown = document.getElementById('jnan-dropdown');
+ const karmDropdown = document.getElementById('karm-dropdown');
+
+ let jnanHtml = `<option value="All" ${activeFilter.jnan === 'All' ? 'selected' : ''}>All Senses</option>`;
+ dataset.jnanendriyas.forEach(g => {
+ jnanHtml += `<option value="${g.name}" ${activeFilter.jnan === g.name ? 'selected' : ''}>${g.sanskritLabel}</option>`;
+ });
+ jnanDropdown.innerHTML = jnanHtml;
+
+ let karmHtml = `<option value="All" ${activeFilter.karm === 'All' ? 'selected' : ''}>All Senses</option>`;
+ dataset.karmendriyas.forEach(g => {
+ karmHtml += `<option value="${g.name}" ${activeFilter.karm === g.name ? 'selected' : ''}>${g.sanskritLabel}</option>`;
+ });
+ karmDropdown.innerHTML = karmHtml;
+}
+
+function filterCategory(type, name) {
+ activeFilter[type] = name;
+ renderSubCategoryDropdowns();
+ renderUI();
+}
+
+function renderCategoryUI(categoryList, targetContainer, currentFilter) {
+ targetContainer.innerHTML = '';
+
+ categoryList.forEach(group => {
+ if (currentFilter !== 'All' && group.name !== currentFilter) return;
+
+ const card = document.createElement('div');
+ card.className = 'indriya-card';
+
+ let html = `<div class="indriya-header"><span>${group.name}</span></div><ul class="practice-list">`;
+
+ group.practices.forEach(p => {
+ const data = getSyncData(p.syncKey);
+ const isDone = data.done;
+ const efficiencies = data.efficiencies || [];
+ const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
+
+ const badgeText = p.type === 'ext' ? 'External' : 'Internal';
+ const badgeClass = p.type === 'ext' ? 'badge-ext' : 'badge-int';
+ const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
+
+ html += `
+ <li class="practice-item">
+ <div class="practice-main">
+ <label class="checkbox-label">
+ <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
+ <div>
+ <div class="practice-name ${isDone ? 'completed-text' : ''}">
+ <span class="badge ${badgeClass}">${badgeText}</span>${p.name}
+ </div>
+ <div class="practice-desc">${p.desc}</div>
+ </div>
+ </label>
+ </div>
+ 
+ <div class="duration-section ${dimmedClass}">
+ <span style="display:inline-flex; align-items:center;">
+ Practice Efficiency:
+ <span class="info-tooltip-container">
+ <span class="info-icon" onclick="toggleInfoTooltip(event, this)">ⓘ</span>
+ <div class="info-tooltip-content">Post-practice, gauge efficiency solely by objective fulfillment—ignoring time, effort, difficulty, and self-image: how completely did behavior and mind align with the define practice objective?</div>
+ </span>
+ </span>
+ <div class="durations-wrapper">
+ ${efficiencies.map((eff, idx) => `
+ <div class="duration-chip">
+ <span>${eff}%</span>
+ <span class="remove-btn" onclick="removeEfficiency('${p.syncKey}', ${idx})">&times;</span>
+ </div>
+ `).join('')}
+ <button class="add-duration-btn" onclick="addEfficiency('${p.syncKey}')">+ Add</button>
+ </div>
+ ${efficiencies.length > 0 ? `<span class="total-duration">(Avg: ${avgEff}%)</span>` : ''}
+ </div>
+ </li>
+ `;
+ });
+
+ html += `</ul>`;
+ card.innerHTML = html;
+ targetContainer.appendChild(card);
+ });
+}
+
+function renderUI() {
+ renderCategoryUI(dataset.jnanendriyas, document.getElementById('jnanendriyas-container'), activeFilter.jnan);
+ renderCategoryUI(dataset.karmendriyas, document.getElementById('karmendriyas-container'), activeFilter.karm);
+}
+
+function getSelectedAnalyticsDates() {
+ const mode = document.getElementById('analyticsMode').value;
+ if (mode === 'current') {
+ const singleAnalyticsDate = document.getElementById('analyticsSingleDate').value;
+ return singleAnalyticsDate ? [singleAnalyticsDate] : [];
+ } else if (mode === 'all') {
+ return Object.keys(logs).sort();
+ } else if (mode === 'range') {
+ const s = document.getElementById('startDate').value;
+ const e = document.getElementById('endDate').value;
+ return Object.keys(logs).filter(d => d >= s && d <= e).sort();
+ }
+ return [];
+}
+
+function updateAnalytics() {
+ const mode = document.getElementById('analyticsMode').value;
+ const singleDateSpan = document.getElementById('singleDateInput');
+ const rangeSpan = document.getElementById('rangeInputs');
+
+ singleDateSpan.style.display = mode === 'current' ? 'inline-block' : 'none';
+ rangeSpan.style.display = mode === 'range' ? 'inline-block' : 'none';
+
+ const targetDates = getSelectedAnalyticsDates();
+
+ let totalPracticesDone = 0;
+ let activeDays = 0;
+ let dailyAverages = [];
+
+ targetDates.forEach(date => {
+ if (!logs[date]) return;
+ let dayHasData = false;
+ let dayEfficiencies = [];
+
+ Object.keys(logs[date]).forEach(syncKey => {
+ const item = logs[date][syncKey];
+ const effList = item.efficiencies || [];
+
+ if (item.done) {
+ if (effList.length > 0 || item.done) dayHasData = true;
+ totalPracticesDone++;
+ dayEfficiencies.push(...effList);
+ }
+ });
+
+ if (dayHasData) {
+ activeDays++;
+ if (dayEfficiencies.length > 0) {
+ const dayAvg = dayEfficiencies.reduce((a, b) => a + b, 0) / dayEfficiencies.length;
+ dailyAverages.push(dayAvg);
+ }
+ }
+ });
+
+ const overallAvgEff = dailyAverages.length > 0 ? Math.round(dailyAverages.reduce((a, b) => a + b, 0) / dailyAverages.length) : 0;
+
+ document.getElementById('statCompleted').innerText = totalPracticesDone;
+ document.getElementById('statEfficiency').innerText = overallAvgEff + '%';
+ document.getElementById('statDays').innerText = activeDays;
+}
+
+function updateSlicerUI() {
+ const startDate = document.getElementById('startDate').value;
+ const endDate = document.getElementById('endDate').value;
+ const mode = document.getElementById('analyticsMode').value;
+
+ document.querySelectorAll('.slicer-btn').forEach(btn => btn.classList.remove('active'));
+
+ if (mode === 'current') {
+ document.getElementById('slicer-1D').classList.add('active');
+ } else if (mode === 'range' && startDate && endDate) {
+ const start = new Date(startDate);
+ const end = new Date(endDate);
+ const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+ if (diffDays === 1) document.getElementById('slicer-1D').classList.add('active');
+ else if (diffDays === 7) document.getElementById('slicer-1W').classList.add('active');
+ else if (diffDays === 30) document.getElementById('slicer-1M').classList.add('active');
+ else if (diffDays === 365) document.getElementById('slicer-1Y').classList.add('active');
+ }
+}
+
+function applySlicer(slicerType) {
+ const baseDateStr = document.getElementById('analyticsSingleDate').value || currentDate;
+ const endDateObj = new Date(baseDateStr);
+
+ if (slicerType === '1D') {
+ document.getElementById('analyticsMode').value = 'current';
+ } else {
+ document.getElementById('analyticsMode').value = 'range';
+ let startDateObj = new Date(endDateObj);
+
+ if (slicerType === '1W') {
+ startDateObj.setDate(startDateObj.getDate() - 6);
+ } else if (slicerType === '1M') {
+ startDateObj.setDate(startDateObj.getDate() - 29);
+ } else if (slicerType === '1Y') {
+ startDateObj.setDate(startDateObj.getDate() - 364);
+ }
+
+ const formatIso = d => {
+   const year = d.getFullYear();
+   const month = String(d.getMonth() + 1).padStart(2, '0');
+   const day = String(d.getDate()).padStart(2, '0');
+   return `${year}-${month}-${day}`;
+ };
+
+ document.getElementById('startDate').value = formatIso(startDateObj);
+ document.getElementById('endDate').value = formatIso(endDateObj);
+ }
+
+ updateAnalyticsDisplay();
+ updateSlicerUI();
+
+ if (currentChartContext.type) {
+   if (currentChartContext.practiceIndex !== null) {
+     openPracticeLineChart(currentChartContext.type, currentChartContext.senseIndex, currentChartContext.practiceIndex);
+   } else if (currentChartContext.senseIndex !== null) {
+     openSubAnalyticsChart(currentChartContext.type, currentChartContext.senseIndex);
+   } else {
+     openAnalyticsChart(currentChartContext.type);
+   }
+ }
+}
+
+function adjustChartWidth(itemCount, minWidthPerItem = 90) {
+  const scrollInner = document.getElementById('chartScrollInner');
+  const parentWidth = document.getElementById('chartScrollBox').clientWidth;
+  const calculatedWidth = itemCount * minWidthPerItem;
+
+  if (calculatedWidth > parentWidth) {
+    scrollInner.style.width = calculatedWidth + 'px';
+  } else {
+    scrollInner.style.width = '100%';
+  }
+}
+
+function openAnalyticsChart(type) {
+ pushModalHistoryState();
+ currentChartContext = { type: type, senseIndex: null, practiceIndex: null };
+ updateSlicerUI();
+
+ const targetDates = getSelectedAnalyticsDates();
+ const categoryList = type === 'jnan' ? dataset.jnanendriyas : dataset.karmendriyas;
+ const chartTitle = type === 'jnan' ? 'Jnanendriyas — Overall Practice Efficiency' : 'Karmendriyas — Overall Practice Efficiency';
+ const xAxisTitle = type === 'jnan' ? 'Jnanendriyas': 'Karmendriyas';
+
+ const labels = [];
+ const opeData = [];
+
+ categoryList.forEach(group => {
+ labels.push(group.sanskritLabel);
+ const totalPracticesInGroup = group.practices.length;
+
+ let dailyOPEValues = [];
+
+ targetDates.forEach(date => {
+ if (!logs[date]) return;
+ let completedCount = 0;
+ let totalGroupEfficiency = 0;
+ let groupEfficiencyEntriesCount = 0;
+
+ group.practices.forEach(p => {
+ const item = logs[date][p.syncKey];
+ if (item && item.done) {
+ completedCount++;
+ const effList = item.efficiencies || [];
+ if (effList.length > 0) {
+ const practiceAvg = effList.reduce((a, b) => a + b, 0) / effList.length;
+ totalGroupEfficiency += practiceAvg;
+ groupEfficiencyEntriesCount++;
+ }
+ }
+ });
+
+ if (completedCount > 0 || groupEfficiencyEntriesCount > 0) {
+ const accomplishmentRatio = totalPracticesInGroup > 0 ? (completedCount / totalPracticesInGroup) : 0;
+ const ape = groupEfficiencyEntriesCount > 0 ? (totalGroupEfficiency / groupEfficiencyEntriesCount) : 0;
+ dailyOPEValues.push(accomplishmentRatio * ape);
+ }
+ });
+
+ const avgOPE = dailyOPEValues.length > 0 ? (dailyOPEValues.reduce((a, b) => a + b, 0) / dailyOPEValues.length) : 0;
+ opeData.push(Math.round(avgOPE * 100) / 100);
+ });
+
+ adjustChartWidth(labels.length, 120);
+
+ document.getElementById('chartModalTitle').innerText = chartTitle;
+ document.getElementById('chartModalTitle').style.color = type === 'jnan' ? 'var(--accent-jnan)' : 'var(--accent-karm)';
+ 
+ document.getElementById('chartDetailsContent').innerHTML = `
+ <li><strong>X-Axis (Senses):</strong> Lists individual sense organ groups using Sanskrit English titles. Click any bar to open its detailed practices chart!</li>
+ <li><strong>Y-Axis (OPE):</strong> Overall Practice Efficiency averaged simple-wise across all active days in range.</li>
+ <li><strong>Accomplishment Ratio:</strong> Daily completed practices count divided by total available practices in that sense.</li>
+ <li><strong>APE:</strong> Daily average efficiency across practices recorded for the sense.</li>
+ `;
+
+ document.getElementById('chartModalOverlay').classList.add('active');
+
+ const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+ const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+
+ const ctx = document.getElementById('modalOpeChart').getContext('2d');
+
+ if (activeChartInstance) {
+ activeChartInstance.destroy();
+ }
+
+ activeChartInstance = new Chart(ctx, {
+ type: 'bar',
+ data: {
+ labels: labels,
+ datasets: [{
+ label: 'Overall Practice Efficiency (OPE) %',
+ data: opeData,
+ backgroundColor: type === 'jnan' ? '#38bdf8' : '#f43f5e',
+ borderRadius: 6,
+ maxBarThickness: 50
+ }]
+ },
+ options: {
+ responsive: true,
+ maintainAspectRatio: false,
+ onClick: (evt, activeElements) => {
+ if (activeElements.length > 0) {
+ const index = activeElements[0].index;
+ openSubAnalyticsChart(type, index);
+ }
+ },
+ scales: {
+ x: {
+ title: { display: true, text: xAxisTitle, color: textTheme, font: { weight: 'bold', size: 12 } },
+ ticks: { color: textTheme, font: { size: 11, weight: '600' } },
+ grid: { color: borderTheme }
+ },
+ y: {
+ beginAtZero: true,
+ max: 100,
+ title: { display: true, text: 'OPE %', color: textTheme, font: { weight: 'bold', size: 12 } },
+ ticks: { color: textTheme, font: { size: 10 } },
+ grid: { color: borderTheme }
+ }
+ },
+ plugins: {
+ legend: {
+ labels: { color: textTheme, font: { size: 12 } }
+ }
+ }
+ }
+ });
+}
+
+function openSubAnalyticsChart(type, senseIndex) {
+ pushModalHistoryState();
+ currentChartContext = { type: type, senseIndex: senseIndex, practiceIndex: null };
+ updateSlicerUI();
+
+ const targetDates = getSelectedAnalyticsDates();
+ const categoryList = type === 'jnan' ? dataset.jnanendriyas : dataset.karmendriyas;
+ const senseGroup = categoryList[senseIndex];
+ 
+ const chartTitle = `${senseGroup.name} — Practice Efficiency`;
+ const labels = [];
+ const apeData = [];
+
+ senseGroup.practices.forEach(p => {
+ labels.push(p.name);
+ 
+ let dailyPracticeAverages = [];
+
+ targetDates.forEach(date => {
+ if (!logs[date]) return;
+ const item = logs[date][p.syncKey];
+ 
+ if (item && item.done) {
+ const effList = item.efficiencies || [];
+ if (effList.length > 0) {
+ const dayAvg = effList.reduce((a, b) => a + b, 0) / effList.length;
+ dailyPracticeAverages.push(dayAvg);
+ }
+ }
+ });
+
+ const avgAPE = dailyPracticeAverages.length > 0 ? (dailyPracticeAverages.reduce((a, b) => a + b, 0) / dailyPracticeAverages.length) : 0;
+ apeData.push(Math.round(avgAPE * 100) / 100);
+ });
+
+ adjustChartWidth(labels.length, 100);
+
+ document.getElementById('chartModalTitle').innerText = chartTitle;
+ document.getElementById('chartModalTitle').style.color = type === 'jnan' ? 'var(--accent-jnan)' : 'var(--accent-karm)';
+ 
+ document.getElementById('chartDetailsContent').innerHTML = `
+ <li><strong>X-Axis (Practices):</strong> Lists individual practices. <em>Click any practice point/bar to view its time-series line chart!</em></li>
+ <li><strong>Y-Axis (APE):</strong> Average Practice Efficiency simple-averaged across all active days in range.</li>
+ <li><strong>APE Formula:</strong> Daily average efficiency of practice scores.</li>
+ `;
+
+ document.getElementById('chartModalOverlay').classList.add('active');
+
+ const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+ const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+ const chartColor = type === 'jnan' ? '#38bdf8' : '#f43f5e';
+
+ const ctx = document.getElementById('modalOpeChart').getContext('2d');
+
+ if (activeChartInstance) {
+ activeChartInstance.destroy();
+ }
+
+ activeChartInstance = new Chart(ctx, {
+ type: 'line',
+ data: {
+ labels: labels,
+ datasets: [{
+ label: 'Average Practice Efficiency (APE) %',
+ data: apeData,
+ borderColor: chartColor,
+ backgroundColor: chartColor,
+ borderWidth: 2,
+ pointBackgroundColor: chartColor,
+ pointRadius: 5,
+ fill: false,
+ tension: 0.2
+ }]
+ },
+ options: {
+ responsive: true,
+ maintainAspectRatio: false,
+ onClick: (evt, activeElements) => {
+   if (activeElements.length > 0) {
+     const pIndex = activeElements[0].index;
+     openPracticeLineChart(type, senseIndex, pIndex);
+   }
+ },
+ scales: {
+ x: {
+ title: { display: true, text: 'Practices (Click to view detailed line chart)', color: textTheme, font: { weight: 'bold', size: 12 } },
+ ticks: { 
+ color: textTheme, 
+ font: { size: 10 },
+ maxRotation: 45, 
+ minRotation: 45 
+ },
+ grid: { color: borderTheme }
+ },
+ y: {
+ beginAtZero: true,
+ max: 100,
+ title: { display: true, text: 'APE %', color: textTheme, font: { weight: 'bold', size: 12 } },
+ ticks: { color: textTheme, font: { size: 10 } },
+ grid: { color: borderTheme }
+ }
+ },
+ plugins: {
+ legend: {
+ labels: { color: textTheme, font: { size: 12 } }
+ }
+ }
+ }
+ });
+}
+
+function openPracticeLineChart(type, senseIndex, practiceIndex) {
+ pushModalHistoryState();
+ currentChartContext = { type: type, senseIndex: senseIndex, practiceIndex: practiceIndex };
+ updateSlicerUI();
+
+ const categoryList = type === 'jnan' ? dataset.jnanendriyas : dataset.karmendriyas;
+ const practice = categoryList[senseIndex].practices[practiceIndex];
+
+ let datesInOrder = [];
+ const mode = document.getElementById('analyticsMode').value;
+
+ if (mode === 'current') {
+   const singleVal = document.getElementById('analyticsSingleDate').value || currentDate;
+   datesInOrder = [singleVal];
+ } else if (mode === 'range') {
+   const sStr = document.getElementById('startDate').value;
+   const eStr = document.getElementById('endDate').value;
+   
+   if (sStr && eStr) {
+     const [sy, sm, sd] = sStr.split('-').map(Number);
+     const [ey, em, ed] = eStr.split('-').map(Number);
+     let d = new Date(sy, sm - 1, sd);
+     const e = new Date(ey, em - 1, ed);
+
+     while (d <= e) {
+       const yr = d.getFullYear();
+       const mo = String(d.getMonth() + 1).padStart(2, '0');
+       const dy = String(d.getDate()).padStart(2, '0');
+       datesInOrder.push(`${yr}-${mo}-${dy}`);
+       d.setDate(d.getDate() + 1);
+     }
+   }
+ } else if (mode === 'all') {
+   datesInOrder = Object.keys(logs).sort();
+   if (datesInOrder.length === 0) datesInOrder = [currentDate];
+ }
+
+ const timeLabels = datesInOrder.map(d => formatDateDDMMYY(d));
+ const practiceApeSeries = datesInOrder.map(date => {
+   if (!logs[date]) return 0;
+   const item = logs[date][practice.syncKey];
+   if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
+     return Math.round(item.efficiencies.reduce((a, b) => a + b, 0) / item.efficiencies.length);
+   }
+   return 0;
+ });
+
+ adjustChartWidth(timeLabels.length, 65);
+
+ document.getElementById('chartModalTitle').innerText = `${practice.name} — Progress Trend`;
+ document.getElementById('chartModalTitle').style.color = 'var(--accent-gold)';
+
+ document.getElementById('chartDetailsContent').innerHTML = `
+ <li><strong>X-Axis (Time Period):</strong> Dates dynamically filtered according to selected slicer (1D, 1W, 1M, 1Y).</li>
+ <li><strong>Y-Axis (APE):</strong> Average Practice Efficiency recorded for this exact practice on each specific date.</li>
+ <li><strong>Tracked Objective:</strong> ${practice.desc}</li>
+ `;
+
+ document.getElementById('chartModalOverlay').classList.add('active');
+
+ const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+ const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+
+ const ctx = document.getElementById('modalOpeChart').getContext('2d');
+
+ if (activeChartInstance) {
+ activeChartInstance.destroy();
+ }
+
+ activeChartInstance = new Chart(ctx, {
+ type: 'line',
+ data: {
+ labels: timeLabels,
+ datasets: [{
+ label: `Average Practice Efficiency (APE) %`,
+ data: practiceApeSeries,
+ borderColor: '#fbbf24',
+ backgroundColor: '#fbbf24',
+ borderWidth: 2,
+ pointBackgroundColor: '#fbbf24',
+ pointRadius: 4,
+ fill: false,
+ tension: 0.3
+ }]
+ },
+ options: {
+ responsive: true,
+ maintainAspectRatio: false,
+ scales: {
+ x: {
+ title: { display: true, text: 'Time Period', color: textTheme, font: { weight: 'bold', size: 12 } },
+ ticks: { color: textTheme, font: { size: 10 } },
+ grid: { color: borderTheme }
+ },
+ y: {
+ beginAtZero: true,
+ max: 100,
+ title: { display: true, text: 'APE %', color: textTheme, font: { weight: 'bold', size: 12 } },
+ ticks: { color: textTheme, font: { size: 10 } },
+ grid: { color: borderTheme }
+ }
+ },
+ plugins: {
+ legend: {
+ labels: { color: textTheme, font: { size: 12 } }
+ }
+ }
+ }
+ });
+}
+
+function handleChartClose() {
+  if (currentChartContext.practiceIndex !== null) {
+    openSubAnalyticsChart(currentChartContext.type, currentChartContext.senseIndex);
+  } else if (currentChartContext.senseIndex !== null) {
+    openAnalyticsChart(currentChartContext.type);
+  } else {
+    document.getElementById('chartModalOverlay').classList.remove('active');
+  }
+}
+
+function closeChartModal(event) {
+ if (!event || event.target === document.getElementById('chartModalOverlay')) {
+   document.getElementById('chartModalOverlay').classList.remove('active');
+ }
+}
+</script>
+
+</body>
+</html>
