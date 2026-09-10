@@ -91,14 +91,14 @@
   color: transparent;
 }
 
-/* header h1 { 
+header h1 { 
   font-size: 1.8rem; 
   background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
-} */
+}
 
  .container { 
   grid-area: content;
@@ -3331,6 +3331,58 @@ function closeChartModal(event) {
    document.getElementById('chartModalOverlay').classList.remove('active');
  }
 }
+
+// ==========================================
+// SCROLL ANIMATION OBSERVER FOR ALL CHARTS
+// ==========================================
+const chartObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    // Check if the container has come into the viewport
+    if (entry.isIntersecting) {
+      const canvas = entry.target.querySelector('canvas');
+      
+      if (canvas && canvas.id) {
+        let instance = null;
+        
+        // Map the canvas ID to your global chart variables
+        switch (canvas.id) {
+          case 'domainBalanceChart': 
+            instance = domainBalanceChartInstance; 
+            break;
+          case 'domainAccomplishmentChart': 
+            instance = domainAccomplishmentChartInstance; 
+            break;
+          case 'trendChart': 
+            instance = trendChartInstance; 
+            break;
+          case 'qualityDistributionChart': 
+            instance = distributionChartInstance; 
+            break;
+          // ADDED: Deep-Dive Modal Chart
+          case 'modalOpeChart':
+            instance = activeChartInstance;
+            break;
+        }
+
+        // Reset and replay the animation
+        if (instance) {
+          instance.reset();
+          instance.update();
+        }
+      }
+    }
+  });
+}, { 
+  threshold: 0.2 // Triggers when 20% of the container is visible
+});
+
+// Start observing once the window loads
+window.addEventListener('DOMContentLoaded', () => {
+  // Select both the standard chart cards AND the modal's canvas wrapper
+  document.querySelectorAll('.chart-card, .canvas-wrapper').forEach(container => {
+    chartObserver.observe(container);
+  });
+});
 </script>
 
 </body>
