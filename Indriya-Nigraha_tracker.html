@@ -3,7 +3,7 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Indriya-Nigraha 🌺</title>
+ <title>Shodhana Nexus</title>
  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  <style>
  :root[data-theme="dark"] {
@@ -19,6 +19,7 @@
  --accent-antah: #818cf8; 
  --accent-manas: #34d399;
  --accent-ident: #f472b6;
+   
  --border: #27272a;
  --success: #10b981;
  --input-bg: #000000;
@@ -81,7 +82,14 @@
    background: var(--card-bg);
    border-bottom: 1px solid var(--border); 
  }
- header h1 { font-size: 1.8rem; color: var(--accent-gold); }
+ header h1 { 
+  font-size: 1.8rem; 
+  background: linear-gradient(135deg, #89a0bf 0%, #64748b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
 
  .container { 
   grid-area: content;
@@ -590,10 +598,9 @@
 
  .stats-grid {
  display: grid;
- /* Assuming you applied the side-by-side fix earlier */
  grid-template-columns: repeat(3, 1fr); 
  gap: 8px;
- margin-top: 35px; /* Adds space above the cards */
+ margin-top: 35px; 
  margin-bottom: 25px;
  }
 
@@ -973,7 +980,7 @@
   <header>
    <div style="display: flex; align-items: center;">
    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()">☰</button>
-   <h1>Indriya-Nigraha 🌺</h1>
+   <h1>Shodhana Nexus</h1>
    </div>
    <button onclick="handleLogout()" style="background: transparent; border: none; cursor: pointer; font-size: 1.4rem;" title="Logout">💔</button>
   </header>
@@ -1020,6 +1027,7 @@
    <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
    </div>
    <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+   <button class="date-nav-btn" id="filter-btn-jnan" onclick="toggleCompletionFilter('jnan')" title="Filter Practices">🔄 All</button>
    <button class="date-nav-btn" onclick="resetContextualJnan()" title="Reset Selection">📛</button>
    </div>
    </div>
@@ -1040,6 +1048,7 @@
    <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
    </div>
    <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+   <button class="date-nav-btn" id="filter-btn-karm" onclick="toggleCompletionFilter('karm')" title="Filter Practices">🔄 All</button>
    <button class="date-nav-btn" onclick="resetContextualKarm()" title="Reset Selection">📛</button>
    </div>
    </div>
@@ -1084,6 +1093,7 @@
            <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
          </div>
          <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+         <button class="date-nav-btn" id="filter-btn-arish" onclick="toggleCompletionFilter('arish')" title="Filter Practices">🔄 All</button>
          <button class="date-nav-btn" onclick="resetContextualArish()" title="Reset Selection">📛</button>
        </div>
      </div>
@@ -1107,6 +1117,7 @@
           <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
         </div>
         <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+        <button class="date-nav-btn" id="filter-btn-manas" onclick="toggleCompletionFilter('manas')" title="Filter Practices">🔄 All</button>
         <button class="date-nav-btn" onclick="resetContextualManas()" title="Reset Selection">📛</button>
       </div>
     </div>
@@ -1175,9 +1186,9 @@
 
 
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
-  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">⚖️ Domain Balance (OPE %)</h2>
+  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">⚖️ Domain Balance (D-OPE %)</h2>
   <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
-    Overall Practice Efficiency harmony across all 5 domains
+    Domain Overall Practice Efficiency harmony across all 5 domains
   </p>
   <div style="position: relative; width: 100%; height: 280px;">
     <canvas id="domainBalanceChart"></canvas>
@@ -1198,7 +1209,7 @@
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
   <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">📈 7-Day Rolling Momentum</h2>
   <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
-    Smooths out daily spikes and rest-day drops over the past 30 days
+    Smooths Daily APE % using an expanding window (Days 1–6) before locking into a 7-day rolling average over the past 30 days
   </p>
   <div style="position: relative; width: 100%; height: 280px; overflow-x: auto; overflow-y: hidden;">
     <div id="trendChartScrollInner" style="height: 100%; min-width: 100%;">
@@ -1222,7 +1233,7 @@
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
   <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">🔥 30-Day Tapas Consistency</h2>
   <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 10px;">
-    Daily mean execution efficiency across all domains combined (darker green = higher mastery)
+    Daily Overall Practice Efficiency (OPE) across all domains combined (darker green = higher mastery)
   </p>
   <div class="heatmap-container" id="heatmapContainer">
     <!-- Populated dynamically by JavaScript -->
@@ -1702,6 +1713,7 @@ let currentDate = new Date().toISOString().split('T')[0];
 let currentTheme = 'dark';
 let logs = {}; 
 let activeFilter = { jnan: 'All', karm: 'All', arish: 'All', manas: 'All' };
+let completionFilter = { jnan: 'all', karm: 'all', arish: 'all', manas: 'all' }; // NEW FILTER STATE
 let searchQuery = '';
 let activeChartInstance = null;
 let domainBalanceChartInstance = null;
@@ -1992,7 +2004,7 @@ if (trendChartInstance) {
     renderRollingTrendChart();
 }
 if (distributionChartInstance) {
-  renderQualityDistributionChart(); // <-- ADD THIS LINE
+  renderQualityDistributionChart();
 }
 renderHeatmap();
 }
@@ -2015,83 +2027,93 @@ function shiftDate(offset) {
 }
 
 function resetContextualJnan() {
- const filterVal = activeFilter.jnan;
- const targetName = filterVal === 'All' ? 'All Jnanendriyas' : filterVal;
- if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
- if (logs[currentDate]) {
- dataset.jnanendriyas.forEach(group => {
- if (filterVal === 'All' || group.name === filterVal) {
- group.practices.forEach(p => {
- if (logs[currentDate][p.syncKey]) {
- delete logs[currentDate][p.syncKey];
- }
- });
- }
- });
- if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
- renderUI();
- if (searchQuery) handleSearch(searchQuery);
- }
- }
+  const filterVal = activeFilter.jnan;
+  const targetName = filterVal === 'All' ? 'All Jnanendriyas' : filterVal;
+  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+    if (!logs[currentDate]) logs[currentDate] = {};
+    dataset.jnanendriyas.forEach(group => {
+      if (filterVal === 'All' || group.name === filterVal) {
+        group.practices.forEach(p => {
+          logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
+        });
+      }
+    });
+    saveLogsToLocal();
+    if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+    renderUI();
+    if (searchQuery) handleSearch(searchQuery);
+  }
 }
 
 function resetContextualKarm() {
- const filterVal = activeFilter.karm;
- const targetName = filterVal === 'All' ? 'All Karmendriyas' : filterVal;
- if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
- if (logs[currentDate]) {
- dataset.karmendriyas.forEach(group => {
- if (filterVal === 'All' || group.name === filterVal) {
- group.practices.forEach(p => {
- if (logs[currentDate][p.syncKey]) {
- delete logs[currentDate][p.syncKey];
- }
- });
- }
- });
- if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
- renderUI();
- if (searchQuery) handleSearch(searchQuery);
- }
- }
+  const filterVal = activeFilter.karm;
+  const targetName = filterVal === 'All' ? 'All Karmendriyas' : filterVal;
+  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+    if (!logs[currentDate]) logs[currentDate] = {};
+    dataset.karmendriyas.forEach(group => {
+      if (filterVal === 'All' || group.name === filterVal) {
+        group.practices.forEach(p => {
+          logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
+        });
+      }
+    });
+    saveLogsToLocal();
+    if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+    renderUI();
+    if (searchQuery) handleSearch(searchQuery);
+  }
 }
 
 function resetContextualManas() {
   const filterVal = activeFilter.manas;
   const targetName = filterVal === 'All' ? 'All Manas Practices' : filterVal;
   if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
-    if (logs[currentDate]) {
-      dataset.manas.forEach(group => {
-        if (filterVal === 'All' || group.name === filterVal) {
-          group.practices.forEach(p => {
-            if (logs[currentDate][p.syncKey]) delete logs[currentDate][p.syncKey];
-          });
-        }
-      });
-      if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
-      renderUI();
-      if (searchQuery) handleSearch(searchQuery);
-    }
+    if (!logs[currentDate]) logs[currentDate] = {};
+    dataset.manas.forEach(group => {
+      if (filterVal === 'All' || group.name === filterVal) {
+        group.practices.forEach(p => {
+          logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
+        });
+      }
+    });
+    saveLogsToLocal();
+    if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+    renderUI();
+    if (searchQuery) handleSearch(searchQuery);
   }
 }
 
 function resetContextualArish() {
- const filterVal = activeFilter.arish;
- const targetName = filterVal === 'All' ? 'All Antid' : filterVal;
- if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
-   if (logs[currentDate]) {
-     dataset.arishadvargas.forEach(group => {
-       if (filterVal === 'All' || group.name === filterVal) {
-         group.practices.forEach(p => {
-           if (logs[currentDate][p.syncKey]) delete logs[currentDate][p.syncKey];
-         });
-       }
-     });
-     if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
-     renderUI();
-     if (searchQuery) handleSearch(searchQuery);
-   }
- }
+  const filterVal = activeFilter.arish;
+  const targetName = filterVal === 'All' ? 'All Antid' : filterVal;
+  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+    if (!logs[currentDate]) logs[currentDate] = {};
+    dataset.arishadvargas.forEach(group => {
+      if (filterVal === 'All' || group.name === filterVal) {
+        group.practices.forEach(p => {
+          logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
+        });
+      }
+    });
+    saveLogsToLocal();
+    if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+    renderUI();
+    if (searchQuery) handleSearch(searchQuery);
+  }
+}
+
+function toggleCompletionFilter(type) {
+  const states = ['all', 'selected', 'unselected'];
+  const icons = { 'all': '🔄 All', 'selected': '✅ Done', 'unselected': '❌ Pending' };
+  
+  let currentIndex = states.indexOf(completionFilter[type]);
+  let nextIndex = (currentIndex + 1) % states.length;
+  completionFilter[type] = states[nextIndex];
+  
+  const btn = document.getElementById(`filter-btn-${type}`);
+  if (btn) btn.innerHTML = icons[completionFilter[type]];
+  
+  renderUI();
 }
 
 function loadLogsLocal() {
@@ -2208,76 +2230,85 @@ function filterCategory(type, name) {
  renderUI();
 }
 
-function renderCategoryUI(categoryList, targetContainer, currentFilter) {
- targetContainer.innerHTML = '';
+function renderCategoryUI(categoryList, targetContainer, currentFilter, completionState = 'all') {
+  targetContainer.innerHTML = '';
 
- categoryList.forEach(group => {
- if (currentFilter !== 'All' && group.name !== currentFilter) return;
+  categoryList.forEach(group => {
+    if (currentFilter !== 'All' && group.name !== currentFilter) return;
 
- const card = document.createElement('div');
- card.className = 'indriya-card';
+    let practicesHtml = '';
+    let practiceCount = 0;
 
- let html = `<div class="indriya-header"><span>${group.name}</span></div><ul class="practice-list">`;
+    group.practices.forEach(p => {
+      const data = getSyncData(p.syncKey);
+      const isDone = data.done;
+      
+      // Apply completion filters
+      if (completionState === 'selected' && !isDone) return;
+      if (completionState === 'unselected' && isDone) return;
+      
+      practiceCount++;
 
- group.practices.forEach(p => {
- const data = getSyncData(p.syncKey);
- const isDone = data.done;
- const efficiencies = data.efficiencies || [];
- const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
+      const efficiencies = data.efficiencies || [];
+      const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
+      const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
 
- const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
+      practicesHtml += `
+      <li class="practice-item">
+        <div class="practice-main">
+          <label class="checkbox-label">
+            <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
+            <div>
+              <div class="practice-name ${isDone ? 'completed-text' : ''}">${p.name}</div>
+              <div class="practice-desc">${p.desc}</div>
+            </div>
+          </label>
+        </div>
+        
+        <div class="duration-section ${dimmedClass}">
+          <span style="display:inline-flex; align-items:center;">
+            Practice Efficiency:
+            <span class="info-tooltip-container">
+              <span class="info-icon" onclick="toggleInfoTooltip(event, this)">ⓘ</span>
+              <div class="info-tooltip-content">Post-practice, gauge efficiency solely by objective fulfillment—ignoring time, effort, difficulty, and self-image: how completely did behavior and mind align with the define practice objective?</div>
+            </span>
+          </span>
+          <div class="durations-wrapper">
+            ${efficiencies.map((eff, idx) => `
+            <div class="duration-chip">
+              <span>${eff}%</span>
+              <span class="remove-btn" onclick="removeEfficiency('${p.syncKey}', ${idx})">&times;</span>
+            </div>
+            `).join('')}
+            <button class="add-duration-btn" onclick="addEfficiency('${p.syncKey}')">+ Add</button>
+          </div>
+          ${efficiencies.length > 0 ? `<span class="total-duration">(Avg: ${avgEff}%)</span>` : ''}
+        </div>
+      </li>
+      `;
+    });
 
- html += `
- <li class="practice-item">
- <div class="practice-main">
- <label class="checkbox-label">
- <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
- <div>
- <div class="practice-name ${isDone ? 'completed-text' : ''}">
- ${p.name}
- </div>
- <div class="practice-desc">${p.desc}</div>
- </div>
- </label>
- </div>
- 
- <div class="duration-section ${dimmedClass}">
- <span style="display:inline-flex; align-items:center;">
- Practice Efficiency:
- <span class="info-tooltip-container">
- <span class="info-icon" onclick="toggleInfoTooltip(event, this)">ⓘ</span>
- <div class="info-tooltip-content">Post-practice, gauge efficiency solely by objective fulfillment—ignoring time, effort, difficulty, and self-image: how completely did behavior and mind align with the define practice objective?</div>
- </span>
- </span>
- <div class="durations-wrapper">
- ${efficiencies.map((eff, idx) => `
- <div class="duration-chip">
- <span>${eff}%</span>
- <span class="remove-btn" onclick="removeEfficiency('${p.syncKey}', ${idx})">&times;</span>
- </div>
- `).join('')}
- <button class="add-duration-btn" onclick="addEfficiency('${p.syncKey}')">+ Add</button>
- </div>
- ${efficiencies.length > 0 ? `<span class="total-duration">(Avg: ${avgEff}%)</span>` : ''}
- </div>
- </li>
- `;
- });
-
- html += `</ul>`;
- card.innerHTML = html;
- targetContainer.appendChild(card);
- });
+    // Only render the category card if there are practices matching the filter
+    if (practiceCount > 0) {
+      const card = document.createElement('div');
+      card.className = 'indriya-card';
+      let html = `<div class="indriya-header"><span>${group.name}</span></div><ul class="practice-list">`;
+      html += practicesHtml;
+      html += `</ul>`;
+      card.innerHTML = html;
+      targetContainer.appendChild(card);
+    }
+  });
 }
 
 function renderUI() {
-  renderCategoryUI(dataset.jnanendriyas, document.getElementById('jnanendriyas-container'), activeFilter.jnan);
-  renderCategoryUI(dataset.karmendriyas, document.getElementById('karmendriyas-container'), activeFilter.karm);
-  renderCategoryUI(dataset.arishadvargas, document.getElementById('arish-container'), activeFilter.arish);
+  renderCategoryUI(dataset.jnanendriyas, document.getElementById('jnanendriyas-container'), activeFilter.jnan, completionFilter.jnan);
+  renderCategoryUI(dataset.karmendriyas, document.getElementById('karmendriyas-container'), activeFilter.karm, completionFilter.karm);
+  renderCategoryUI(dataset.arishadvargas, document.getElementById('arish-container'), activeFilter.arish, completionFilter.arish);
 
   const manasContainer = document.getElementById('manas-container');
   if (manasContainer) {
-    renderCategoryUI(dataset.manas, manasContainer, activeFilter.manas);
+    renderCategoryUI(dataset.manas, manasContainer, activeFilter.manas, completionFilter.manas);
   }
 }
 
@@ -2296,7 +2327,6 @@ function getSelectedAnalyticsDates() {
  return [];
 }
 
-// <-- PASTE BOTH FUNCTIONS DIRECTLY ABOVE updateAnalytics() -->
 function calculateDomainOPE(domainKey, targetDates) {
   const categoryList = dataset[domainKey];
   if (!categoryList || categoryList.length === 0) return 0;
@@ -2329,9 +2359,10 @@ function calculateDomainOPE(domainKey, targetDates) {
     });
 
     if (completedCount > 0 || effCount > 0) {
-      const accomplishmentRatio = totalPracticesInDomain > 0 ? (completedCount / totalPracticesInDomain) : 0;
+      const accomplishmentRate = totalPracticesInDomain > 0 ? (completedCount / totalPracticesInDomain) * 100 : 0;
       const ape = effCount > 0 ? (totalEffSum / effCount) : 0;
-      dailyOPEs.push(accomplishmentRatio * ape);
+      // Geometric Mean of Accomplishment Rate (%) and APE (%)
+      dailyOPEs.push(Math.sqrt(accomplishmentRate * ape));
     }
   });
 
@@ -2360,14 +2391,14 @@ function renderDomainBalanceChart() {
   if (domainBalanceChartInstance) {
     domainBalanceChartInstance.destroy();
   }
-  
+
   const ctx = canvas.getContext('2d');
   domainBalanceChartInstance = new Chart(ctx, {
     type: 'radar',
     data: {
       labels: labels,
       datasets: [{
-        label: 'Domain OPE %',
+        label: 'D-OPE %',
         data: values,
         backgroundColor: 'rgba(251, 191, 36, 0.25)',
         borderColor: '#fbbf24',
@@ -2536,12 +2567,17 @@ function renderRollingTrendChart() {
     return effs.length > 0 ? Math.round(effs.reduce((a, b) => a + b, 0) / effs.length) : 0;
   });
 
-  // Calculate 7-day rolling averages
+  // Calculate rolling averages with expanding initial window (no blank 6-day gap)
   const rollingAvgData = rawDailyData.map((val, idx, arr) => {
-    if (idx < 6) return null; // First 6 days do not have a full 7-day window
-    const windowSlice = arr.slice(idx - 6, idx + 1);
-    const sum = windowSlice.reduce((a, b) => a + b, 0);
-    return Math.round(sum / 7);
+    const windowStart = Math.max(0, idx - 6);
+    const windowSlice = arr.slice(windowStart, idx + 1);
+    
+    // Average only active days within the available window
+    const activeValues = windowSlice.filter(v => v > 0);
+    if (activeValues.length === 0) return 0;
+    
+    const sum = activeValues.reduce((a, b) => a + b, 0);
+    return Math.round(sum / activeValues.length);
   });
 
   const timeLabels = last30Days.map(d => formatDateDDMMYY(d));
@@ -2569,7 +2605,7 @@ function renderRollingTrendChart() {
       labels: timeLabels,
       datasets: [
         {
-          label: 'Daily Score %',
+          label: 'Daily APE %',
           data: rawDailyData,
           borderColor: borderTheme,
           borderWidth: 1.5,
@@ -2694,6 +2730,20 @@ function renderHeatmap() {
 
   container.innerHTML = '';
 
+  // Calculate total available practices across all domains
+  const allDomains = [
+    ...dataset.jnanendriyas,
+    ...dataset.karmendriyas,
+    ...dataset.manas,
+    ...dataset.arishadvargas,
+    ...(dataset.identification || [])
+  ];
+
+  let totalAvailablePractices = 0;
+  allDomains.forEach(group => {
+    totalAvailablePractices += group.practices.length;
+  });
+
   // Generate 30 consecutive calendar days up to the active date
   const anchorDateStr = document.getElementById('analyticsSingleDate').value || currentDate;
   const [ay, am, ad] = anchorDateStr.split('-').map(Number);
@@ -2709,27 +2759,42 @@ function renderHeatmap() {
     last30Days.push(`${yr}-${mo}-${dy}`);
   }
 
-  // Render each individual day square
+  // Render each day square using daily OPE
   last30Days.forEach(date => {
+    let completedCount = 0;
     let dayEffs = [];
+
     if (logs[date]) {
-      Object.keys(logs[date]).forEach(key => {
-        const item = logs[date][key];
-        if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
-          dayEffs.push(...item.efficiencies);
-        }
+      allDomains.forEach(group => {
+        group.practices.forEach(p => {
+          const item = logs[date][p.syncKey];
+          if (item && item.done) {
+            completedCount++;
+            const effList = item.efficiencies || [];
+            if (effList.length > 0) {
+              const pAvg = effList.reduce((a, b) => a + b, 0) / effList.length;
+              dayEffs.push(pAvg);
+            }
+          }
+        });
       });
     }
 
-    const dayAvg = dayEffs.length > 0 ? Math.round(dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) : 0;
+    let dayOpe = 0;
+    if (completedCount > 0 || dayEffs.length > 0) {
+      const accomplishmentRate = totalAvailablePractices > 0 ? (completedCount / totalAvailablePractices) * 100 : 0;
+      const ape = dayEffs.length > 0 ? (dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) : 0;
+      // Geometric Mean of Accomplishment Rate (%) and APE (%)
+      dayOpe = Math.round(Math.sqrt(accomplishmentRate * ape));
+    }
 
     const dayDiv = document.createElement('div');
     dayDiv.classList.add('heatmap-day');
 
-    if (dayAvg > 0) {
-      const opacity = 0.25 + (dayAvg / 100) * 0.75;
+    if (dayOpe > 0) {
+      const opacity = 0.25 + (dayOpe / 100) * 0.75;
       dayDiv.style.backgroundColor = `rgba(16, 185, 129, ${opacity})`;
-      dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: ${dayAvg}% Average`);
+      dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: ${dayOpe}% OPE`);
     } else {
       dayDiv.style.backgroundColor = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
       dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: No practices logged`);
@@ -2867,132 +2932,138 @@ function adjustChartWidth(itemCount, minWidthPerItem = 90) {
 }
 
 function openAnalyticsChart(type) {
- const categoryList = type === 'jnan' ? dataset.jnanendriyas : (type === 'karm' ? dataset.karmendriyas : (type === 'manas' ? dataset.manas : (type === 'arish' ? dataset.arishadvargas : dataset.identification)));
- 
- if (!categoryList || categoryList.length === 0) {
-   alert('Practices for this section are coming soon!');
-   return;
- }
+  const categoryList = type === 'jnan' ? dataset.jnanendriyas : (type === 'karm' ? dataset.karmendriyas : (type === 'manas' ? dataset.manas : (type === 'arish' ? dataset.arishadvargas : dataset.identification)));
+  
+  if (!categoryList || categoryList.length === 0) {
+    alert('Practices for this section are coming soon!');
+    return;
+  }
 
- pushModalHistoryState();
- currentChartContext = { type: type, senseIndex: null, practiceIndex: null };
- updateSlicerUI();
+  pushModalHistoryState();
+  currentChartContext = { type: type, senseIndex: null, practiceIndex: null };
+  updateSlicerUI();
 
- const targetDates = getSelectedAnalyticsDates();
- const chartTitle = type === 'jnan' ? 'Jnanendriyas — Overall Practice Efficiency' : (type === 'karm' ? 'Karmendriyas — Overall Practice Efficiency' : (type === 'manas' ? 'Manas — Overall Practice Efficiency' : (type === 'arish' ? 'Arishadvargas — Overall Practice Efficiency' : 'Identification — Overall Practice Efficiency')));
- const xAxisTitle = type === 'jnan' ? 'Jnanendriyas': (type === 'karm' ? 'Karmendriyas' : (type === 'manas' ? 'Manas Domains' : (type === 'arish' ? 'Arishadvargas' : 'Identification')));
- const chartColor = type === 'jnan' ? '#38bdf8' : (type === 'karm' ? '#f43f5e' : (type === 'manas' ? '#34d399' : (type === 'arish' ? '#a855f7' : '#f472b6')));
+  const targetDates = getSelectedAnalyticsDates();
+  const chartTitle = type === 'jnan' ? 'Jnanendriyas — Overall Practice Efficiency' : (type === 'karm' ? 'Karmendriyas — Overall Practice Efficiency' : (type === 'manas' ? 'Manas — Overall Practice Efficiency' : (type === 'arish' ? 'Arishadvargas — Overall Practice Efficiency' : 'Identification — Overall Practice Efficiency')));
+  const xAxisTitle = type === 'jnan' ? 'Jnanendriyas': (type === 'karm' ? 'Karmendriyas' : (type === 'manas' ? 'Manas Domains' : (type === 'arish' ? 'Arishadvargas' : 'Identification')));
+  const chartColor = type === 'jnan' ? '#38bdf8' : (type === 'karm' ? '#f43f5e' : (type === 'manas' ? '#34d399' : (type === 'arish' ? '#a855f7' : '#f472b6')));
 
- const labels = [];
- const opeData = [];
+  const labels = [];
+  const opeData = [];
 
- categoryList.forEach(group => {
- labels.push(group.sanskritLabel);
- const totalPracticesInGroup = group.practices.length;
+  categoryList.forEach(group => {
+    labels.push(group.sanskritLabel);
+    const totalPracticesInGroup = group.practices.length;
 
- let dailyOPEValues = [];
+    let dailyOPEValues = [];
 
- targetDates.forEach(date => {
- if (!logs[date]) return;
- let completedCount = 0;
- let totalGroupEfficiency = 0;
- let groupEfficiencyEntriesCount = 0;
+    targetDates.forEach(date => {
+      if (!logs[date]) return;
+      let completedCount = 0;
+      let totalGroupEfficiency = 0;
+      let groupEfficiencyEntriesCount = 0;
 
- group.practices.forEach(p => {
- const item = logs[date][p.syncKey];
- if (item && item.done) {
- completedCount++;
- const effList = item.efficiencies || [];
- if (effList.length > 0) {
- const practiceAvg = effList.reduce((a, b) => a + b, 0) / effList.length;
- totalGroupEfficiency += practiceAvg;
- groupEfficiencyEntriesCount++;
- }
- }
- });
+      group.practices.forEach(p => {
+        const item = logs[date][p.syncKey];
+        if (item && item.done) {
+          completedCount++;
+          const effList = item.efficiencies || [];
+          if (effList.length > 0) {
+            const practiceAvg = effList.reduce((a, b) => a + b, 0) / effList.length;
+            totalGroupEfficiency += practiceAvg;
+            groupEfficiencyEntriesCount++;
+          }
+        }
+      });
 
- if (completedCount > 0 || groupEfficiencyEntriesCount > 0) {
- const accomplishmentRatio = totalPracticesInGroup > 0 ? (completedCount / totalPracticesInGroup) : 0;
- const ape = groupEfficiencyEntriesCount > 0 ? (totalGroupEfficiency / groupEfficiencyEntriesCount) : 0;
- dailyOPEValues.push(accomplishmentRatio * ape);
- }
- });
+      if (completedCount > 0 || groupEfficiencyEntriesCount > 0) {
+        // Accomplishment rate normalized to percentage (0 - 100)
+        const accomplishmentRate = totalPracticesInGroup > 0 ? (completedCount / totalPracticesInGroup) * 100 : 0;
+        // Group Average Practice Efficiency (APE)
+        const ape = groupEfficiencyEntriesCount > 0 ? (totalGroupEfficiency / groupEfficiencyEntriesCount) : 0;
+        
+        // Daily OPE = Geometric Mean of (Accomplishment Rate, APE)
+        const dailyOpe = Math.sqrt(accomplishmentRate * ape);
+        dailyOPEValues.push(dailyOpe);
+      }
+    });
 
- const avgOPE = dailyOPEValues.length > 0 ? (dailyOPEValues.reduce((a, b) => a + b, 0) / dailyOPEValues.length) : 0;
- opeData.push(Math.round(avgOPE * 100) / 100);
- });
+    // Multi-day average: simple average of active daily OPE values
+    const avgOPE = dailyOPEValues.length > 0 ? (dailyOPEValues.reduce((a, b) => a + b, 0) / dailyOPEValues.length) : 0;
+    opeData.push(Math.round(avgOPE * 100) / 100);
+  });
 
- adjustChartWidth(labels.length, 120);
+  adjustChartWidth(labels.length, 120);
 
- document.getElementById('chartModalTitle').innerText = chartTitle;
- document.getElementById('chartModalTitle').style.color = chartColor;
- 
- document.getElementById('chartDetailsContent').innerHTML = `
- <li><strong>X-Axis (Senses/Domains):</strong> Lists individual groups using Sanskrit English titles. Click any bar to open its detailed practices chart!</li>
- <li><strong>Y-Axis (OPE):</strong> Overall Practice Efficiency averaged simple-wise across all active days in range.</li>
- <li><strong>Accomplishment Ratio:</strong> Daily completed practices count divided by total available practices in that section.</li>
- <li><strong>APE:</strong> Daily average efficiency across practices recorded for the section.</li>
- `;
+  document.getElementById('chartModalTitle').innerText = chartTitle;
+  document.getElementById('chartModalTitle').style.color = chartColor;
+  
+  document.getElementById('chartDetailsContent').innerHTML = `
+    <li><strong>X-Axis (Senses/Domains):</strong> Lists individual groups using Sanskrit English titles. Click any bar to open its detailed practices chart!</li>
+    <li><strong>Daily OPE Formula:</strong> Geometric Mean $\\sqrt{\\text{Accomplishment Rate (\\%)} \\times \\text{APE (\\%)}}$.</li>
+    <li><strong>Accomplishment Rate:</strong> Completed practices count divided by total practices in group (expressed as a percentage).</li>
+    <li><strong>Multi-day OPE:</strong> Simple arithmetic average across all active days in the selected range.</li>
+  `;
 
- document.getElementById('chartModalOverlay').classList.add('active');
+  document.getElementById('chartModalOverlay').classList.add('active');
 
- const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
- const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+  const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+  const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
 
- const ctx = document.getElementById('modalOpeChart').getContext('2d');
+  const ctx = document.getElementById('modalOpeChart').getContext('2d');
 
- if (activeChartInstance) {
- activeChartInstance.destroy();
- }
+  if (activeChartInstance) {
+    activeChartInstance.destroy();
+  }
 
- setTimeout(() => {
- activeChartInstance = new Chart(ctx, {
- type: 'bar',
- data: {
- labels: labels,
- datasets: [{
- label: 'Overall Practice Efficiency (OPE) %',
- data: opeData,
- backgroundColor: chartColor,
- borderRadius: 6,
- maxBarThickness: 50
- }]
- },
- options: {
-  animation: {
-    duration: 1200,
-    easing: 'easeOutQuart'
-  },
-  responsive: true,
-  maintainAspectRatio: false,
- onClick: (evt, activeElements) => {
- if (activeElements.length > 0) {
- const index = activeElements[0].index;
- openSubAnalyticsChart(type, index);
- }
- },
- scales: {
- x: {
- title: { display: true, text: xAxisTitle, color: textTheme, font: { weight: 'bold', size: 12 } },
- ticks: { color: textTheme, font: { size: 11, weight: '600' } },
- grid: { color: borderTheme }
- },
- y: {
- beginAtZero: true,
- max: 100,
- title: { display: true, text: 'OPE %', color: textTheme, font: { weight: 'bold', size: 12 } },
- ticks: { color: textTheme, font: { size: 10 } },
- grid: { color: borderTheme }
- }
- },
- plugins: {
- legend: {
- labels: { color: textTheme, font: { size: 12 } }
- }
- }
- }
- });
- }, 150);
+  setTimeout(() => {
+    activeChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Group-wise Overall Practice Efficiency (G-OPE) %',
+          data: opeData,
+          backgroundColor: chartColor,
+          borderRadius: 6,
+          maxBarThickness: 50
+        }]
+      },
+      options: {
+        animation: {
+          duration: 1200,
+          easing: 'easeOutQuart'
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        onClick: (evt, activeElements) => {
+          if (activeElements.length > 0) {
+            const index = activeElements[0].index;
+            openSubAnalyticsChart(type, index);
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: xAxisTitle, color: textTheme, font: { weight: 'bold', size: 12 } },
+            ticks: { color: textTheme, font: { size: 11, weight: '600' } },
+            grid: { color: borderTheme }
+          },
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: { display: true, text: 'G-OPE %', color: textTheme, font: { weight: 'bold', size: 12 } },
+            ticks: { color: textTheme, font: { size: 10 } },
+            grid: { color: borderTheme }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: textTheme, font: { size: 12 } }
+          }
+        }
+      }
+    });
+  }, 150);
 }
 
 function openSubAnalyticsChart(type, senseIndex) {
@@ -3187,7 +3258,7 @@ function openPracticeLineChart(type, senseIndex, practiceIndex) {
  data: {
  labels: timeLabels,
  datasets: [{
- label: `Average Practice Efficiency (APE) %`,
+ label: `Daily Average Practice Efficiency (APE) %`,
  data: practiceApeSeries,
  borderColor: '#fbbf24',
  backgroundColor: '#fbbf24',
@@ -3214,7 +3285,7 @@ function openPracticeLineChart(type, senseIndex, practiceIndex) {
  y: {
  beginAtZero: true,
  max: 100,
- title: { display: true, text: 'APE %', color: textTheme, font: { weight: 'bold', size: 12 } },
+ title: { display: true, text: 'D-APE %', color: textTheme, font: { weight: 'bold', size: 12 } },
  ticks: { color: textTheme, font: { size: 10 } },
  grid: { color: borderTheme }
  }
