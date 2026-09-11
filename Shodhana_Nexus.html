@@ -19,7 +19,6 @@
  --accent-antah: #818cf8; 
  --accent-manas: #34d399;
  --accent-ident: #f472b6;
-   
  --border: #27272a;
  --success: #10b981;
  --input-bg: #000000;
@@ -50,64 +49,55 @@
  * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
  
  body { 
-   background-color: var(--bg); 
-   color: var(--text-main); 
-   line-height: 1.5; 
-   transition: background-color 0.3s, color 0.3s;
-   height: 100vh;
-   overflow: hidden;
+ background-color: var(--bg); 
+ color: var(--text-main); 
+ line-height: 1.5; 
+ transition: background-color 0.3s, color 0.3s;
+ height: 100vh;
+ overflow: hidden;
  }
 
  .app-dashboard-layout {
-   display: grid;
-   grid-template-columns: auto 1fr;
-   grid-template-rows: 70px 1fr;
-   grid-template-areas:
-     "header header"
-     "sidebar content";
-   height: 100vh;
-   width: 100vw;
-   position: relative;
+ display: grid;
+ grid-template-columns: auto 1fr;
+ grid-template-rows: 70px 1fr;
+ grid-template-areas:
+ "header header"
+ "sidebar content";
+ height: 100vh;
+ width: 100vw;
+ position: relative;
  }
 
  header { 
-   grid-area: header;
-   position: sticky;
-   top: 0;
-   z-index: 100;
-   display: flex; 
-   justify-content: space-between; 
-   align-items: center; 
-   padding: 0 20px;
-   background: var(--card-bg);
-   border-bottom: 1px solid var(--border); 
+ grid-area: header;
+ position: sticky;
+ top: 0;
+ z-index: 100;
+ display: flex; 
+ justify-content: space-between; 
+ align-items: center; 
+ padding: 0 20px;
+ background: var(--card-bg);
+ border-bottom: 1px solid var(--border); 
  }
  header h1 { 
-  font-size: 1.8rem; 
-  background: linear-gradient(135deg, #89a0bf 0%, #64748b 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-}
-
-/* header h1 { 
-  font-size: 1.8rem; 
-  background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-} */
+ font-size: 1.8rem; 
+ background: linear-gradient(135deg, #89a0bf 0%, #64748b 100%);
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+ background-clip: text;
+ color: transparent;
+ }
 
  .container { 
-  grid-area: content;
-  overflow-y: auto;
-  padding: 20px 20px 150px 20px;
-  max-width: 1000px; 
-  margin: 0 auto; 
-  width: 100%;
-}
+ grid-area: content;
+ overflow-y: auto;
+ padding: 20px 20px 150px 20px;
+ max-width: 1000px; 
+ margin: 0 auto; 
+ width: 100%;
+ }
 
  .sidebar-overlay {
  position: fixed;
@@ -614,28 +604,28 @@
  }
 
 .stat-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 6px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ border-radius: 10px;
+ padding: 12px 6px;
+ text-align: center;
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
 }
 
 .stat-val {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: var(--accent-gold);
-  line-height: 1.2;
+ font-size: 1.3rem;
+ font-weight: bold;
+ color: var(--accent-gold);
+ line-height: 1.2;
 }
 
 .stat-lbl {
-  font-size: 0.72rem;
-  color: var(--text-sub);
-  margin-top: 4px;
-  line-height: 1.2;
+ font-size: 0.72rem;
+ color: var(--text-sub);
+ margin-top: 4px;
+ line-height: 1.2;
 }
 
  .analytics-buttons-wrapper {
@@ -790,12 +780,12 @@
  }
 
  .canvas-wrapper {
-  position: relative;
-  width: 100%;
-  min-height: 320px;
-  height: 60vh;
-  margin-bottom: 25px;
-}
+ position: relative;
+ width: 100%;
+ min-height: 320px;
+ height: 60vh;
+ margin-bottom: 25px;
+ }
 
  .chart-scroll-box {
  width: 100%;
@@ -866,7 +856,6 @@
  #manas-view .indriya-header { color: var(--accent-manas); border-bottom-color: var(--accent-manas); }
  #identification-view .indriya-header { color: var(--accent-ident); border-bottom-color: var(--accent-ident); }
 
-
  /* Auth and Sync Overlay Styles */
  .auth-card {
  max-width: 400px;
@@ -908,414 +897,604 @@
  header h1 { font-size: 1.4rem; }
  .analytics-btn { width: 100%; }
  .canvas-wrapper { 
-    min-height: 260px;
-    height: 50vh;
-  }
+ min-height: 260px;
+ height: 50vh;
+ }
  .chart-modal-container { padding: 15px; }
  }
 
  /* Heatmap Styles */
 .heatmap-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: center;
-  margin-top: 15px;
+ display: flex;
+ flex-wrap: wrap;
+ gap: 6px;
+ justify-content: center;
+ margin-top: 15px;
 }
 
 .heatmap-day {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  background-color: var(--border);
-  position: relative;
-  cursor: crosshair;
-  transition: transform 0.15s ease;
+ width: 20px;
+ height: 20px;
+ border-radius: 4px;
+ background-color: var(--border);
+ position: relative;
+ cursor: crosshair;
+ transition: transform 0.15s ease;
 }
 
 .heatmap-day:hover {
-  transform: scale(1.25);
-  z-index: 10;
+ transform: scale(1.25);
+ z-index: 10;
 }
 
 .heatmap-day:hover::after {
-  content: attr(data-info);
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--text-main);
-  color: var(--bg);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
-  z-index: 20;
-  pointer-events: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+ content: attr(data-info);
+ position: absolute;
+ bottom: 28px;
+ left: 50%;
+ transform: translateX(-50%);
+ background: var(--text-main);
+ color: var(--bg);
+ padding: 4px 8px;
+ border-radius: 4px;
+ font-size: 0.75rem;
+ font-weight: 600;
+ white-space: nowrap;
+ z-index: 20;
+ pointer-events: none;
+ box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
- </style>
+
+ /* Practice Ledger Sorting & Chart.js Style Tooltip */
+ .sort-btn {
+ cursor: pointer;
+ user-select: none;
+ margin-left: 5px;
+ opacity: 0.5;
+ font-size: 0.8rem;
+ }
+ .sort-btn.active {
+ opacity: 1;
+ color: var(--accent-gold);
+ }
+
+ .ledger-tooltip-wrapper {
+ position: relative;
+ display: inline-flex;
+ align-items: center;
+ }
+
+ .ledger-tooltip-content {
+ visibility: hidden;
+ opacity: 0;
+ position: absolute;
+ bottom: calc(100% + 8px);
+ left: 0;
+ background: #ffffff;
+ color: #0f172a;
+ padding: 6px 12px;
+ border-radius: 6px;
+ font-size: 0.75rem;
+ font-weight: 600;
+ white-space: nowrap;
+ z-index: 50;
+ box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+ border: 1px solid rgba(0, 0, 0, 0.2);
+ pointer-events: none;
+ transition: opacity 0.15s ease, transform 0.15s ease;
+ transform: translateY(4px);
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ /* Dark Theme Tooltip Override */
+ [data-theme="dark"] .ledger-tooltip-content {
+ background: #18181b;
+ color: #f8fafc;
+ border: 1px solid rgba(255, 255, 255, 0.25);
+ box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+ }
+
+ /* Light Theme Tooltip Alternative */
+ [data-theme="light"] .ledger-tooltip-content {
+ background: #ffffff;
+ color: #0f172a;
+ border: 1px solid rgba(0, 0, 0, 0.25);
+ }
+
+ .ledger-tooltip-content.active {
+ visibility: visible;
+ opacity: 1;
+ transform: translateY(0);
+ pointer-events: auto;
+ }
+
+ /* Reusable Action Chip within Tooltips */
+ .tooltip-action-chip {
+ background: var(--card-sub-bg);
+ color: var(--accent-gold);
+ border: 1px solid var(--accent-gold);
+ padding: 2px 8px;
+ border-radius: 4px;
+ cursor: pointer;
+ font-size: 0.72rem;
+ font-weight: bold;
+ transition: all 0.2s ease;
+ }
+
+ [data-theme="light"] .tooltip-action-chip {
+ background: #f1f5f9;
+ }
+
+ .tooltip-action-chip:hover {
+ background: var(--accent-gold);
+ color: #000000;
+ }
+
+ /* Floating Interactive Tooltip for Domain Accomplishment Chart */
+ .domain-chart-tooltip {
+ position: absolute;
+ display: none;
+ z-index: 100;
+ background: #ffffff;
+ color: #0f172a;
+ padding: 6px 12px;
+ border-radius: 6px;
+ font-size: 0.75rem;
+ font-weight: 600;
+ box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+ border: 1px solid rgba(0, 0, 0, 0.2);
+ pointer-events: auto;
+ transform: translate(-50%, -120%);
+ white-space: nowrap;
+ align-items: center;
+ gap: 8px;
+ }
+
+ [data-theme="dark"] .domain-chart-tooltip {
+ background: #18181b;
+ color: #f8fafc;
+ border: 1px solid var(--accent-gold);
+ box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+ }
+
+ [data-theme="light"] .domain-chart-tooltip {
+ background: #ffffff;
+ color: #0f172a;
+ border: 1px solid var(--accent-gold);
+ }
+
+ .domain-chart-tooltip.active {
+ display: flex;
+ }
+
+ /* Color Box indicator inside Domain Tooltip */
+ .domain-tooltip-color-box {
+ display: inline-block;
+ width: 9px;
+ height: 9px;
+ border-radius: 2px;
+ margin-right: 6px;
+ vertical-align: middle;
+ flex-shrink: 0;
+ }
+
+ /* Practice Row Color Box Indicator */
+ .practice-domain-indicator {
+ display: inline-block;
+ width: 8px;
+ height: 8px;
+ border-radius: 2px;
+ margin-right: 8px;
+ vertical-align: middle;
+ flex-shrink: 0;
+ }
+
+ /* Scrollable Fixed Frame for Comprehensive Practice Ledger (4-5 items visible) */
+ .ledger-scroll-frame {
+ width: 100%;
+ max-height: 350px;
+ overflow-y: auto;
+ overflow-x: hidden;
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ position: relative;
+ }
+
+ .ledger-scroll-frame thead th {
+ position: sticky;
+ top: 0;
+ z-index: 5;
+ background: var(--card-sub-bg);
+ box-shadow: 0 1px 0 var(--border);
+ }
+</style>
 </head>
 <body onclick="handleBodyClick(event)">
 
 <!-- Authentication Container (Visible when logged out) -->
 <div id="auth-wrapper" class="container" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
-  <div class="auth-card">
-    <h2>Firebase Login 🌺</h2>
-    <div id="error-message" class="error-msg"></div>
-    <input type="email" id="email" class="auth-input" placeholder="Email address" required>
-    <input type="password" id="password" class="auth-input" placeholder="Password" required>
-    <button id="loginBtn" class="auth-btn">Sign In</button>
-  </div>
+ <div class="auth-card">
+ <h2>Firebase Login 🌺</h2>
+ <div id="error-message" class="error-msg"></div>
+ <input type="email" id="email" class="auth-input" placeholder="Email address" required>
+ <input type="password" id="password" class="auth-input" placeholder="Password" required>
+ <button id="loginBtn" class="auth-btn">Sign In</button>
+ </div>
 </div>
 
 <!-- Main App Dashboard Layout (Hidden until authenticated) -->
 <div id="app-wrapper" class="app-dashboard-layout hidden">
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+ <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-  <aside class="sidebar" id="sidebar">
-   <div>
-   <div class="sidebar-header">
-   <h2>Navigation Menu</h2>
-   <button class="sidebar-close-btn" onclick="closeSidebar()">&times;</button>
-   </div>
-   <nav class="sidebar-nav">
-   <div class="nav-item" id="themeBtn" onclick="toggleTheme()">☀️ Light</div>
-   </nav>
-   </div>
-  </aside>
+ <aside class="sidebar" id="sidebar">
+ <div>
+ <div class="sidebar-header">
+ <h2>Navigation Menu</h2>
+ <button class="sidebar-close-btn" onclick="closeSidebar()">&times;</button>
+ </div>
+ <nav class="sidebar-nav">
+ <div class="nav-item" id="themeBtn" onclick="toggleTheme()">☀️ Light</div>
+ </nav>
+ </div>
+ </aside>
 
-  <header>
-   <div style="display: flex; align-items: center;">
-   <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()">☰</button>
-   <h1>Shodhana Nexus</h1>
-   </div>
-   <button onclick="handleLogout()" style="background: transparent; border: none; cursor: pointer; font-size: 1.4rem;" title="Logout">💔</button>
-  </header>
+ <header>
+ <div style="display: flex; align-items: center;">
+ <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()">☰</button>
+ <h1>Shodhana Nexus</h1>
+ </div>
+ <button onclick="handleLogout()" style="background: transparent; border: none; cursor: pointer; font-size: 1.4rem;" title="Logout">💔</button>
+ </header>
 
-  <main class="container">
-   <div id="hub-view" class="view-section active">
-   <div class="search-box-home">
-   <span class="search-icon">🔍</span>
-   <input type="search" id="homeSearchInput" placeholder="Search across all practices..." oninput="handleSearch(this.value)">
-   </div>
+ <main class="container">
+ <div id="hub-view" class="view-section active">
+ <div class="search-box-home">
+ <span class="search-icon">🔍</span>
+ <input type="search" id="homeSearchInput" placeholder="Search across all practices..." oninput="handleSearch(this.value)">
+ </div>
 
-   <div id="search-results-container" style="display: none; margin-top: 25px;"></div>
+ <div id="search-results-container" style="display: none; margin-top: 25px;"></div>
 
-   <div class="hub-grid" id="main-hub-grid">
-   <div class="hub-card" onclick="openView('jnan-view')">
-   <div class="hub-icon">🧠</div>
-   <div class="hub-title" style="color: var(--accent-jnan);">Jnanendriyas</div>
-   <div class="hub-desc">5 Cognitive Senses — Sight (Chakṣu), Hearing (Śrotra), Smell (Ghrāṇa), Taste (Rasa), Touch (Tvak)</div>
-   </div>
-   <div class="hub-card" onclick="openView('karm-view')">
-   <div class="hub-icon">🛠️</div>
-   <div class="hub-title" style="color: var(--accent-karm);">Karmendriyas</div>
-   <div class="hub-desc">5 Executive Senses — Speech (Vāk), Grasping (Pāṇi), Movement (Pāda), Generation (Upastha), Elimination (Pāyu)</div>
-   </div>
-   <div class="hub-card" onclick="openView('antahkarana-hub-view')">
-    <div class="hub-icon">🛡️</div>
-    <div class="hub-title" style="color: var(--accent-antah);">Antahkarana</div>
-    <div class="hub-desc">Internal Instruments — Manas, Arishadvargas & Identification</div>
-    </div>
-   <div class="hub-card" onclick="openView('analytics-view')">
-   <div class="hub-icon">📊</div>
-   <div class="hub-title" style="color: var(--accent-gold);">Data Analytics</div>
-   <div class="hub-desc">View reports across dates, ranges, and total summaries</div>
-   </div>
-   </div>
-   </div>
+ <div class="hub-grid" id="main-hub-grid">
+ <div class="hub-card" onclick="openView('jnan-view')">
+ <div class="hub-icon">🧠</div>
+ <div class="hub-title" style="color: var(--accent-jnan);">Jnanendriyas</div>
+ <div class="hub-desc">5 Cognitive Senses — Sight (Chakṣu), Hearing (Śrotra), Smell (Ghrāṇa), Taste (Rasa), Touch (Tvak)</div>
+ </div>
+ <div class="hub-card" onclick="openView('karm-view')">
+ <div class="hub-icon">🛠️</div>
+ <div class="hub-title" style="color: var(--accent-karm);">Karmendriyas</div>
+ <div class="hub-desc">5 Executive Senses — Speech (Vāk), Grasping (Pāṇi), Movement (Pāda), Generation (Upastha), Elimination (Pāyu)</div>
+ </div>
+ <div class="hub-card" onclick="openView('antahkarana-hub-view')">
+ <div class="hub-icon">🛡️</div>
+ <div class="hub-title" style="color: var(--accent-antah);">Antahkarana</div>
+ <div class="hub-desc">Internal Instruments — Manas, Arishadvargas & Identification</div>
+ </div>
+ <div class="hub-card" onclick="openView('analytics-view')">
+ <div class="hub-icon">📊</div>
+ <div class="hub-title" style="color: var(--accent-gold);">Data Analytics</div>
+ <div class="hub-desc">View reports across dates, ranges, and total summaries</div>
+ </div>
+ </div>
+ </div>
 
-   <div id="jnan-view" class="view-section">
-   <div class="top-toolbar">
-   <div class="date-controls">
-   <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
-   <div class="date-picker-wrapper">
-   <span class="formatted-date-display global-date-display"></span>
-   <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
-   </div>
-   <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
-   <button class="date-nav-btn" id="filter-btn-jnan" onclick="toggleCompletionFilter('jnan')" title="Filter Practices">🔄 All</button>
-   <button class="date-nav-btn" onclick="resetContextualJnan()" title="Reset Selection">📛</button>
-   </div>
-   </div>
+ <div id="jnan-view" class="view-section">
+ <div class="top-toolbar">
+ <div class="date-controls">
+ <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
+ <div class="date-picker-wrapper">
+ <span class="formatted-date-display global-date-display"></span>
+ <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
+ </div>
+ <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+ <button class="date-nav-btn" id="filter-btn-jnan" onclick="toggleCompletionFilter('jnan')" title="Filter Practices">🔄 All</button>
+ <button class="date-nav-btn" onclick="resetContextualJnan()" title="Reset Selection">📛</button>
+ </div>
+ </div>
 
-   <div class="section-title-wrapper">
-   <h2 class="section-title" style="color: var(--accent-jnan);">🧠 Jnanendriyas 👇</h2>
-   <select id="jnan-dropdown" class="indriya-dropdown" onchange="filterCategory('jnan', this.value)"></select>
-   </div>
-   <div id="jnanendriyas-container"></div>
-   </div>
+ <div class="section-title-wrapper">
+ <h2 class="section-title" style="color: var(--accent-jnan);">🧠 Jnanendriyas 👇</h2>
+ <select id="jnan-dropdown" class="indriya-dropdown" onchange="filterCategory('jnan', this.value)"></select>
+ </div>
+ <div id="jnanendriyas-container"></div>
+ </div>
 
-   <div id="karm-view" class="view-section">
-   <div class="top-toolbar">
-   <div class="date-controls">
-   <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
-   <div class="date-picker-wrapper">
-   <span class="formatted-date-display global-date-display"></span>
-   <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
-   </div>
-   <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
-   <button class="date-nav-btn" id="filter-btn-karm" onclick="toggleCompletionFilter('karm')" title="Filter Practices">🔄 All</button>
-   <button class="date-nav-btn" onclick="resetContextualKarm()" title="Reset Selection">📛</button>
-   </div>
-   </div>
+ <div id="karm-view" class="view-section">
+ <div class="top-toolbar">
+ <div class="date-controls">
+ <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
+ <div class="date-picker-wrapper">
+ <span class="formatted-date-display global-date-display"></span>
+ <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
+ </div>
+ <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+ <button class="date-nav-btn" id="filter-btn-karm" onclick="toggleCompletionFilter('karm')" title="Filter Practices">🔄 All</button>
+ <button class="date-nav-btn" onclick="resetContextualKarm()" title="Reset Selection">📛</button>
+ </div>
+ </div>
 
-   <div class="section-title-wrapper">
-   <h2 class="section-title" style="color: var(--accent-karm);">🛠️ Karmendriyas 👇</h2>
-   <select id="karm-dropdown" class="indriya-dropdown" onchange="filterCategory('karm', this.value)"></select>
-   </div>
-   <div id="karmendriyas-container"></div>
-   </div>
+ <div class="section-title-wrapper">
+ <h2 class="section-title" style="color: var(--accent-karm);">🛠️ Karmendriyas 👇</h2>
+ <select id="karm-dropdown" class="indriya-dropdown" onchange="filterCategory('karm', this.value)"></select>
+ </div>
+ <div id="karmendriyas-container"></div>
+ </div>
 
-  <div id="antahkarana-hub-view" class="view-section">
-    <h2 class="section-title" style="color: var(--accent-antah); margin-bottom: 20px; border-bottom: none;">🛡️ Antahkarana Hub</h2>
-    <div class="hub-grid">
-      <div class="hub-card" onclick="openView('manas-view')">
-        <div class="hub-icon">💭</div>
-        <div class="hub-title" style="color: var(--accent-manas);">Manas</div>
-        <div class="hub-desc">Internal representation, elaboration, and mental movement</div>
-      </div>
-      <div class="hub-card" onclick="openView('arish-view')">
-        <div class="hub-icon">🔖</div>
-        <div class="hub-title" style="color: var(--accent-arish);">Arishadvargas</div>
-        <div class="hub-desc">Transforming antidotes for the 6 inner enemies</div>
-      </div>
-      <div class="hub-card" onclick="openView('identification-view')">
-        <div class="hub-icon">🪞</div>
-        <div class="hub-title" style="color: var(--accent-ident);">Identification</div>
-        <div class="hub-desc">Ego (Ahamkara), attachments, and identity</div>
-      </div>
-    </div>
-  </div>
+ <div id="antahkarana-hub-view" class="view-section">
+ <h2 class="section-title" style="color: var(--accent-antah); margin-bottom: 20px; border-bottom: none;">🛡️ Antahkarana Hub</h2>
+ <div class="hub-grid">
+ <div class="hub-card" onclick="openView('manas-view')">
+ <div class="hub-icon">💭</div>
+ <div class="hub-title" style="color: var(--accent-manas);">Manas</div>
+ <div class="hub-desc">Internal representation, elaboration, and mental movement</div>
+ </div>
+ <div class="hub-card" onclick="openView('arish-view')">
+ <div class="hub-icon">🔖</div>
+ <div class="hub-title" style="color: var(--accent-arish);">Arishadvargas</div>
+ <div class="hub-desc">Transforming antidotes for the 6 inner enemies</div>
+ </div>
+ <div class="hub-card" onclick="openView('identification-view')">
+ <div class="hub-icon">🪞</div>
+ <div class="hub-title" style="color: var(--accent-ident);">Identification</div>
+ <div class="hub-desc">Ego (Ahamkara), attachments, and identity</div>
+ </div>
+ </div>
+ </div>
 
-   <!-- ========================================== -->
-   <!-- ARISHADVARGAS VIEW                         -->
-   <!-- ========================================== -->
-   <div id="arish-view" class="view-section">
-     <div class="top-toolbar">
-       <div class="date-controls">
-         <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
-         <div class="date-picker-wrapper">
-           <span class="formatted-date-display global-date-display"></span>
-           <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
-         </div>
-         <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
-         <button class="date-nav-btn" id="filter-btn-arish" onclick="toggleCompletionFilter('arish')" title="Filter Practices">🔄 All</button>
-         <button class="date-nav-btn" onclick="resetContextualArish()" title="Reset Selection">📛</button>
-       </div>
-     </div>
+ <!-- ARISHADVARGAS VIEW -->
+ <div id="arish-view" class="view-section">
+ <div class="top-toolbar">
+ <div class="date-controls">
+ <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
+ <div class="date-picker-wrapper">
+ <span class="formatted-date-display global-date-display"></span>
+ <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
+ </div>
+ <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+ <button class="date-nav-btn" id="filter-btn-arish" onclick="toggleCompletionFilter('arish')" title="Filter Practices">🔄 All</button>
+ <button class="date-nav-btn" onclick="resetContextualArish()" title="Reset Selection">📛</button>
+ </div>
+ </div>
 
-     <div class="section-title-wrapper">
-       <h2 class="section-title" style="color: var(--accent-arish);">🛡️ Arishadvargas 👇</h2>
-       <select id="arish-dropdown" class="indriya-dropdown" onchange="filterCategory('arish', this.value)"></select>
-     </div>
-     <div id="arish-container"></div>
-   </div>
+ <div class="section-title-wrapper">
+ <h2 class="section-title" style="color: var(--accent-arish);">🛡️ Arishadvargas 👇</h2>
+ <select id="arish-dropdown" class="indriya-dropdown" onchange="filterCategory('arish', this.value)"></select>
+ </div>
+ <div id="arish-container"></div>
+ </div>
 
-   <!-- ========================================== -->
-   <!-- MANAS VIEW                                 -->
-   <!-- ========================================== -->
-   <div id="manas-view" class="view-section">
-    <div class="top-toolbar">
-      <div class="date-controls">
-        <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
-        <div class="date-picker-wrapper">
-          <span class="formatted-date-display global-date-display"></span>
-          <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
-        </div>
-        <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
-        <button class="date-nav-btn" id="filter-btn-manas" onclick="toggleCompletionFilter('manas')" title="Filter Practices">🔄 All</button>
-        <button class="date-nav-btn" onclick="resetContextualManas()" title="Reset Selection">📛</button>
-      </div>
-    </div>
+ <!-- MANAS VIEW -->
+ <div id="manas-view" class="view-section">
+ <div class="top-toolbar">
+ <div class="date-controls">
+ <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
+ <div class="date-picker-wrapper">
+ <span class="formatted-date-display global-date-display"></span>
+ <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
+ </div>
+ <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+ <button class="date-nav-btn" id="filter-btn-manas" onclick="toggleCompletionFilter('manas')" title="Filter Practices">🔄 All</button>
+ <button class="date-nav-btn" onclick="resetContextualManas()" title="Reset Selection">📛</button>
+ </div>
+ </div>
 
-    <div class="section-title-wrapper">
-      <h2 class="section-title" style="color: var(--accent-manas);">💭 Manas 👇</h2>
-      <select id="manas-dropdown" class="indriya-dropdown" onchange="filterCategory('manas', this.value)"></select>
-    </div>
-    <div id="manas-container"></div>
-  </div>
+ <div class="section-title-wrapper">
+ <h2 class="section-title" style="color: var(--accent-manas);">💭 Manas 👇</h2>
+ <select id="manas-dropdown" class="indriya-dropdown" onchange="filterCategory('manas', this.value)"></select>
+ </div>
+ <div id="manas-container"></div>
+ </div>
 
-   <!-- ========================================== -->
-   <!-- IDENTIFICATION VIEW                        -->
-   <!-- ========================================== -->
-  <div id="identification-view" class="view-section">
-    <div class="section-title-wrapper">
-      <h2 class="section-title" style="color: var(--accent-ident);">🪞 Identification 👇</h2>
-    </div>
-    <p style="color: var(--text-sub); text-align: center; margin-top: 40px;">Practices coming soon...</p>
-  </div>
+ <!-- IDENTIFICATION VIEW -->
+ <div id="identification-view" class="view-section">
+ <div class="section-title-wrapper">
+ <h2 class="section-title" style="color: var(--accent-ident);">🪞 Identification 👇</h2>
+ </div>
+ <p style="color: var(--text-sub); text-align: center; margin-top: 40px;">Practices coming soon...</p>
+ </div>
 
-   <div id="analytics-view" class="view-section">
-   <div class="analytics-controls">
-   <select id="analyticsMode" onchange="updateAnalytics()">
-   <option value="current">Date Only</option>
-   <option value="range">Date Range</option>
-   <option value="all">All-Time</option>
-   </select>
+ <div id="analytics-view" class="view-section">
+ <div class="analytics-controls">
+ <select id="analyticsMode" onchange="updateAnalytics()">
+ <option value="current">Date Only</option>
+ <option value="range">Date Range</option>
+ <option value="all">All-Time</option>
+ </select>
 
-   <span id="singleDateInput" style="display: inline-block;">
-   <div class="date-picker-wrapper">
-   <span class="formatted-date-display" id="analyticsSingleDateDisplay"></span>
-   <input type="date" class="hidden-date-input" id="analyticsSingleDate" onchange="updateAnalyticsDisplay()">
-   </div>
-   </span>
+ <span id="singleDateInput" style="display: inline-block;">
+ <div class="date-picker-wrapper">
+ <span class="formatted-date-display" id="analyticsSingleDateDisplay"></span>
+ <input type="date" class="hidden-date-input" id="analyticsSingleDate" onchange="updateAnalyticsDisplay()">
+ </div>
+ </span>
 
-   <span id="rangeInputs" style="display: none;">
-   <div class="date-picker-wrapper">
-   <span class="formatted-date-display" id="startDateDisplay"></span>
-   <input type="date" class="hidden-date-input" id="startDate" onchange="updateAnalyticsDisplay()">
-   </div>
-   to 
-   <div class="date-picker-wrapper">
-   <span class="formatted-date-display" id="endDateDisplay"></span>
-   <input type="date" class="hidden-date-input" id="endDate" onchange="updateAnalyticsDisplay()">
-   </div>
-   </span>
-   </div>
+ <span id="rangeInputs" style="display: none;">
+ <div class="date-picker-wrapper">
+ <span class="formatted-date-display" id="startDateDisplay"></span>
+ <input type="date" class="hidden-date-input" id="startDate" onchange="updateAnalyticsDisplay()">
+ </div>
+ to 
+ <div class="date-picker-wrapper">
+ <span class="formatted-date-display" id="endDateDisplay"></span>
+ <input type="date" class="hidden-date-input" id="endDate" onchange="updateAnalyticsDisplay()">
+ </div>
+ </span>
+ </div>
 
-   <h2 class="section-title" style="color: var(--accent-gold);">📊 Data Analytics 👇</h2>
+ <h2 class="section-title" style="color: var(--accent-gold);">📊 Data Analytics 👇</h2>
 
-   <div class="stats-grid">
-   <div class="stat-card">
-   <div class="stat-val" id="statCompleted">0</div>
-   <div class="stat-lbl">Practices Completed</div>
-   </div>
-   <div class="stat-card">
-   <div class="stat-val" id="statEfficiency">0%</div>
-   <div class="stat-lbl">Avg. Practice Efficiency</div>
-   </div>
-   <div class="stat-card">
-   <div class="stat-val" id="statDays">0</div>
-   <div class="stat-lbl">Active Days Recorded</div>
-   </div>
-   </div>
-
+ <div class="stats-grid">
+ <div class="stat-card">
+ <div class="stat-val" id="statCompleted">0</div>
+ <div class="stat-lbl">Practices Completed</div>
+ </div>
+ <div class="stat-card">
+ <div class="stat-val" id="statEfficiency">0%</div>
+ <div class="stat-lbl">Avg. Practice Efficiency</div>
+ </div>
+ <div class="stat-card">
+ <div class="stat-val" id="statDays">0</div>
+ <div class="stat-lbl">Active Days Recorded</div>
+ </div>
+ </div>
 
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
-  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">⚖️ Domain Balance (D-OPE %)</h2>
-  <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
-    Domain Overall Practice Efficiency harmony across all 5 domains
-  </p>
-  <div style="position: relative; width: 100%; height: 280px;">
-    <canvas id="domainBalanceChart"></canvas>
-  </div>
+ <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">⚖️ Domain Balance (D-OPE %)</h2>
+ <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
+ Domain Overall Practice Efficiency harmony across all 5 domains
+ </p>
+ <div style="position: relative; width: 100%; height: 280px;">
+ <canvas id="domainBalanceChart"></canvas>
+ </div>
 </div>
 
-<!-- Insert directly below the Domain Balance (Radar) chart-card -->
-<div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
-  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">🎯 Domain Accomplishment Rate</h2>
-  <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
-    Normalized completion percentage per domain (weight-balanced across categories)
-  </p>
-  <div style="position: relative; width: 100%; height: 280px;">
-    <canvas id="domainAccomplishmentChart"></canvas>
-  </div>
+<div class="chart-card" id="domainAccomplishmentCard" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative;">
+ <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">🎯 Domain Accomplishment Rate</h2>
+ <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
+ Normalized completion percentage per domain (weight-balanced across categories)
+ </p>
+ <div style="position: relative; width: 100%; height: 280px;">
+ <canvas id="domainAccomplishmentChart"></canvas>
+ <!-- Interactive Tooltip for Domain Accomplishment Rate Chart -->
+ <div id="domainChartTooltip" class="domain-chart-tooltip" onclick="event.stopPropagation()">
+   <span id="domainTooltipText" style="display: inline-flex; align-items: center;"></span>
+   <button id="domainTooltipActionBtn" class="tooltip-action-chip">➔ Filter Ledger</button>
+ </div>
+ </div>
 </div>
 
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
-  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">📈 7-Day Rolling Momentum</h2>
-  <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
-    Smooths Daily APE % using an expanding window (Days 1–6) before locking into a 7-day rolling average over the past 30 days
-  </p>
-  <div style="position: relative; width: 100%; height: 280px; overflow-x: auto; overflow-y: hidden;">
-    <div id="trendChartScrollInner" style="height: 100%; min-width: 100%;">
-      <canvas id="trendChart"></canvas>
-    </div>
-  </div>
+ <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">📈 7-Day Rolling Momentum</h2>
+ <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
+ Smooths Daily APE % using an expanding window (Days 1–6) before locking into a 7-day rolling average over the past 30 days
+ </p>
+ <div style="position: relative; width: 100%; height: 280px; overflow-x: auto; overflow-y: hidden;">
+ <div id="trendChartScrollInner" style="height: 100%; min-width: 100%;">
+ <canvas id="trendChart"></canvas>
+ </div>
+ </div>
 </div>
 
-<!-- Insert directly below the 7-Day Rolling Momentum chart-card -->
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
-  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">📊 Quality Distribution</h2>
-  <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
-    Frequency of individual practice efficiency scores across the selected date(s)
-  </p>
-  <div style="position: relative; width: 100%; height: 280px;">
-    <canvas id="qualityDistributionChart"></canvas>
-  </div>
+ <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">📊 Quality Distribution</h2>
+ <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
+ Frequency of individual practice efficiency scores across the selected date(s)
+ </p>
+ <div style="position: relative; width: 100%; height: 280px;">
+ <canvas id="qualityDistributionChart"></canvas>
+ </div>
 </div>
 
-<!-- Insert directly below the Quality Distribution chart-card -->
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
-  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">🔥 30-Day Tapas Consistency</h2>
-  <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 10px;">
-    Daily Overall Practice Efficiency (OPE) across all domains combined (darker green = higher mastery)
-  </p>
-  <div class="heatmap-container" id="heatmapContainer">
-    <!-- Populated dynamically by JavaScript -->
-  </div>
+ <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">🔥 30-Day Tapas Consistency</h2>
+ <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 10px;">
+ Daily Overall Practice Efficiency (OPE) across all domains combined (darker green = higher mastery)
+ </p>
+ <div class="heatmap-container" id="heatmapContainer"></div>
 </div>
 
-   <div class="analytics-buttons-wrapper">
-   <div class="analytics-section-wrapper">
-   <button class="analytics-btn jnan-btn" onclick="openAnalyticsChart('jnan')">
-   🧠 Jnanendriyas Deep-Dive
+<!-- Comprehensive Practice Ledger -->
+<div class="chart-card" id="comprehensivePracticeLedgerCard" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+ <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 8px;">
+   <h2 style="font-size: 1.1rem; color: var(--accent-gold); margin: 0;">📋 Comprehensive Practice Ledger</h2>
+   <button id="resetLedgerFilterBtn" onclick="filterLedgerByDomain('All')" style="display: none; background: var(--nav-btn-bg); color: var(--text-main); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 600;">
+     ✕ Clear Domain Filter
    </button>
-   </div>
+ </div>
+ <p id="ledgerSubTitle" style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 15px;">
+ Hover or click over any practice name to view its details and trend line chart
+ </p>
+ <div class="ledger-scroll-frame">
+ <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+ <thead>
+ <tr style="border-bottom: 1px solid var(--border); color: var(--text-sub);">
+ <th style="padding: 10px 14px; font-weight: 600;">Practice</th>
+ <th style="padding: 10px 14px; font-weight: 600; text-align: center; cursor: pointer;" onclick="handleLedgerSort('attendance')">
+ Attendance <span id="sort-attendance" class="sort-btn active">▼</span>
+ </th>
+ <th style="padding: 10px 14px; font-weight: 600; text-align: right; cursor: pointer;" onclick="handleLedgerSort('avgEffic')">
+ Avg Effic <span id="sort-avgEffic" class="sort-btn">↕</span>
+ </th>
+ </tr>
+ </thead>
 
-   <div class="analytics-section-wrapper">
-   <button class="analytics-btn karm-btn" onclick="openAnalyticsChart('karm')">
-   🛠️ Karmendriyas Deep-Dive
-   </button>
-   </div>
+ <tbody id="practiceLedgerBody">
+ <!-- Populated dynamically via renderPracticeLedger() -->
+ </tbody>
+ </table>
+ </div>
+</div>
 
-   <div class="analytics-section-wrapper">
-   <button class="analytics-btn" style="color: var(--accent-manas);" onclick="openAnalyticsChart('manas')">
-   💭 Manas Deep-Dive
-   </button>
-   </div>
-   
-   <div class="analytics-section-wrapper">
-   <button class="analytics-btn" style="color: var(--accent-arish);" onclick="openAnalyticsChart('arish')">
-   🛡️ Arishadvargas Deep-Dive
-   </button>
-   </div>
+ <div class="analytics-buttons-wrapper">
+ <div class="analytics-section-wrapper">
+ <button class="analytics-btn jnan-btn" onclick="openAnalyticsChart('jnan')">
+ 🧠 Jnanendriyas Deep-Dive
+ </button>
+ </div>
 
-   <div class="analytics-section-wrapper">
-   <button class="analytics-btn" style="color: var(--accent-ident);" onclick="openAnalyticsChart('identification')">
-   🪞 Identification Deep-Dive
-   </button>
-   </div>
-   </div>
-   </div>
+ <div class="analytics-section-wrapper">
+ <button class="analytics-btn karm-btn" onclick="openAnalyticsChart('karm')">
+ 🛠️ Karmendriyas Deep-Dive
+ </button>
+ </div>
 
-   <div id="settings-view" class="view-section">
-   <h2 class="section-title" style="color: var(--text-main);">⚙️ Settings</h2>
-   
-   <div class="settings-container">
-   <div class="settings-row">
-   <span>Theme Mode</span>
-   <div class="nav-item" id="themeBtnSettings" style="width: auto; padding: 8px 16px;" onclick="toggleTheme()">☀️ Light</div>
-   </div>
-   <div class="settings-row">
-   <span>Account Action</span>
-   <div class="nav-item" style="width: auto; padding: 8px 16px; color: var(--accent-karm);" onclick="handleLogout()">🚪 Logout</div>
-   </div>
-   </div>
-   </div>
-  </main>
+ <div class="analytics-section-wrapper">
+ <button class="analytics-btn" style="color: var(--accent-manas);" onclick="openAnalyticsChart('manas')">
+ 💭 Manas Deep-Dive
+ </button>
+ </div>
+ 
+<div class="analytics-section-wrapper">
+ <button class="analytics-btn" style="color: var(--accent-arish);" onclick="openAnalyticsChart('arish')">
+ 🛡️ Arishadvargas Deep-Dive
+ </button>
+ </div>
 
-  <!-- Colorful Theme-Adaptive Static Fixed Bottom Navigation Bar -->
-  <div class="main-footnote-nav">
-    <div class="nav-item active" id="bottom-nav-home" onclick="navTo('hub-view')">
-      <span style="font-size: 1.1rem;">🏠</span> Home
-    </div>
-    <div class="nav-item" id="bottom-nav-jnan" onclick="navTo('jnan-view')">
-      <span style="font-size: 1.1rem;">🧠</span> Jnanendriyas
-    </div>
-    <div class="nav-item" id="bottom-nav-karm" onclick="navTo('karm-view')">
-      <span style="font-size: 1.1rem;">🛠️</span> Karmendriyas
-    </div>
-    <div class="nav-item" id="bottom-nav-antahkarana" onclick="navTo('antahkarana-hub-view')">
-      <span style="font-size: 1.1rem;">🛡️</span> Antahkarana
-    </div>
-    <div class="nav-item" id="bottom-nav-analytics" onclick="navTo('analytics-view')">
-      <span style="font-size: 1.1rem;">📊</span> Analytics
-    </div>
-  </div>
+ <div class="analytics-section-wrapper">
+ <button class="analytics-btn" style="color: var(--accent-ident);" onclick="openAnalyticsChart('identification')">
+ 🪞 Identification Deep-Dive
+ </button>
+ </div>
+ </div>
+ </div>
+
+ <div id="settings-view" class="view-section">
+ <h2 class="section-title" style="color: var(--text-main);">⚙️ Settings</h2>
+ 
+<div class="settings-container">
+ <div class="settings-row">
+ <span>Theme Mode</span>
+ <div class="nav-item" id="themeBtnSettings" style="width: auto; padding: 8px 16px;" onclick="toggleTheme()">☀️ Light</div>
+ </div>
+ <div class="settings-row">
+ <span>Account Action</span>
+ <div class="nav-item" style="width: auto; padding: 8px 16px; color: var(--accent-karm);" onclick="handleLogout()">🚪 Logout</div>
+ </div>
+ </div>
+ </div>
+ </main>
+
+ <!-- Colorful Theme-Adaptive Static Fixed Bottom Navigation Bar -->
+ <div class="main-footnote-nav">
+ <div class="nav-item active" id="bottom-nav-home" onclick="navTo('hub-view')">
+ <span style="font-size: 1.1rem;">🏠</span> Home
+ </div>
+ <div class="nav-item" id="bottom-nav-jnan" onclick="navTo('jnan-view')">
+ <span style="font-size: 1.1rem;">🧠</span> Jnanendriyas
+ </div>
+ <div class="nav-item" id="bottom-nav-karm" onclick="navTo('karm-view')">
+ <span style="font-size: 1.1rem;">🛠️</span> Karmendriyas
+ </div>
+ <div class="nav-item" id="bottom-nav-antahkarana" onclick="navTo('antahkarana-hub-view')">
+ <span style="font-size: 1.1rem;">🛡️</span> Antahkarana
+ </div>
+ <div class="nav-item" id="bottom-nav-analytics" onclick="navTo('analytics-view')">
+ <span style="font-size: 1.1rem;">📊</span> Analytics
+ </div>
+ </div>
 </div>
 
 <!-- Dynamic In-App Mobile Chart Modal -->
@@ -1326,7 +1505,7 @@
  <h2 id="chartModalTitle">Efficiency Chart</h2>
  </div>
  
- <div class="slicer-toolbar">
+<div class="slicer-toolbar">
  <button class="slicer-btn" id="slicer-1D" onclick="applySlicer('1D')">1D</button>
  <button class="slicer-btn" id="slicer-1W" onclick="applySlicer('1W')">1W</button>
  <button class="slicer-btn" id="slicer-1M" onclick="applySlicer('1M')">1M</button>
@@ -1334,14 +1513,14 @@
  </div>
 
  <div class="canvas-wrapper">
-   <div class="chart-scroll-box" id="chartScrollBox">
-     <div class="chart-scroll-inner" id="chartScrollInner">
-       <canvas id="modalOpeChart"></canvas>
-     </div>
-   </div>
+ <div class="chart-scroll-box" id="chartScrollBox">
+ <div class="chart-scroll-inner" id="chartScrollInner">
+ <canvas id="modalOpeChart"></canvas>
+ </div>
+ </div>
  </div>
  
- <div class="chart-details-card" id="chartDetailsCard">
+<div class="chart-details-card" id="chartDetailsCard">
  <h3>Formula & Methodology Details</h3>
  <ul id="chartDetailsContent">
  <li><strong>X-Axis (Senses):</strong> Lists individual sense organ groups using Sanskrit English titles. Click any bar to open line chart.</li>
@@ -1355,114 +1534,106 @@
 
 <!-- Firebase Modular SDK Integration Script -->
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+ import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+ import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase Configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyBHlw_kjAtZlCZHFeTLaSjBpEEOjDsi7Pk",
-        authDomain: "indriya-ha.firebaseapp.com",
-        projectId: "indriya-ha",
-        storageBucket: "indriya-ha.firebasestorage.app",
-        messagingSenderId: "245692789323",
-        appId: "1:245692789323:web:4ce5cc90813ca1f0cc53ce",
-        measurementId: "G-ZFXEGB8K74"
-    };
+ const firebaseConfig = {
+ apiKey: "AIzaSyBHlw_kjAtZlCZHFeTLaSjBpEEOjDsi7Pk",
+ authDomain: "indriya-ha.firebaseapp.com",
+ projectId: "indriya-ha",
+ storageBucket: "indriya-ha.firebasestorage.app",
+ messagingSenderId: "245692789323",
+ appId: "1:245692789323:web:4ce5cc90813ca1f0cc53ce",
+ measurementId: "G-ZFXEGB8K74"
+ };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+ const app = initializeApp(firebaseConfig);
+ const analytics = getAnalytics(app);
+ const auth = getAuth(app);
+ const db = getFirestore(app);
 
-    // DOM Elements for Auth & App Containers
-    const authWrapper = document.getElementById("auth-wrapper");
-    const appWrapper = document.getElementById("app-wrapper");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const loginBtn = document.getElementById("loginBtn");
-    const errorMessage = document.getElementById("error-message");
+ const authWrapper = document.getElementById("auth-wrapper");
+ const appWrapper = document.getElementById("app-wrapper");
+ const emailInput = document.getElementById("email");
+ const passwordInput = document.getElementById("password");
+ const loginBtn = document.getElementById("loginBtn");
+ const errorMessage = document.getElementById("error-message");
 
-    let unsubscribeFirestore = null;
-    let isRemoteSyncing = false;
+ let unsubscribeFirestore = null;
+ let isRemoteSyncing = false;
 
-    // Monitor Auth State Changes
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            authWrapper.classList.add("hidden");
-            appWrapper.classList.remove("hidden");
-            startFirestoreListener(user.uid);
-        } else {
-            authWrapper.classList.remove("hidden");
-            appWrapper.classList.add("hidden");
-            logs = {};
-            if (unsubscribeFirestore) {
-                unsubscribeFirestore();
-                unsubscribeFirestore = null;
-            }
-            renderUI();
-        }
-    });
+ onAuthStateChanged(auth, async (user) => {
+ if (user) {
+ authWrapper.classList.add("hidden");
+ appWrapper.classList.remove("hidden");
+ startFirestoreListener(user.uid);
+ } else {
+ authWrapper.classList.remove("hidden");
+ appWrapper.classList.add("hidden");
+ logs = {};
+ if (unsubscribeFirestore) {
+ unsubscribeFirestore();
+ unsubscribeFirestore = null;
+ }
+ renderUI();
+ }
+ });
 
-    // Login Event Handler
-    loginBtn.addEventListener("click", async () => {
-        errorMessage.textContent = "";
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-        } catch (error) {
-            errorMessage.textContent = error.message;
-        }
-    });
+ loginBtn.addEventListener("click", async () => {
+ errorMessage.textContent = "";
+ const email = emailInput.value.trim();
+ const password = passwordInput.value;
+ try {
+ await signInWithEmailAndPassword(auth, email, password);
+ } catch (error) {
+ errorMessage.textContent = error.message;
+ }
+ });
 
-    // Global Logout Function attached to UI
-    window.handleLogout = async () => {
-        try {
-            await signOut(auth);
-            closeSidebar();
-        } catch (error) {
-            console.error("Error signing out:", error);
-        }
-    };
+ window.handleLogout = async () => {
+ try {
+ await signOut(auth);
+ closeSidebar();
+ } catch (error) {
+ console.error("Error signing out:", error);
+ }
+ };
 
-    // Firestore Real-time Listener
-    function startFirestoreListener(uid) {
-        const docRef = doc(db, "userLogs", uid);
-        
-        unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
-            isRemoteSyncing = true;
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                logs = data.logs || {};
-            } else {
-                logs = {};
-            }
-            saveLogsToLocal(); 
-            renderUI();
-            updateAnalytics();
-            isRemoteSyncing = false;
-        }, (error) => {
-            console.error("Firestore listener error:", error);
-            isRemoteSyncing = false;
-        });
-    }
+ function startFirestoreListener(uid) {
+ const docRef = doc(db, "userLogs", uid);
+ 
+ unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
+ isRemoteSyncing = true;
+ if (docSnap.exists()) {
+ const data = docSnap.data();
+ logs = data.logs || {};
+ } else {
+ logs = {};
+ }
+ saveLogsToLocal(); 
+ renderUI();
+ updateAnalytics();
+ isRemoteSyncing = false;
+ }, (error) => {
+ console.error("Firestore listener error:", error);
+ isRemoteSyncing = false;
+ });
+ }
 
-    // Manual / Auto Save function to write state changes to Firestore
-    window.saveLogsToFirestore = async function() {
-        if (isRemoteSyncing || !auth.currentUser) return;
-        saveLogsToLocal(); 
-        
-        const uid = auth.currentUser.uid;
-        const docRef = doc(db, "userLogs", uid);
-        try {
-            await setDoc(docRef, { logs: logs, updatedAt: new Date().toISOString() }, { merge: true });
-        } catch (error) {
-            console.error("Error writing logs to Firestore:", error);
-        }
-    };
+ window.saveLogsToFirestore = async function() {
+ if (isRemoteSyncing || !auth.currentUser) return;
+ saveLogsToLocal(); 
+
+ const uid = auth.currentUser.uid;
+ const docRef = doc(db, "userLogs", uid);
+ try {
+ await setDoc(docRef, { logs: logs, updatedAt: new Date().toISOString() }, { merge: true });
+ } catch (error) {
+ console.error("Error writing logs to Firestore:", error);
+ }
+ };
 </script>
 
 <script>
@@ -1506,49 +1677,49 @@ const dataset = {
  ]
  },
  {
-  name: "Rasa (Taste) 👅",
-  sanskritLabel: "Rasa",
-  practices: [
-    { id: "j4_1", syncKey: "mindful_eating", type: "ext", name: "Mindful Eating 🧘", desc: "Eating with awareness of actual taste without distraction." },
-    { id: "j4_2", syncKey: "deliberate_tasting", type: "ext", name: "Deliberate Tasting 👅", desc: "Experiencing flavor consciously rather than consuming mechanically." },
-    { id: "j4_3", syncKey: "portion_discipline", type: "ext", name: "Portion Discipline ⚖️", desc: "Deciding appropriate quantity beforehand without taste-driven overeating." },
-    { id: "j4_4", syncKey: "taste_stimulation_reg", type: "ext", name: "Taste Stimulation Regulation 🍬", desc: "Reducing dependence on intense salt, sugar, fat, and flavor combinations." },
-    { id: "j4_5", syncKey: "hunger_taste_distinction", type: "ext", name: "Hunger–Taste Distinction 🧠", desc: "Distinguishing physiological hunger from eating for taste pleasure." },
-    { id: "j4_6", syncKey: "eating_windows", type: "ext", name: "Eating Windows ⏰", desc: "Consistent eating periods without continuous sensory grazing." },
-    { id: "j4_7", syncKey: "upavasa", type: "ext", name: "Upavāsa 🙏", desc: "Periodic discipline fasting for mastery over compulsive eating." },
-    { id: "j4_8", syncKey: "naivedya", type: "ext", name: "Naivedya / Īśvara-Arpaṇa 🪔", desc: "Offering food to the Divine before eating with spiritual intent." },
-    { id: "j4_9", syncKey: "taste_equanimity", type: "ext", name: "Taste Equanimity ⚖️", desc: "Experiencing all flavors without allowing preference to dictate behavior." },
-    { id: "j4_10", syncKey: "sufficiency", type: "ext", name: "Sufficiency 🌿", desc: "Stopping when sufficient instead of continuing for sensory pleasure." }
-  ]
+ name: "Rasa (Taste) 👅",
+ sanskritLabel: "Rasa",
+ practices: [
+ { id: "j4_1", syncKey: "mindful_eating", type: "ext", name: "Mindful Eating 🧘", desc: "Eating with awareness of actual taste without distraction." },
+ { id: "j4_2", syncKey: "deliberate_tasting", type: "ext", name: "Deliberate Tasting 👅", desc: "Experiencing flavor consciously rather than consuming mechanically." },
+ { id: "j4_3", syncKey: "portion_discipline", type: "ext", name: "Portion Discipline ⚖️", desc: "Deciding appropriate quantity beforehand without taste-driven overeating." },
+ { id: "j4_4", syncKey: "taste_stimulation_reg", type: "ext", name: "Taste Stimulation Regulation 🍬", desc: "Reducing dependence on intense salt, sugar, fat, and flavor combinations." },
+ { id: "j4_5", syncKey: "hunger_taste_distinction", type: "ext", name: "Hunger–Taste Distinction 🧠", desc: "Distinguishing physiological hunger from eating for taste pleasure." },
+ { id: "j4_6", syncKey: "eating_windows", type: "ext", name: "Eating Windows ⏰", desc: "Consistent eating periods without continuous sensory grazing." },
+ { id: "j4_7", syncKey: "upavasa", type: "ext", name: "Upavāsa 🙏", desc: "Periodic discipline fasting for mastery over compulsive eating." },
+ { id: "j4_8", syncKey: "naivedya", type: "ext", name: "Naivedya / Īśvara-Arpaṇa 🪔", desc: "Offering food to the Divine before eating with spiritual intent." },
+ { id: "j4_9", syncKey: "taste_equanimity", type: "ext", name: "Taste Equanimity ⚖️", desc: "Experiencing all flavors without allowing preference to dictate behavior." },
+ { id: "j4_10", syncKey: "sufficiency", type: "ext", name: "Sufficiency 🌿", desc: "Stopping when sufficient instead of continuing for sensory pleasure." }
+ ]
  },
  {
-  name: "Tvak (Touch) ✋",
-  sanskritLabel: "Tvak",
-  practices: [
-    { id: "j5_1", syncKey: "tactile_pratyahara", type: "ext", name: "Tactile Pratyāhāra 🧘", desc: "Observing sensations without pursuing pleasant or resisting unpleasant ones." },
-    { id: "j5_2", syncKey: "conscious_touch", type: "ext", name: "Conscious Physical Contact 🤲", desc: "Experiencing physical contact consciously without seeking extra stimulation." },
-    { id: "j5_3", syncKey: "sensory_equanimity", type: "ext", name: "Sensory Equanimity ⚖️", desc: "Remaining balanced toward warmth, cold, pressure, texture, and pain." },
-    { id: "j5_4", syncKey: "comfort_regulation", type: "ext", name: "Comfort Regulation 🌿", desc: "Tolerating manageable physical discomfort to avoid compulsive comfort-seeking." },
-    { id: "j5_5", syncKey: "moderate_tapas", type: "ext", name: "Moderate Tapas 🔥", desc: "Developing proportionate tolerance toward sensory discomfort safely." },
-    { id: "j5_6", syncKey: "temperature_discipline", type: "ext", name: "Temperature Discipline ❄️", desc: "Experiencing temperature variations without immediately reacting." },
-    { id: "j5_7", syncKey: "tactile_fasting", type: "ext", name: "Tactile Fasting 🌑", desc: "Reducing dependence on luxury textures, conveniences, and tactile stimulation." },
-    { id: "j5_8", syncKey: "sensory_stillness", type: "ext", name: "Sensory Stillness 🧘", desc: "Remaining physically still without reacting to arising tactile sensations." }
-  ]
+ name: "Tvak (Touch) ✋",
+ sanskritLabel: "Tvak",
+ practices: [
+ { id: "j5_1", syncKey: "tactile_pratyahara", type: "ext", name: "Tactile Pratyāhāra 🧘", desc: "Observing sensations without pursuing pleasant or resisting unpleasant ones." },
+ { id: "j5_2", syncKey: "conscious_touch", type: "ext", name: "Conscious Physical Contact 🤲", desc: "Experiencing physical contact consciously without seeking extra stimulation." },
+ { id: "j5_3", syncKey: "sensory_equanimity", type: "ext", name: "Sensory Equanimity ⚖️", desc: "Remaining balanced toward warmth, cold, pressure, texture, and pain." },
+ { id: "j5_4", syncKey: "comfort_regulation", type: "ext", name: "Comfort Regulation 🌿", desc: "Tolerating manageable physical discomfort to avoid compulsive comfort-seeking." },
+ { id: "j5_5", syncKey: "moderate_tapas", type: "ext", name: "Moderate Tapas 🔥", desc: "Developing proportionate tolerance toward sensory discomfort safely." },
+ { id: "j5_6", syncKey: "temperature_discipline", type: "ext", name: "Temperature Discipline ❄️", desc: "Experiencing temperature variations without immediately reacting." },
+ { id: "j5_7", syncKey: "tactile_fasting", type: "ext", name: "Tactile Fasting 🌑", desc: "Reducing dependence on luxury textures, conveniences, and tactile stimulation." },
+ { id: "j5_8", syncKey: "sensory_stillness", type: "ext", name: "Sensory Stillness 🧘", desc: "Remaining physically still without reacting to arising tactile sensations." }
+ ]
  }
  ],
  karmendriyas: [
  {
-  name: "Vāk (Speech) 🗣️",
-  sanskritLabel: "Vāk",
-  practices: [
-    { id: "k1_1", syncKey: "mauna", type: "ext", name: "Mauna — Deliberate Silence 🤫", desc: "Observing predetermined silence periods to regulate unnecessary speech." },
-    { id: "k1_2", syncKey: "vak_tapas", type: "ext", name: "Vāk Tapas 🔥", desc: "Practicing speech that is Satya (truthful), Priya (pleasant), Hita (beneficial), and Kāla-yukta." },
-    { id: "k1_3", syncKey: "pause_speech", type: "ext", name: "Pause Before Speaking ⏸️", desc: "Impulse → Pause → Discernment before speaking." },
-    { id: "k1_4", syncKey: "speech_economy", type: "ext", name: "Speech Economy ✂️", desc: "Expressing what is necessary clearly without verbal prolongation." },
-    { id: "k1_5", syncKey: "reactive_speech_restraint", type: "ext", name: "Reactive-Speech Restraint 🧘", desc: "Delaying speech when provoked to avoid anger and defensiveness." },
-    { id: "k1_6", syncKey: "gossip_restraint", type: "ext", name: "Gossip and Argument Restraint 🚫", desc: "Avoiding gossip, insults, aggression, and pointless arguments." },
-    { id: "k1_7", syncKey: "sacred_speech", type: "ext", name: "Sacred Speech 🕉️", desc: "Using speech for Japa, Stotra, prayer, teaching, and encouragement." }
-  ]
+ name: "Vāk (Speech) 🗣️",
+ sanskritLabel: "Vāk",
+ practices: [
+ { id: "k1_1", syncKey: "mauna", type: "ext", name: "Mauna — Deliberate Silence 🤫", desc: "Observing predetermined silence periods to regulate unnecessary speech." },
+ { id: "k1_2", syncKey: "vak_tapas", type: "ext", name: "Vāk Tapas 🔥", desc: "Practicing speech that is Satya (truthful), Priya (pleasant), Hita (beneficial), and Kāla-yukta." },
+ { id: "k1_3", syncKey: "pause_speech", type: "ext", name: "Pause Before Speaking ⏸️", desc: "Impulse → Pause → Discernment before speaking." },
+ { id: "k1_4", syncKey: "speech_economy", type: "ext", name: "Speech Economy ✂️", desc: "Expressing what is necessary clearly without verbal prolongation." },
+ { id: "k1_5", syncKey: "reactive_speech_restraint", type: "ext", name: "Reactive-Speech Restraint 🧘", desc: "Delaying speech when provoked to avoid anger and defensiveness." },
+ { id: "k1_6", syncKey: "gossip_restraint", type: "ext", name: "Gossip and Argument Restraint 🚫", desc: "Avoiding gossip, insults, aggression, and pointless arguments." },
+ { id: "k1_7", syncKey: "sacred_speech", type: "ext", name: "Sacred Speech 🕉️", desc: "Using speech for Japa, Stotra, prayer, teaching, and encouragement." }
+ ]
  },
  {
  name: "Pāṇi (Grasping) 🤲",
@@ -1602,116 +1773,116 @@ const dataset = {
  ],
 
  manas: [
-   {
-     name: "Visual Representations 👁️",
-     sanskritLabel: "Dṛśya",
-     practices: [
-       { id: "m1_1", syncKey: "antar_trataka", type: "int", name: "Antar-Trāṭaka 🔥", desc: "Reproduce object mentally after external gazing. Hold steadily without modification." },
-       { id: "m1_2", syncKey: "sacred_vis", type: "int", name: "Sacred Visualization 🕉️", desc: "Construct, stabilize, refine, and deliberately dissolve a steady mental image." },
-       { id: "m1_3", syncKey: "vis_manipulation", type: "int", name: "Visual Manipulation 🔄", desc: "Deliberately alter internal image: color, scale, 3D rotation, or motion." },
-       { id: "m1_4", syncKey: "vis_pratyahara", type: "int", name: "Visual Pratyāhāra 🧘", desc: "Command spontaneous mental scenes to fade into total darkness on cue." },
-       { id: "m1_5", syncKey: "vis_fasting", type: "int", name: "Visual Fasting 🚫", desc: "Maintain total internal non-imaging; refuse internal daydreams or fantasies." }
-     ]
-   },
-   {
-     name: "Auditory & Verbal 👂",
-     sanskritLabel: "Śabda",
-     practices: [
-       { id: "m2_1", syncKey: "manasika_japa", type: "int", name: "Mānasika Japa 📿", desc: "Uninterrupted internal mantra without any tongue or throat movement." },
-       { id: "m2_2", syncKey: "deliberate_dialogue", type: "int", name: "Deliberate Inner Dialogue 🗣️", desc: "Intentionally start, generate responses, change speakers, and stop on command." },
-       { id: "m2_3", syncKey: "inner_sound_trans", type: "int", name: "Inner-Sound Transformation 🔄", desc: "Modify internally generated sound volume, pitch, speed, or voice." },
-       { id: "m2_4", syncKey: "nada_anusandhana", type: "int", name: "Nāda-Anusandhāna 🎵", desc: "Listen receptively to non-verbal internal frequencies or subtle inner sound." },
-       { id: "m2_5", syncKey: "verbal_fasting", type: "int", name: "Antar-Mauna 🤫", desc: "Intercept inner chatter; allow verbal impulse to collapse into absolute inner silence." }
-     ]
-   },
-   {
-     name: "Other Sensory Representations ✋",
-     sanskritLabel: "Anyendriya",
-     practices: [
-       { id: "m3_1", syncKey: "internal_nyasa", type: "int", name: "Internal Nyāsa 🧍", desc: "Systematically move internal attentional focus through body coordinates." },
-       { id: "m3_2", syncKey: "multi_sensory_synth", type: "int", name: "Multi-Sensory Synthesis ✋", desc: "Deliberately generate and instantly cut off phantom sensations (textures, temps)." },
-       { id: "m3_3", syncKey: "internal_equanimity", type: "int", name: "Internal Sensory Equanimity ⚖️", desc: "Observe internal cravings or phantom discomforts strictly as neutral vibrational events." },
-       { id: "m3_4", syncKey: "sensory_pratyahara", type: "int", name: "Sensory Pratyāhāra 🌑", desc: "When fantasy arises: Recognize → Don't elaborate → Don't pursue → Withdraw." },
-       { id: "m3_5", syncKey: "sensory_fasting", type: "int", name: "Sensory Fasting 🚫", desc: "Periodically suspend deliberate internal recreation of tastes or physical gratifications." }
-     ]
-   },
-   {
-     name: "Conceptual Representations 💭",
-     sanskritLabel: "Avadhāraṇā",
-     practices: [
-       { id: "m4_1", syncKey: "sakshi_bhava", type: "int", name: "Sākṣī-Bhāva 👁️", desc: "Observe thoughts as they arise without continuing or elaborating on them." },
-       { id: "m4_2", syncKey: "cognitive_labelling", type: "int", name: "Viveka Labelling 🏷️", desc: "Instantly classify incoming thoughts (e.g., Inference, Memory, Assumption, Judgment)." },
-       { id: "m4_3", syncKey: "eka_tattva", type: "int", name: "Eka-Tattva Abhyāsa 🎯", desc: "Hold a single abstract principle without deviation to train mental architecture." },
-       { id: "m4_4", syncKey: "sankalpa_vikalpa", type: "int", name: "Sankalpa-Vikalpa ⚖️", desc: "Step back and observe the movement of indecision itself rather than choosing." },
-       { id: "m4_5", syncKey: "deliberate_concept", type: "int", name: "Deliberate Construction 🧩", desc: "Build a logical chain from premise to conclusion, then dissolve it instantly." },
-       { id: "m4_6", syncKey: "concept_fasting", type: "int", name: "Conceptual Antar-Mauna ⏸️", desc: "Halt the undercurrent of planning. Rest the intellect in non-conceptual stillness." }
-     ]
-   }
+ {
+ name: "Visual Representations 👁️",
+ sanskritLabel: "Dṛśya",
+ practices: [
+ { id: "m1_1", syncKey: "antar_trataka", type: "int", name: "Antar-Trāṭaka 🔥", desc: "Reproduce object mentally after external gazing. Hold steadily without modification." },
+ { id: "m1_2", syncKey: "sacred_vis", type: "int", name: "Sacred Visualization 🕉️", desc: "Construct, stabilize, refine, and deliberately dissolve a steady mental image." },
+ { id: "m1_3", syncKey: "vis_manipulation", type: "int", name: "Visual Manipulation 🔄", desc: "Deliberately alter internal image: color, scale, 3D rotation, or motion." },
+ { id: "m1_4", syncKey: "vis_pratyahara", type: "int", name: "Visual Pratyāhāra 🧘", desc: "Command spontaneous mental scenes to fade into total darkness on cue." },
+ { id: "m1_5", syncKey: "vis_fasting", type: "int", name: "Visual Fasting 🚫", desc: "Maintain total internal non-imaging; refuse internal daydreams or fantasies." }
+ ]
+ },
+ {
+ name: "Auditory & Verbal 👂",
+ sanskritLabel: "Śabda",
+ practices: [
+ { id: "m2_1", syncKey: "manasika_japa", type: "int", name: "Mānasika Japa 📿", desc: "Uninterrupted internal mantra without any tongue or throat movement." },
+ { id: "m2_2", syncKey: "deliberate_dialogue", type: "int", name: "Deliberate Inner Dialogue 🗣️", desc: "Intentionally start, generate responses, change speakers, and stop on command." },
+ { id: "m2_3", syncKey: "inner_sound_trans", type: "int", name: "Inner-Sound Transformation 🔄", desc: "Modify internally generated sound volume, pitch, speed, or voice." },
+ { id: "m2_4", syncKey: "nada_anusandhana", type: "int", name: "Nāda-Anusandhāna 🎵", desc: "Listen receptively to non-verbal internal frequencies or subtle inner sound." },
+ { id: "m2_5", syncKey: "verbal_fasting", type: "int", name: "Antar-Mauna 🤫", desc: "Intercept inner chatter; allow verbal impulse to collapse into absolute inner silence." }
+ ]
+ },
+ {
+ name: "Other Sensory Representations ✋",
+ sanskritLabel: "Anyendriya",
+ practices: [
+ { id: "m3_1", syncKey: "internal_nyasa", type: "int", name: "Internal Nyāsa 🧍", desc: "Systematically move internal attentional focus through body coordinates." },
+ { id: "m3_2", syncKey: "multi_sensory_synth", type: "int", name: "Multi-Sensory Synthesis ✋", desc: "Deliberately generate and instantly cut off phantom sensations (textures, temps)." },
+ { id: "m3_3", syncKey: "internal_equanimity", type: "int", name: "Internal Sensory Equanimity ⚖️", desc: "Observe internal cravings or phantom discomforts strictly as neutral vibrational events." },
+ { id: "m3_4", syncKey: "sensory_pratyahara", type: "int", name: "Sensory Pratyāhāra 🌑", desc: "When fantasy arises: Recognize → Don't elaborate → Don't pursue → Withdraw." },
+ { id: "m3_5", syncKey: "sensory_fasting", type: "int", name: "Sensory Fasting 🚫", desc: "Periodically suspend deliberate internal recreation of tastes or physical gratifications." }
+ ]
+ },
+ {
+ name: "Conceptual Representations 💭",
+ sanskritLabel: "Avadhāraṇā",
+ practices: [
+ { id: "m4_1", syncKey: "sakshi_bhava", type: "int", name: "Sākṣī-Bhāva 👁️", desc: "Observe thoughts as they arise without continuing or elaborating on them." },
+ { id: "m4_2", syncKey: "cognitive_labelling", type: "int", name: "Viveka Labelling 🏷️", desc: "Instantly classify incoming thoughts (e.g., Inference, Memory, Assumption, Judgment)." },
+ { id: "m4_3", syncKey: "eka_tattva", type: "int", name: "Eka-Tattva Abhyāsa 🎯", desc: "Hold a single abstract principle without deviation to train mental architecture." },
+ { id: "m4_4", syncKey: "sankalpa_vikalpa", type: "int", name: "Sankalpa-Vikalpa ⚖️", desc: "Step back and observe the movement of indecision itself rather than choosing." },
+ { id: "m4_5", syncKey: "deliberate_concept", type: "int", name: "Deliberate Construction 🧩", desc: "Build a logical chain from premise to conclusion, then dissolve it instantly." },
+ { id: "m4_6", syncKey: "concept_fasting", type: "int", name: "Conceptual Antar-Mauna ⏸️", desc: "Halt the undercurrent of planning. Rest the intellect in non-conceptual stillness." }
+ ]
+ }
  ],
 
  arishadvargas: [
  {
-   name: "Kama (Desire/Lust) 🌪️",
-   sanskritLabel: "Kama",
-   practices: [
-     { id: "a1_1", syncKey: "arish_vairagya", type: "ext", name: "Vairagya", desc: "Cultivating dispassion and non-attachment." },
-     { id: "a1_2", syncKey: "arish_santosha", type: "ext", name: "Santosha", desc: "Cultivating contentment with what is present." },
-     { id: "a1_3", syncKey: "arish_dama", type: "ext", name: "Dama", desc: "Active sense-restraint." },
-     { id: "a1_4", syncKey: "arish_brahmacharya", type: "ext", name: "Brahmacharya", desc: "Wise conservation and direction of sexual energy." },
-     { id: "a1_5", syncKey: "arish_tapas", type: "ext", name: "Tapas", desc: "Disciplined endurance." }
-   ]
+ name: "Kama (Desire/Lust) 🌪️",
+ sanskritLabel: "Kama",
+ practices: [
+ { id: "a1_1", syncKey: "arish_vairagya", type: "ext", name: "Vairagya", desc: "Cultivating dispassion and non-attachment." },
+ { id: "a1_2", syncKey: "arish_santosha", type: "ext", name: "Santosha", desc: "Cultivating contentment with what is present." },
+ { id: "a1_3", syncKey: "arish_dama", type: "ext", name: "Dama", desc: "Active sense-restraint." },
+ { id: "a1_4", syncKey: "arish_brahmacharya", type: "ext", name: "Brahmacharya", desc: "Wise conservation and direction of sexual energy." },
+ { id: "a1_5", syncKey: "arish_tapas", type: "ext", name: "Tapas", desc: "Disciplined endurance." }
+ ]
  },
  {
-   name: "Krodha (Anger) 🔥",
-   sanskritLabel: "Krodha",
-   practices: [
-     { id: "a2_1", syncKey: "arish_kshama", type: "ext", name: "Kshama", desc: "Cultivating forgiving qualities and letting go of resentment." },
-     { id: "a2_2", syncKey: "arish_titiksha", type: "ext", name: "Titiksha", desc: "Practicing forbearance and enduring provocations without agitation." },
-     { id: "a2_3", syncKey: "arish_shanti", type: "ext", name: "Shanti", desc: "Cultivating inner peace." },
-     { id: "a2_4", syncKey: "arish_karuna", type: "ext", name: "Karuna", desc: "Extending compassion to oneself and others." },
-     { id: "a2_5", syncKey: "arish_upeksha", type: "ext", name: "Upeksha", desc: "Maintaining equanimity." },
-     { id: "a2_6", syncKey: "arish_ahimsa", type: "ext", name: "Ahimsa", desc: "Strict adherence to non-harming." }
-   ]
+ name: "Krodha (Anger) 🔥",
+ sanskritLabel: "Krodha",
+ practices: [
+ { id: "a2_1", syncKey: "arish_kshama", type: "ext", name: "Kshama", desc: "Cultivating forgiving qualities and letting go of resentment." },
+ { id: "a2_2", syncKey: "arish_titiksha", type: "ext", name: "Titiksha", desc: "Practicing forbearance and enduring provocations without agitation." },
+ { id: "a2_3", syncKey: "arish_shanti", type: "ext", name: "Shanti", desc: "Cultivating inner peace." },
+ { id: "a2_4", syncKey: "arish_karuna", type: "ext", name: "Karuna", desc: "Extending compassion to oneself and others." },
+ { id: "a2_5", syncKey: "arish_upeksha", type: "ext", name: "Upeksha", desc: "Maintaining equanimity." },
+ { id: "a2_6", syncKey: "arish_ahimsa", type: "ext", name: "Ahimsa", desc: "Strict adherence to non-harming." }
+ ]
  },
  {
-   name: "Lobha (Greed) 🪤",
-   sanskritLabel: "Lobha",
-   practices: [
-     { id: "a3_1", syncKey: "arish_dana", type: "ext", name: "Dana", desc: "Practicing generosity." },
-     { id: "a3_2", syncKey: "arish_aparigraha", type: "ext", name: "Aparigraha", desc: "Non-grasping and non-hoarding." },
-     { id: "a3_3", syncKey: "arish_tyaga", type: "ext", name: "Tyaga", desc: "Renunciation of the unnecessary." }
-   ]
+ name: "Lobha (Greed) 🪤",
+ sanskritLabel: "Lobha",
+ practices: [
+ { id: "a3_1", syncKey: "arish_dana", type: "ext", name: "Dana", desc: "Practicing generosity." },
+ { id: "a3_2", syncKey: "arish_aparigraha", type: "ext", name: "Aparigraha", desc: "Non-grasping and non-hoarding." },
+ { id: "a3_3", syncKey: "arish_tyaga", type: "ext", name: "Tyaga", desc: "Renunciation of the unnecessary." }
+ ]
  },
  {
-   name: "Moha (Delusion) 🌫️",
-   sanskritLabel: "Moha",
-   practices: [
-     { id: "a4_1", syncKey: "arish_viveka", type: "ext", name: "Viveka", desc: "Applying discrimination between real and unreal." },
-     { id: "a4_2", syncKey: "arish_vichara", type: "ext", name: "Vichara", desc: "Self-inquiry and investigation." },
-     { id: "a4_3", syncKey: "arish_shravana", type: "ext", name: "Shravana", desc: "Right hearing and learning." },
-     { id: "a4_4", syncKey: "arish_manana", type: "ext", name: "Manana", desc: "Reflective examination of teachings." },
-     { id: "a4_5", syncKey: "arish_smriti", type: "ext", name: "Smriti", desc: "Maintaining clear remembrance." }
-   ]
+ name: "Moha (Delusion) 🌫️",
+ sanskritLabel: "Moha",
+ practices: [
+ { id: "a4_1", syncKey: "arish_viveka", type: "ext", name: "Viveka", desc: "Applying discrimination between real and unreal." },
+ { id: "a4_2", syncKey: "arish_vichara", type: "ext", name: "Vichara", desc: "Self-inquiry and investigation." },
+ { id: "a4_3", syncKey: "arish_shravana", type: "ext", name: "Shravana", desc: "Right hearing and learning." },
+ { id: "a4_4", syncKey: "arish_manana", type: "ext", name: "Manana", desc: "Reflective examination of teachings." },
+ { id: "a4_5", syncKey: "arish_smriti", type: "ext", name: "Smriti", desc: "Maintaining clear remembrance." }
+ ]
  },
  {
-   name: "Mada (Pride/Arrogance) 🦚",
-   sanskritLabel: "Mada",
-   practices: [
-     { id: "a5_1", syncKey: "arish_vinaya", type: "ext", name: "Vinaya", desc: "Cultivating humility & modesty." },
-     { id: "a5_2", syncKey: "arish_seva", type: "ext", name: "Seva", desc: "Engaging in selfless service." },
-     { id: "a5_3", syncKey: "arish_kritajnata", type: "ext", name: "Kritajnata", desc: "Expressing genuine gratitude." },
-     { id: "a5_4", syncKey: "arish_samabhava", type: "ext", name: "Samabhava", desc: "Viewing all with equanimity and equal vision." },
-     { id: "a5_5", syncKey: "arish_ishvararpana", type: "ext", name: "Ishvararpana", desc: "Offering actions and results to the Divine." }
-   ]
+ name: "Mada (Pride/Arrogance) 🦚",
+ sanskritLabel: "Mada",
+ practices: [
+ { id: "a5_1", syncKey: "arish_vinaya", type: "ext", name: "Vinaya", desc: "Cultivating humility & modesty." },
+ { id: "a5_2", syncKey: "arish_seva", type: "ext", name: "Seva", desc: "Engaging in selfless service." },
+ { id: "a5_3", syncKey: "arish_kritajnata", type: "ext", name: "Kritajnata", desc: "Expressing genuine gratitude." },
+ { id: "a5_4", syncKey: "arish_samabhava", type: "ext", name: "Samabhava", desc: "Viewing all with equanimity and equal vision." },
+ { id: "a5_5", syncKey: "arish_ishvararpana", type: "ext", name: "Ishvararpana", desc: "Offering actions and results to the Divine." }
+ ]
  },
  {
-   name: "Matsarya (Jealousy/Envy) 🐍",
-   sanskritLabel: "Matsarya",
-   practices: [
-     { id: "a6_1", syncKey: "arish_mudita", type: "ext", name: "Mudita", desc: "Cultivating appreciative joy for others' success." },
-     { id: "a6_2", syncKey: "arish_maitri", type: "ext", name: "Maitri", desc: "Fostering goodwill and friendliness." },
-     { id: "a6_3", syncKey: "arish_prasada", type: "ext", name: "Prasada", desc: "Graciously accepting outcomes without envy." }
-   ]
+ name: "Matsarya (Jealousy/Envy) 🐍",
+ sanskritLabel: "Matsarya",
+ practices: [
+ { id: "a6_1", syncKey: "arish_mudita", type: "ext", name: "Mudita", desc: "Cultivating appreciative joy for others' success." },
+ { id: "a6_2", syncKey: "arish_maitri", type: "ext", name: "Maitri", desc: "Fostering goodwill and friendliness." },
+ { id: "a6_3", syncKey: "arish_prasada", type: "ext", name: "Prasada", desc: "Graciously accepting outcomes without envy." }
+ ]
  }
  ],
 
@@ -1722,7 +1893,7 @@ let currentDate = new Date().toISOString().split('T')[0];
 let currentTheme = 'dark';
 let logs = {}; 
 let activeFilter = { jnan: 'All', karm: 'All', arish: 'All', manas: 'All' };
-let completionFilter = { jnan: 'all', karm: 'all', arish: 'all', manas: 'all' }; // NEW FILTER STATE
+let completionFilter = { jnan: 'all', karm: 'all', arish: 'all', manas: 'all' };
 let searchQuery = '';
 let activeChartInstance = null;
 let domainBalanceChartInstance = null;
@@ -1730,6 +1901,7 @@ let domainAccomplishmentChartInstance = null;
 let trendChartInstance = null;
 let distributionChartInstance = null;
 let currentChartContext = { type: null, senseIndex: null, practiceIndex: null };
+let ledgerDomainFilter = 'All';
 
 function formatDateDDMMYY(isoDateStr) {
  if (!isoDateStr) return '';
@@ -1755,43 +1927,43 @@ window.onload = () => {
 };
 
 const parentMap = {
-  'jnan-view': 'hub-view',
-  'karm-view': 'hub-view',
-  'analytics-view': 'hub-view',
-  'antahkarana-hub-view': 'hub-view',
-  'arish-view': 'antahkarana-hub-view',
-  'manas-view': 'antahkarana-hub-view',
-  'identification-view': 'antahkarana-hub-view',
-  'settings-view': 'hub-view'
+ 'jnan-view': 'hub-view',
+ 'karm-view': 'hub-view',
+ 'analytics-view': 'hub-view',
+ 'antahkarana-hub-view': 'hub-view',
+ 'arish-view': 'antahkarana-hub-view',
+ 'manas-view': 'antahkarana-hub-view',
+ 'identification-view': 'antahkarana-hub-view',
+ 'settings-view': 'hub-view'
 };
 
 window.addEventListener('popstate', (event) => {
-  const overlay = document.getElementById('chartModalOverlay');
-  
-  if (overlay.classList.contains('active')) {
-    if (currentChartContext.practiceIndex !== null) {
-      openSubAnalyticsChart(currentChartContext.type, currentChartContext.senseIndex);
-    } else if (currentChartContext.senseIndex !== null) {
-      openAnalyticsChart(currentChartContext.type);
-    } else {
-      overlay.classList.remove('active');
-    }
-  } else {
-    const activeView = document.querySelector('.view-section.active');
-    const currentViewId = activeView ? activeView.id : 'hub-view';
-    const parentViewId = parentMap[currentViewId];
-    
-    if (parentViewId && currentViewId !== 'hub-view') {
-        openView(parentViewId, false);
-        history.replaceState({ view: parentViewId }, '', `#${parentViewId}`);
-    } else {
-        openView('hub-view', false);
-    }
-  }
+ const overlay = document.getElementById('chartModalOverlay');
+ 
+ if (overlay.classList.contains('active')) {
+ if (currentChartContext.practiceIndex !== null) {
+ openSubAnalyticsChart(currentChartContext.type, currentChartContext.senseIndex);
+ } else if (currentChartContext.senseIndex !== null) {
+ openAnalyticsChart(currentChartContext.type);
+ } else {
+ overlay.classList.remove('active');
+ }
+ } else {
+ const activeView = document.querySelector('.view-section.active');
+ const currentViewId = activeView ? activeView.id : 'hub-view';
+ const parentViewId = parentMap[currentViewId];
+ 
+ if (parentViewId && currentViewId !== 'hub-view') {
+ openView(parentViewId, false);
+ history.replaceState({ view: parentViewId }, '', `#${parentViewId}`);
+ } else {
+ openView('hub-view', false);
+ }
+ }
 });
 
 function pushModalHistoryState() {
-  history.pushState({ modalOpen: true }, '');
+ history.pushState({ modalOpen: true }, '');
 }
 
 function toggleSidebar() {
@@ -1858,6 +2030,21 @@ function handleBodyClick(event) {
  el.classList.remove('active');
  });
  }
+
+ if (!event.target.closest('#practiceLedgerBody tr')) {
+ document.querySelectorAll('.ledger-tooltip-content.active').forEach(el => {
+ el.classList.remove('active');
+ });
+ }
+
+ if (!event.target.closest('#domainAccomplishmentCard')) {
+ hideDomainChartTooltip();
+ }
+}
+
+function hideDomainChartTooltip() {
+ const tooltip = document.getElementById('domainChartTooltip');
+ if (tooltip) tooltip.classList.remove('active');
 }
 
 function handleSearch(query) {
@@ -1877,11 +2064,11 @@ function handleSearch(query) {
  resultsContainer.innerHTML = '';
 
  const allCategories = [
-  ...dataset.jnanendriyas.map(g => ({ ...g, categoryType: 'Jnanendriyas' })),
-  ...dataset.karmendriyas.map(g => ({ ...g, categoryType: 'Karmendriyas' })),
-  ...dataset.arishadvargas.map(g => ({ ...g, categoryType: 'Arishadvargas' })),
-  ...dataset.manas.map(g => ({ ...g, categoryType: 'Manas' }))
-];
+ ...dataset.jnanendriyas.map(g => ({ ...g, categoryType: 'Jnanendriyas' })),
+ ...dataset.karmendriyas.map(g => ({ ...g, categoryType: 'Karmendriyas' })),
+ ...dataset.arishadvargas.map(g => ({ ...g, categoryType: 'Arishadvargas' })),
+ ...dataset.manas.map(g => ({ ...g, categoryType: 'Manas' }))
+ ];
 
  let hasMatches = false;
 
@@ -1954,32 +2141,32 @@ function handleSearch(query) {
 }
 
 function openView(viewId, pushToHistory = true) {
-  document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-  document.getElementById(viewId).classList.add('active');
+ document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+ document.getElementById(viewId).classList.add('active');
 
-  if (pushToHistory) {
-    history.pushState({ view: viewId }, '', `#${viewId}`);
-  }
+ if (pushToHistory) {
+ history.pushState({ view: viewId }, '', `#${viewId}`);
+ }
 
-  const mainContainer = document.querySelector('main.container');
-  if (mainContainer) {
-    mainContainer.scrollTop = 0;
-  }
+ const mainContainer = document.querySelector('main.container');
+ if (mainContainer) {
+ mainContainer.scrollTop = 0;
+ }
 
-  document.querySelectorAll('.main-footnote-nav .nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
+ document.querySelectorAll('.main-footnote-nav .nav-item').forEach(item => {
+ item.classList.remove('active');
+ });
 
-  if (viewId === 'hub-view') document.getElementById('bottom-nav-home').classList.add('active');
-  if (viewId === 'jnan-view') document.getElementById('bottom-nav-jnan').classList.add('active');
-  if (viewId === 'karm-view') document.getElementById('bottom-nav-karm').classList.add('active');
-  if (viewId === 'antahkarana-hub-view' || viewId === 'arish-view' || viewId === 'manas-view' || viewId === 'identification-view') {
-      document.getElementById('bottom-nav-antahkarana').classList.add('active');
-  }
-  if (viewId === 'analytics-view') {
-    document.getElementById('bottom-nav-analytics').classList.add('active');
-    updateAnalyticsDisplay();
-  }
+ if (viewId === 'hub-view') document.getElementById('bottom-nav-home').classList.add('active');
+ if (viewId === 'jnan-view') document.getElementById('bottom-nav-jnan').classList.add('active');
+ if (viewId === 'karm-view') document.getElementById('bottom-nav-karm').classList.add('active');
+ if (viewId === 'antahkarana-hub-view' || viewId === 'arish-view' || viewId === 'manas-view' || viewId === 'identification-view') {
+ document.getElementById('bottom-nav-antahkarana').classList.add('active');
+ }
+ if (viewId === 'analytics-view') {
+ document.getElementById('bottom-nav-analytics').classList.add('active');
+ updateAnalyticsDisplay();
+ }
 }
 
 function setTheme(theme) {
@@ -2003,19 +2190,11 @@ function setTheme(theme) {
  activeChartInstance.options.plugins.legend.labels.color = textTheme;
  activeChartInstance.update();
  }
- if (domainBalanceChartInstance) {
-  renderDomainBalanceChart();
-}
-if (domainAccomplishmentChartInstance) {
-  renderDomainAccomplishmentChart();
-}
-if (trendChartInstance) {
-    renderRollingTrendChart();
-}
-if (distributionChartInstance) {
-  renderQualityDistributionChart();
-}
-renderHeatmap();
+ if (domainBalanceChartInstance) renderDomainBalanceChart();
+ if (domainAccomplishmentChartInstance) renderDomainAccomplishmentChart();
+ if (trendChartInstance) renderRollingTrendChart();
+ if (distributionChartInstance) renderQualityDistributionChart();
+ renderHeatmap();
 }
 
 function toggleTheme() {
@@ -2036,93 +2215,93 @@ function shiftDate(offset) {
 }
 
 function resetContextualJnan() {
-  const filterVal = activeFilter.jnan;
-  const targetName = filterVal === 'All' ? 'All Jnanendriyas' : filterVal;
-  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
-    if (!logs[currentDate]) logs[currentDate] = {};
-    dataset.jnanendriyas.forEach(group => {
-      if (filterVal === 'All' || group.name === filterVal) {
-        group.practices.forEach(p => {
-          logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
-        });
-      }
-    });
-    saveLogsToLocal();
-    if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
-    renderUI();
-    if (searchQuery) handleSearch(searchQuery);
-  }
+ const filterVal = activeFilter.jnan;
+ const targetName = filterVal === 'All' ? 'All Jnanendriyas' : filterVal;
+ if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ if (!logs[currentDate]) logs[currentDate] = {};
+ dataset.jnanendriyas.forEach(group => {
+ if (filterVal === 'All' || group.name === filterVal) {
+ group.practices.forEach(p => {
+ logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
+ });
+ }
+ });
+ saveLogsToLocal();
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+ }
 }
 
 function resetContextualKarm() {
-  const filterVal = activeFilter.karm;
-  const targetName = filterVal === 'All' ? 'All Karmendriyas' : filterVal;
-  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
-    if (!logs[currentDate]) logs[currentDate] = {};
-    dataset.karmendriyas.forEach(group => {
-      if (filterVal === 'All' || group.name === filterVal) {
-        group.practices.forEach(p => {
-          logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
-        });
-      }
-    });
-    saveLogsToLocal();
-    if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
-    renderUI();
-    if (searchQuery) handleSearch(searchQuery);
-  }
+ const filterVal = activeFilter.karm;
+ const targetName = filterVal === 'All' ? 'All Karmendriyas' : filterVal;
+ if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ if (!logs[currentDate]) logs[currentDate] = {};
+ dataset.karmendriyas.forEach(group => {
+ if (filterVal === 'All' || group.name === filterVal) {
+ group.practices.forEach(p => {
+ logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
+ });
+ }
+ });
+ saveLogsToLocal();
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+ }
 }
 
 function resetContextualManas() {
-  const filterVal = activeFilter.manas;
-  const targetName = filterVal === 'All' ? 'All Manas Practices' : filterVal;
-  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
-    if (!logs[currentDate]) logs[currentDate] = {};
-    dataset.manas.forEach(group => {
-      if (filterVal === 'All' || group.name === filterVal) {
-        group.practices.forEach(p => {
-          logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
-        });
-      }
-    });
-    saveLogsToLocal();
-    if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
-    renderUI();
-    if (searchQuery) handleSearch(searchQuery);
-  }
+ const filterVal = activeFilter.manas;
+ const targetName = filterVal === 'All' ? 'All Manas Practices' : filterVal;
+ if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ if (!logs[currentDate]) logs[currentDate] = {};
+ dataset.manas.forEach(group => {
+ if (filterVal === 'All' || group.name === filterVal) {
+ group.practices.forEach(p => {
+ logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
+ });
+ }
+ });
+ saveLogsToLocal();
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+ }
 }
 
 function resetContextualArish() {
-  const filterVal = activeFilter.arish;
-  const targetName = filterVal === 'All' ? 'All Antid' : filterVal;
-  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
-    if (!logs[currentDate]) logs[currentDate] = {};
-    dataset.arishadvargas.forEach(group => {
-      if (filterVal === 'All' || group.name === filterVal) {
-        group.practices.forEach(p => {
-          logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
-        });
-      }
-    });
-    saveLogsToLocal();
-    if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
-    renderUI();
-    if (searchQuery) handleSearch(searchQuery);
-  }
+ const filterVal = activeFilter.arish;
+ const targetName = filterVal === 'All' ? 'All Antid' : filterVal;
+ if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ if (!logs[currentDate]) logs[currentDate] = {};
+ dataset.arishadvargas.forEach(group => {
+ if (filterVal === 'All' || group.name === filterVal) {
+ group.practices.forEach(p => {
+ logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
+ });
+ }
+ });
+ saveLogsToLocal();
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+ }
 }
 
 function toggleCompletionFilter(type) {
-  const states = ['all', 'selected', 'unselected'];
-  const icons = { 'all': '🔄 All', 'selected': '✅ Done', 'unselected': '❌ Pending' };
-  
-  let currentIndex = states.indexOf(completionFilter[type]);
-  let nextIndex = (currentIndex + 1) % states.length;
-  completionFilter[type] = states[nextIndex];
-  
-  const btn = document.getElementById(`filter-btn-${type}`);
-  if (btn) btn.innerHTML = icons[completionFilter[type]];
-  
-  renderUI();
+ const states = ['all', 'selected', 'unselected'];
+ const icons = { 'all': '🔄 All', 'selected': '✅ Done', 'unselected': '❌ Pending' };
+ 
+ let currentIndex = states.indexOf(completionFilter[type]);
+ let nextIndex = (currentIndex + 1) % states.length;
+ completionFilter[type] = states[nextIndex];
+ 
+ const btn = document.getElementById(`filter-btn-${type}`);
+ if (btn) btn.innerHTML = icons[completionFilter[type]];
+ 
+ renderUI();
 }
 
 function loadLogsLocal() {
@@ -2185,7 +2364,7 @@ function addEfficiency(syncKey) {
  renderUI();
  if (searchQuery) handleSearch(searchQuery);
  } else if (input !== null) {
- alert("Please enter a valid number between 0 and 100.");
+ alert("Please enter a number between 0 and 100.");
  }
 }
 
@@ -2221,14 +2400,14 @@ function renderSubCategoryDropdowns() {
  karmDropdown.innerHTML = karmHtml;
 
  let manasHtml = `<option value="All" ${activeFilter.manas === 'All' ? 'selected' : ''}>All Domains</option>`;
-dataset.manas.forEach(g => {
-  manasHtml += `<option value="${g.name}" ${activeFilter.manas === g.name ? 'selected' : ''}>${g.sanskritLabel}</option>`;
-});
-if (manasDropdown) manasDropdown.innerHTML = manasHtml;
+ dataset.manas.forEach(g => {
+ manasHtml += `<option value="${g.name}" ${activeFilter.manas === g.name ? 'selected' : ''}>${g.sanskritLabel}</option>`;
+ });
+ if (manasDropdown) manasDropdown.innerHTML = manasHtml;
 
  let arishHtml = `<option value="All" ${activeFilter.arish === 'All' ? 'selected' : ''}>All Antid</option>`;
  dataset.arishadvargas.forEach(g => {
-   arishHtml += `<option value="${g.name}" ${activeFilter.arish === g.name ? 'selected' : ''}>${g.sanskritLabel}</option>`;
+ arishHtml += `<option value="${g.name}" ${activeFilter.arish === g.name ? 'selected' : ''}>${g.sanskritLabel}</option>`;
  });
  arishDropdown.innerHTML = arishHtml;
 }
@@ -2240,85 +2419,83 @@ function filterCategory(type, name) {
 }
 
 function renderCategoryUI(categoryList, targetContainer, currentFilter, completionState = 'all') {
-  targetContainer.innerHTML = '';
+ targetContainer.innerHTML = '';
 
-  categoryList.forEach(group => {
-    if (currentFilter !== 'All' && group.name !== currentFilter) return;
+ categoryList.forEach(group => {
+ if (currentFilter !== 'All' && group.name !== currentFilter) return;
 
-    let practicesHtml = '';
-    let practiceCount = 0;
+ let practicesHtml = '';
+ let practiceCount = 0;
 
-    group.practices.forEach(p => {
-      const data = getSyncData(p.syncKey);
-      const isDone = data.done;
-      
-      // Apply completion filters
-      if (completionState === 'selected' && !isDone) return;
-      if (completionState === 'unselected' && isDone) return;
-      
-      practiceCount++;
+ group.practices.forEach(p => {
+ const data = getSyncData(p.syncKey);
+ const isDone = data.done;
+ 
+ if (completionState === 'selected' && !isDone) return;
+ if (completionState === 'unselected' && isDone) return;
+ 
+ practiceCount++;
 
-      const efficiencies = data.efficiencies || [];
-      const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
-      const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
+ const efficiencies = data.efficiencies || [];
+ const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
+ const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
 
-      practicesHtml += `
-      <li class="practice-item">
-        <div class="practice-main">
-          <label class="checkbox-label">
-            <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
-            <div>
-              <div class="practice-name ${isDone ? 'completed-text' : ''}">${p.name}</div>
-              <div class="practice-desc">${p.desc}</div>
-            </div>
-          </label>
-        </div>
-        
-        <div class="duration-section ${dimmedClass}">
-          <span style="display:inline-flex; align-items:center;">
-            Practice Efficiency:
-            <span class="info-tooltip-container">
-              <span class="info-icon" onclick="toggleInfoTooltip(event, this)">ⓘ</span>
-              <div class="info-tooltip-content">Post-practice, gauge efficiency solely by objective fulfillment—ignoring time, effort, difficulty, and self-image: how completely did behavior and mind align with the define practice objective?</div>
-            </span>
-          </span>
-          <div class="durations-wrapper">
-            ${efficiencies.map((eff, idx) => `
-            <div class="duration-chip">
-              <span>${eff}%</span>
-              <span class="remove-btn" onclick="removeEfficiency('${p.syncKey}', ${idx})">&times;</span>
-            </div>
-            `).join('')}
-            <button class="add-duration-btn" onclick="addEfficiency('${p.syncKey}')">+ Add</button>
-          </div>
-          ${efficiencies.length > 0 ? `<span class="total-duration">(Avg: ${avgEff}%)</span>` : ''}
-        </div>
-      </li>
-      `;
-    });
+ practicesHtml += `
+ <li class="practice-item">
+ <div class="practice-main">
+ <label class="checkbox-label">
+ <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
+ <div>
+ <div class="practice-name ${isDone ? 'completed-text' : ''}">${p.name}</div>
+ <div class="practice-desc">${p.desc}</div>
+ </div>
+ </label>
+ </div>
+ 
+ <div class="duration-section ${dimmedClass}">
+ <span style="display:inline-flex; align-items:center;">
+ Practice Efficiency:
+ <span class="info-tooltip-container">
+ <span class="info-icon" onclick="toggleInfoTooltip(event, this)">ⓘ</span>
+ <div class="info-tooltip-content">Post-practice, gauge efficiency solely by objective fulfillment—ignoring time, effort, difficulty, and self-image: how completely did behavior and mind align with the define practice objective?</div>
+ </span>
+ </span>
+ <div class="durations-wrapper">
+ ${efficiencies.map((eff, idx) => `
+ <div class="duration-chip">
+ <span>${eff}%</span>
+ <span class="remove-btn" onclick="removeEfficiency('${p.syncKey}', ${idx})">&times;</span>
+ </div>
+ `).join('')}
+ <button class="add-duration-btn" onclick="addEfficiency('${p.syncKey}')">+ Add</button>
+ </div>
+ ${efficiencies.length > 0 ? `<span class="total-duration">(Avg: ${avgEff}%)</span>` : ''}
+ </div>
+ </li>
+ `;
+ });
 
-    // Only render the category card if there are practices matching the filter
-    if (practiceCount > 0) {
-      const card = document.createElement('div');
-      card.className = 'indriya-card';
-      let html = `<div class="indriya-header"><span>${group.name}</span></div><ul class="practice-list">`;
-      html += practicesHtml;
-      html += `</ul>`;
-      card.innerHTML = html;
-      targetContainer.appendChild(card);
-    }
-  });
+ if (practiceCount > 0) {
+ const card = document.createElement('div');
+ card.className = 'indriya-card';
+ let html = `<div class="indriya-header"><span>${group.name}</span></div><ul class="practice-list">`;
+ html += practicesHtml;
+ html += `</ul>`;
+ card.innerHTML = html;
+ targetContainer.appendChild(card);
+ }
+ });
 }
 
 function renderUI() {
-  renderCategoryUI(dataset.jnanendriyas, document.getElementById('jnanendriyas-container'), activeFilter.jnan, completionFilter.jnan);
-  renderCategoryUI(dataset.karmendriyas, document.getElementById('karmendriyas-container'), activeFilter.karm, completionFilter.karm);
-  renderCategoryUI(dataset.arishadvargas, document.getElementById('arish-container'), activeFilter.arish, completionFilter.arish);
+ renderCategoryUI(dataset.jnanendriyas, document.getElementById('jnanendriyas-container'), activeFilter.jnan, completionFilter.jnan);
+ renderCategoryUI(dataset.karmendriyas, document.getElementById('karmendriyas-container'), activeFilter.karm, completionFilter.karm);
+ renderCategoryUI(dataset.arishadvargas, document.getElementById('arish-container'), activeFilter.arish, completionFilter.arish);
 
-  const manasContainer = document.getElementById('manas-container');
-  if (manasContainer) {
-    renderCategoryUI(dataset.manas, manasContainer, activeFilter.manas, completionFilter.manas);
-  }
+ const manasContainer = document.getElementById('manas-container');
+ if (manasContainer) {
+ renderCategoryUI(dataset.manas, manasContainer, activeFilter.manas, completionFilter.manas);
+ }
 }
 
 function getSelectedAnalyticsDates() {
@@ -2337,484 +2514,524 @@ function getSelectedAnalyticsDates() {
 }
 
 function calculateDomainOPE(domainKey, targetDates) {
-  const categoryList = dataset[domainKey];
-  if (!categoryList || categoryList.length === 0) return 0;
+ const categoryList = dataset[domainKey];
+ if (!categoryList || categoryList.length === 0) return 0;
 
-  let totalPracticesInDomain = 0;
-  categoryList.forEach(group => {
-    totalPracticesInDomain += group.practices.length;
-  });
+ let totalPracticesInDomain = 0;
+ categoryList.forEach(group => {
+ totalPracticesInDomain += group.practices.length;
+ });
 
-  let dailyOPEs = [];
+ let dailyOPEs = [];
 
-  targetDates.forEach(date => {
-    if (!logs[date]) return;
-    let completedCount = 0;
-    let totalEffSum = 0;
-    let effCount = 0;
+ targetDates.forEach(date => {
+ if (!logs[date]) return;
+ let completedCount = 0;
+ let totalEffSum = 0;
+ let effCount = 0;
 
-    categoryList.forEach(group => {
-      group.practices.forEach(p => {
-        const item = logs[date][p.syncKey];
-        if (item && item.done) {
-          completedCount++;
-          const effs = item.efficiencies || [];
-          if (effs.length > 0) {
-            totalEffSum += effs.reduce((a, b) => a + b, 0) / effs.length;
-            effCount++;
-          }
-        }
-      });
-    });
+ categoryList.forEach(group => {
+ group.practices.forEach(p => {
+ const item = logs[date][p.syncKey];
+ if (item && item.done) {
+ completedCount++;
+ const effs = item.efficiencies || [];
+ if (effs.length > 0) {
+ totalEffSum += effs.reduce((a, b) => a + b, 0) / effs.length;
+ effCount++;
+ }
+ }
+ });
+ });
 
-    if (completedCount > 0 || effCount > 0) {
-      const accomplishmentRate = totalPracticesInDomain > 0 ? (completedCount / totalPracticesInDomain) * 100 : 0;
-      const ape = effCount > 0 ? (totalEffSum / effCount) : 0;
-      // Geometric Mean of Accomplishment Rate (%) and APE (%)
-      dailyOPEs.push(Math.sqrt(accomplishmentRate * ape));
-    }
-  });
+ if (completedCount > 0 || effCount > 0) {
+ const accomplishmentRate = totalPracticesInDomain > 0 ? (completedCount / totalPracticesInDomain) * 100 : 0;
+ const ape = effCount > 0 ? (totalEffSum / effCount) : 0;
+ dailyOPEs.push(Math.sqrt(accomplishmentRate * ape));
+ }
+ });
 
-  return dailyOPEs.length > 0
-    ? Math.round((dailyOPEs.reduce((a, b) => a + b, 0) / dailyOPEs.length) * 10) / 10
-    : 0;
+ return dailyOPEs.length > 0
+ ? Math.round((dailyOPEs.reduce((a, b) => a + b, 0) / dailyOPEs.length) * 10) / 10
+ : 0;
 }
 
 function renderDomainBalanceChart() {
-  const canvas = document.getElementById('domainBalanceChart');
-  if (!canvas) return;
+ const canvas = document.getElementById('domainBalanceChart');
+ if (!canvas) return;
 
-  const targetDates = getSelectedAnalyticsDates();
-  const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
-  const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+ const targetDates = getSelectedAnalyticsDates();
+ const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+ const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
 
-  const labels = ['Jnanendriyas', 'Karmendriyas', 'Manas', 'Arishadvargas', 'Identification'];
-  const values = [
-    calculateDomainOPE('jnanendriyas', targetDates),
-    calculateDomainOPE('karmendriyas', targetDates),
-    calculateDomainOPE('manas', targetDates),
-    calculateDomainOPE('arishadvargas', targetDates),
-    calculateDomainOPE('identification', targetDates)
-  ];
+ const labels = ['Jnanendriyas', 'Karmendriyas', 'Manas', 'Arishadvargas', 'Identification'];
+ const values = [
+ calculateDomainOPE('jnanendriyas', targetDates),
+ calculateDomainOPE('karmendriyas', targetDates),
+ calculateDomainOPE('manas', targetDates),
+ calculateDomainOPE('arishadvargas', targetDates),
+ calculateDomainOPE('identification', targetDates)
+ ];
 
-  if (domainBalanceChartInstance) {
-    domainBalanceChartInstance.destroy();
-  }
+ if (domainBalanceChartInstance) {
+ domainBalanceChartInstance.destroy();
+ }
 
-  const ctx = canvas.getContext('2d');
-  domainBalanceChartInstance = new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'D-OPE %',
-        data: values,
-        backgroundColor: 'rgba(251, 191, 36, 0.25)',
-        borderColor: '#fbbf24',
-        pointBackgroundColor: '#fbbf24',
-        pointBorderColor: textTheme,
-        borderWidth: 2,
-        pointRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      resizeDelay: 200,
-      scales: {
-        r: {
-          min: 0,
-          max: 100,
-          angleLines: { color: borderTheme },
-          grid: { color: borderTheme },
-          pointLabels: { 
-            color: textTheme, 
-            font: { size: 11, weight: '600' } 
-          },
-          ticks: { 
-            display: false,
-            stepSize: 25
-          }
-        }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw}%`
-          }
-        }
-      }
-    }
-  });
+ const ctx = canvas.getContext('2d');
+ domainBalanceChartInstance = new Chart(ctx, {
+ type: 'radar',
+ data: {
+ labels: labels,
+ datasets: [{
+ label: 'D-OPE %',
+ data: values,
+ backgroundColor: 'rgba(251, 191, 36, 0.25)',
+ borderColor: '#fbbf24',
+ pointBackgroundColor: '#fbbf24',
+ pointBorderColor: textTheme,
+ borderWidth: 2,
+ pointRadius: 4
+ }]
+ },
+ options: {
+ responsive: true,
+ maintainAspectRatio: false,
+ resizeDelay: 200,
+ scales: {
+ r: {
+ min: 0,
+ max: 100,
+ angleLines: { color: borderTheme },
+ grid: { color: borderTheme },
+ pointLabels: { 
+ color: textTheme, 
+ font: { size: 11, weight: '600' } 
+ },
+ ticks: { 
+ display: false,
+ stepSize: 25
+ }
+ }
+ },
+ plugins: {
+ legend: { display: false },
+ tooltip: {
+ callbacks: {
+ label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw}%`
+ }
+ }
+ }
+ }
+ });
 }
 
 function calculateDomainAccomplishment(domainKey, targetDates) {
-  const categoryList = dataset[domainKey];
-  if (!categoryList || categoryList.length === 0) return 0;
+ const categoryList = dataset[domainKey];
+ if (!categoryList || categoryList.length === 0) return 0;
 
-  let totalPracticesInDomain = 0;
-  categoryList.forEach(group => {
-    totalPracticesInDomain += group.practices.length;
-  });
+ let totalPracticesInDomain = 0;
+ categoryList.forEach(group => {
+ totalPracticesInDomain += group.practices.length;
+ });
 
-  if (totalPracticesInDomain === 0 || targetDates.length === 0) return 0;
+ if (totalPracticesInDomain === 0 || targetDates.length === 0) return 0;
 
-  let dailyRatios = [];
+ let dailyRatios = [];
 
-  targetDates.forEach(date => {
-    if (!logs[date]) {
-      dailyRatios.push(0);
-      return;
-    }
+ targetDates.forEach(date => {
+ if (!logs[date]) {
+ dailyRatios.push(0);
+ return;
+ }
 
-    let completedCount = 0;
-    categoryList.forEach(group => {
-      group.practices.forEach(p => {
-        const item = logs[date][p.syncKey];
-        if (item && item.done) {
-          completedCount++;
-        }
-      });
-    });
+ let completedCount = 0;
+ categoryList.forEach(group => {
+ group.practices.forEach(p => {
+ const item = logs[date][p.syncKey];
+ if (item && item.done) {
+ completedCount++;
+ }
+ });
+ });
 
-    dailyRatios.push((completedCount / totalPracticesInDomain) * 100);
-  });
+ dailyRatios.push((completedCount / totalPracticesInDomain) * 100);
+ });
 
-  return dailyRatios.length > 0
-    ? Math.round((dailyRatios.reduce((a, b) => a + b, 0) / dailyRatios.length) * 10) / 10
-    : 0;
+ return dailyRatios.length > 0
+ ? Math.round((dailyRatios.reduce((a, b) => a + b, 0) / dailyRatios.length) * 10) / 10
+ : 0;
 }
 
 function renderDomainAccomplishmentChart() {
-  const canvas = document.getElementById('domainAccomplishmentChart');
-  if (!canvas) return;
+ const canvas = document.getElementById('domainAccomplishmentChart');
+ if (!canvas) return;
 
-  const targetDates = getSelectedAnalyticsDates();
-  const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
-  const cardBorder = currentTheme === 'dark' ? '#111111' : '#ffffff';
+ const targetDates = getSelectedAnalyticsDates();
+ const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+ const cardBorder = currentTheme === 'dark' ? '#111111' : '#ffffff';
 
-  const labels = ['Jnanendriyas', 'Karmendriyas', 'Manas', 'Arishadvargas', 'Identification'];
-  const values = [
-    calculateDomainAccomplishment('jnanendriyas', targetDates),
-    calculateDomainAccomplishment('karmendriyas', targetDates),
-    calculateDomainAccomplishment('manas', targetDates),
-    calculateDomainAccomplishment('arishadvargas', targetDates),
-    calculateDomainAccomplishment('identification', targetDates)
-  ];
+ const labels = ['Jnanendriyas', 'Karmendriyas', 'Manas', 'Arishadvargas', 'Identification'];
+ const colors = ['#38bdf8', '#f43f5e', '#34d399', '#a855f7', '#f472b6'];
+ const values = [
+ calculateDomainAccomplishment('jnanendriyas', targetDates),
+ calculateDomainAccomplishment('karmendriyas', targetDates),
+ calculateDomainAccomplishment('manas', targetDates),
+ calculateDomainAccomplishment('arishadvargas', targetDates),
+ calculateDomainAccomplishment('identification', targetDates)
+ ];
 
-  if (domainAccomplishmentChartInstance) {
-    domainAccomplishmentChartInstance.destroy();
-  }
+ if (domainAccomplishmentChartInstance) {
+ domainAccomplishmentChartInstance.destroy();
+ }
 
-  const ctx = canvas.getContext('2d');
-  domainAccomplishmentChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: values,
-        backgroundColor: ['#38bdf8', '#f43f5e', '#34d399', '#a855f7', '#f472b6'],
-        borderColor: cardBorder,
-        borderWidth: 3,
-        hoverOffset: 6
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      resizeDelay: 200,
-      plugins: {
-        legend: {
-          position: 'right',
-          labels: {
-            color: textTheme,
-            padding: 12,
-            font: { size: 11, weight: '600' }
-          }
-        },
-        tooltip: {
-          callbacks: {
-            label: (context) => ` ${context.label}: ${context.raw}% Accomplishment`
-          }
-        }
-      }
-    }
-  });
+ const ctx = canvas.getContext('2d');
+ domainAccomplishmentChartInstance = new Chart(ctx, {
+ type: 'doughnut',
+ data: {
+ labels: labels,
+ datasets: [{
+ data: values,
+ backgroundColor: colors,
+ borderColor: cardBorder,
+ borderWidth: 3,
+ hoverOffset: 6
+ }]
+ },
+ options: {
+ responsive: true,
+ maintainAspectRatio: false,
+ resizeDelay: 200,
+ onClick: (evt, elements) => {
+   const tooltip = document.getElementById('domainChartTooltip');
+   if (elements.length > 0) {
+     const index = elements[0].index;
+     const clickedDomain = labels[index];
+     const val = values[index];
+     const sectorColor = colors[index];
+
+     const { x, y } = elements[0].element;
+     tooltip.style.left = `${x}px`;
+     tooltip.style.top = `${y}px`;
+
+     document.getElementById('domainTooltipText').innerHTML = `
+       <span class="domain-tooltip-color-box" style="background-color: ${sectorColor};"></span>
+       <span><strong>${clickedDomain}</strong>: ${val}%</span>
+     `;
+     
+     const actionBtn = document.getElementById('domainTooltipActionBtn');
+     actionBtn.onclick = (e) => {
+       e.stopPropagation();
+       hideDomainChartTooltip();
+       filterLedgerByDomain(clickedDomain);
+     };
+
+     tooltip.classList.add('active');
+   } else {
+     hideDomainChartTooltip();
+   }
+ },
+ plugins: {
+ legend: {
+ position: 'right',
+ labels: {
+ color: textTheme,
+ padding: 12,
+ font: { size: 11, weight: '600' }
+ },
+ onClick: (e, legendItem) => {
+   filterLedgerByDomain(legendItem.text);
+ }
+ },
+ tooltip: {
+   enabled: false
+ }
+ }
+ }
+ });
+}
+
+function filterLedgerByDomain(domainName) {
+ ledgerDomainFilter = domainName;
+ renderPracticeLedger();
+
+ const resetBtn = document.getElementById('resetLedgerFilterBtn');
+ const subTitle = document.getElementById('ledgerSubTitle');
+ if (resetBtn) {
+   resetBtn.style.display = domainName === 'All' ? 'none' : 'inline-block';
+ }
+ if (subTitle) {
+   subTitle.innerHTML = domainName === 'All'
+     ? 'Hover or click over any practice name to view its details and trend line chart'
+     : `Filtered by: <strong>${domainName}</strong>. Click row to reveal tooltip.`;
+ }
+
+ const ledgerEl = document.getElementById('comprehensivePracticeLedgerCard');
+ if (ledgerEl) {
+   ledgerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+ }
 }
 
 function renderRollingTrendChart() {
-  const canvas = document.getElementById('trendChart');
-  if (!canvas) return;
+ const canvas = document.getElementById('trendChart');
+ if (!canvas) return;
 
-  const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
-  const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+ const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+ const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
 
-  // Generate 30 consecutive calendar days up to the active date
-  const anchorDateStr = document.getElementById('analyticsSingleDate').value || currentDate;
-  const [ay, am, ad] = anchorDateStr.split('-').map(Number);
-  const anchorDate = new Date(ay, am - 1, ad);
+ const anchorDateStr = document.getElementById('analyticsSingleDate').value || currentDate;
+ const [ay, am, ad] = anchorDateStr.split('-').map(Number);
+ const anchorDate = new Date(ay, am - 1, ad);
 
-  const last30Days = [];
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date(anchorDate);
-    d.setDate(d.getDate() - i);
-    const yr = d.getFullYear();
-    const mo = String(d.getMonth() + 1).padStart(2, '0');
-    const dy = String(d.getDate()).padStart(2, '0');
-    last30Days.push(`${yr}-${mo}-${dy}`);
-  }
+ const last30Days = [];
+ for (let i = 29; i >= 0; i--) {
+ const d = new Date(anchorDate);
+ d.setDate(d.getDate() - i);
+ const yr = d.getFullYear();
+ const mo = String(d.getMonth() + 1).padStart(2, '0');
+ const dy = String(d.getDate()).padStart(2, '0');
+ last30Days.push(`${yr}-${mo}-${dy}`);
+ }
 
-  // Calculate overall daily average efficiency for each of the 30 days
-  const rawDailyData = last30Days.map(date => {
-    if (!logs[date]) return 0;
-    let effs = [];
-    Object.keys(logs[date]).forEach(key => {
-      const item = logs[date][key];
-      if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
-        effs.push(...item.efficiencies);
-      }
-    });
-    return effs.length > 0 ? Math.round(effs.reduce((a, b) => a + b, 0) / effs.length) : 0;
-  });
+ const rawDailyData = last30Days.map(date => {
+ if (!logs[date]) return 0;
+ let effs = [];
+ Object.keys(logs[date]).forEach(key => {
+ const item = logs[date][key];
+ if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
+ effs.push(...item.efficiencies);
+ }
+ });
+ return effs.length > 0 ? Math.round(effs.reduce((a, b) => a + b, 0) / effs.length) : 0;
+ });
 
-  // Calculate rolling averages with expanding initial window (no blank 6-day gap)
-  const rollingAvgData = rawDailyData.map((val, idx, arr) => {
-    const windowStart = Math.max(0, idx - 6);
-    const windowSlice = arr.slice(windowStart, idx + 1);
-    
-    // Average only active days within the available window
-    const activeValues = windowSlice.filter(v => v > 0);
-    if (activeValues.length === 0) return 0;
-    
-    const sum = activeValues.reduce((a, b) => a + b, 0);
-    return Math.round(sum / activeValues.length);
-  });
+ const rollingAvgData = rawDailyData.map((val, idx, arr) => {
+ const windowStart = Math.max(0, idx - 6);
+ const windowSlice = arr.slice(windowStart, idx + 1);
+ const activeValues = windowSlice.filter(v => v > 0);
+ if (activeValues.length === 0) return 0;
+ const sum = activeValues.reduce((a, b) => a + b, 0);
+ return Math.round(sum / activeValues.length);
+ });
 
-  const timeLabels = last30Days.map(d => formatDateDDMMYY(d));
+ const timeLabels = last30Days.map(d => formatDateDDMMYY(d));
 
-  if (trendChartInstance) {
-    trendChartInstance.destroy();
-  }
+ if (trendChartInstance) {
+ trendChartInstance.destroy();
+ }
 
-  const scrollInner = document.getElementById('trendChartScrollInner');
-  if (scrollInner) {
-    const parentWidth = scrollInner.parentElement.clientWidth;
-    const calculatedWidth = last30Days.length * 28; // Allocates ~28px per day
+ const scrollInner = document.getElementById('trendChartScrollInner');
+ if (scrollInner) {
+ const parentWidth = scrollInner.parentElement.clientWidth;
+ const calculatedWidth = last30Days.length * 28;
 
-    if (calculatedWidth > parentWidth) {
-      scrollInner.style.width = calculatedWidth + 'px';
-    } else {
-      scrollInner.style.width = '100%';
-    }
-  }
+ if (calculatedWidth > parentWidth) {
+ scrollInner.style.width = calculatedWidth + 'px';
+ } else {
+ scrollInner.style.width = '100%';
+ }
+ }
 
-  const ctx = canvas.getContext('2d');
-  trendChartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: timeLabels,
-      datasets: [
-        {
-          label: 'Daily APE %',
-          data: rawDailyData,
-          borderColor: borderTheme,
-          borderWidth: 1.5,
-          borderDash: [4, 4],
-          pointRadius: 2,
-          fill: false,
-          tension: 0.3
-        },
-        {
-          label: '7-Day Rolling Avg %',
-          data: rollingAvgData,
-          borderColor: '#38bdf8',
-          backgroundColor: 'rgba(56, 189, 248, 0.12)',
-          borderWidth: 2.5,
-          pointRadius: 0,
-          fill: true,
-          tension: 0.35
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      resizeDelay: 200,
-      scales: {
-        x: {
-          ticks: { color: textTheme, maxTicksLimit: 8, font: { size: 10 } },
-          grid: { display: false }
-        },
-        y: {
-          beginAtZero: true,
-          max: 100,
-          ticks: { color: textTheme, font: { size: 10 } },
-          grid: { color: borderTheme }
-        }
-      },
-      plugins: {
-        legend: {
-          labels: { color: textTheme, font: { size: 11 } }
-        },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw !== null ? ctx.raw + '%' : 'N/A'}`
-          }
-        }
-      }
-    }
-  });
+ const ctx = canvas.getContext('2d');
+ trendChartInstance = new Chart(ctx, {
+ type: 'line',
+ data: {
+ labels: timeLabels,
+ datasets: [
+ {
+ label: 'Daily APE %',
+ data: rawDailyData,
+ borderColor: borderTheme,
+ borderWidth: 1.5,
+ borderDash: [4, 4],
+ pointRadius: 2,
+ fill: false,
+ tension: 0.3
+ },
+ {
+ label: '7-Day Rolling Avg %',
+ data: rollingAvgData,
+ borderColor: '#38bdf8',
+ backgroundColor: 'rgba(56, 189, 248, 0.12)',
+ borderWidth: 2.5,
+ pointRadius: 0,
+ fill: true,
+ tension: 0.35
+ }
+ ]
+ },
+ options: {
+ responsive: true,
+ maintainAspectRatio: false,
+ resizeDelay: 200,
+ scales: {
+ x: {
+ ticks: { color: textTheme, maxTicksLimit: 8, font: { size: 10 } },
+ grid: { display: false }
+ },
+ y: {
+ beginAtZero: true,
+ max: 100,
+ ticks: { color: textTheme, font: { size: 10 } },
+ grid: { color: borderTheme }
+ }
+ },
+ plugins: {
+ legend: {
+ labels: { color: textTheme, font: { size: 11 } }
+ },
+ tooltip: {
+ callbacks: {
+ label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw !== null ? ctx.raw + '%' : 'N/A'}`
+ }
+ }
+ }
+ }
+ });
 }
 
 function renderQualityDistributionChart() {
-  const canvas = document.getElementById('qualityDistributionChart');
-  if (!canvas) return;
+ const canvas = document.getElementById('qualityDistributionChart');
+ if (!canvas) return;
 
-  const targetDates = getSelectedAnalyticsDates();
-  const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
-  const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+ const targetDates = getSelectedAnalyticsDates();
+ const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+ const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
 
-  // Five score buckets: 0-20%, 21-40%, 41-60%, 61-80%, 81-100%
-  const distributionBuckets = [0, 0, 0, 0, 0];
+ const distributionBuckets = [0, 0, 0, 0, 0];
 
-  targetDates.forEach(date => {
-    if (!logs[date]) return;
-    Object.keys(logs[date]).forEach(key => {
-      const item = logs[date][key];
-      if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
-        item.efficiencies.forEach(score => {
-          if (score <= 20) distributionBuckets[0]++;
-          else if (score <= 40) distributionBuckets[1]++;
-          else if (score <= 60) distributionBuckets[2]++;
-          else if (score <= 80) distributionBuckets[3]++;
-          else distributionBuckets[4]++;
-        });
-      }
-    });
-  });
+ targetDates.forEach(date => {
+ if (!logs[date]) return;
+ Object.keys(logs[date]).forEach(key => {
+ const item = logs[date][key];
+ if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
+ item.efficiencies.forEach(score => {
+ if (score <= 20) distributionBuckets[0]++;
+ else if (score <= 40) distributionBuckets[1]++;
+ else if (score <= 60) distributionBuckets[2]++;
+ else if (score <= 80) distributionBuckets[3]++;
+ else distributionBuckets[4]++;
+ });
+ }
+ });
+ });
 
-  if (distributionChartInstance) {
-    distributionChartInstance.destroy();
-  }
+ if (distributionChartInstance) {
+ distributionChartInstance.destroy();
+ }
 
-  const ctx = canvas.getContext('2d');
-  distributionChartInstance = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['0–20%', '21–40%', '41–60%', '61–80%', '81–100%'],
-      datasets: [{
-        label: 'Practice Entries',
-        data: distributionBuckets,
-        backgroundColor: ['#ef4444', '#f59e0b', '#a855f7', '#38bdf8', '#10b981'],
-        borderRadius: 6
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      resizeDelay: 200,
-      scales: {
-        x: {
-          ticks: { color: textTheme, font: { size: 11, weight: '600' } },
-          grid: { display: false }
-        },
-        y: {
-          beginAtZero: true,
-          ticks: { color: textTheme, stepSize: 1, font: { size: 10 } },
-          grid: { color: borderTheme }
-        }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => ` Entries logged: ${ctx.raw}`
-          }
-        }
-      }
-    }
-  });
+ const ctx = canvas.getContext('2d');
+ distributionChartInstance = new Chart(ctx, {
+ type: 'bar',
+ data: {
+ labels: ['0–20%', '21–40%', '41–60%', '61–80%', '81–100%'],
+ datasets: [{
+ label: 'Practice Entries',
+ data: distributionBuckets,
+ backgroundColor: ['#ef4444', '#f59e0b', '#a855f7', '#38bdf8', '#10b981'],
+ borderRadius: 6
+ }]
+ },
+ options: {
+ responsive: true,
+ maintainAspectRatio: false,
+ resizeDelay: 200,
+ scales: {
+ x: {
+ ticks: { color: textTheme, font: { size: 11, weight: '600' } },
+ grid: { display: false }
+ },
+ y: {
+ beginAtZero: true,
+ ticks: { color: textTheme, stepSize: 1, font: { size: 10 } },
+ grid: { color: borderTheme }
+ }
+ },
+ plugins: {
+ legend: { display: false },
+ tooltip: {
+ callbacks: {
+ label: (ctx) => ` Entries logged: ${ctx.raw}`
+ }
+ }
+ }
+ }
+ });
 }
 
 function renderHeatmap() {
-  const container = document.getElementById('heatmapContainer');
-  if (!container) return;
+ const container = document.getElementById('heatmapContainer');
+ if (!container) return;
 
-  container.innerHTML = '';
+ container.innerHTML = '';
 
-  // Calculate total available practices across all domains
-  const allDomains = [
-    ...dataset.jnanendriyas,
-    ...dataset.karmendriyas,
-    ...dataset.manas,
-    ...dataset.arishadvargas,
-    ...(dataset.identification || [])
-  ];
+ const allDomains = [
+ ...dataset.jnanendriyas,
+ ...dataset.karmendriyas,
+ ...dataset.manas,
+ ...dataset.arishadvargas,
+ ...(dataset.identification || [])
+ ];
 
-  let totalAvailablePractices = 0;
-  allDomains.forEach(group => {
-    totalAvailablePractices += group.practices.length;
-  });
+ let totalAvailablePractices = 0;
+ allDomains.forEach(group => {
+ totalAvailablePractices += group.practices.length;
+ });
 
-  // Generate 30 consecutive calendar days up to the active date
-  const anchorDateStr = document.getElementById('analyticsSingleDate').value || currentDate;
-  const [ay, am, ad] = anchorDateStr.split('-').map(Number);
-  const anchorDate = new Date(ay, am - 1, ad);
+ const anchorDateStr = document.getElementById('analyticsSingleDate').value || currentDate;
+ const [ay, am, ad] = anchorDateStr.split('-').map(Number);
+ const anchorDate = new Date(ay, am - 1, ad);
 
-  const last30Days = [];
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date(anchorDate);
-    d.setDate(d.getDate() - i);
-    const yr = d.getFullYear();
-    const mo = String(d.getMonth() + 1).padStart(2, '0');
-    const dy = String(d.getDate()).padStart(2, '0');
-    last30Days.push(`${yr}-${mo}-${dy}`);
-  }
+ const last30Days = [];
+ for (let i = 29; i >= 0; i--) {
+ const d = new Date(anchorDate);
+ d.setDate(d.getDate() - i);
+ const yr = d.getFullYear();
+ const mo = String(d.getMonth() + 1).padStart(2, '0');
+ const dy = String(d.getDate()).padStart(2, '0');
+ last30Days.push(`${yr}-${mo}-${dy}`);
+ }
 
-  // Render each day square using daily OPE
-  last30Days.forEach(date => {
-    let completedCount = 0;
-    let dayEffs = [];
+ last30Days.forEach(date => {
+ let completedCount = 0;
+ let dayEffs = [];
 
-    if (logs[date]) {
-      allDomains.forEach(group => {
-        group.practices.forEach(p => {
-          const item = logs[date][p.syncKey];
-          if (item && item.done) {
-            completedCount++;
-            const effList = item.efficiencies || [];
-            if (effList.length > 0) {
-              const pAvg = effList.reduce((a, b) => a + b, 0) / effList.length;
-              dayEffs.push(pAvg);
-            }
-          }
-        });
-      });
-    }
+ if (logs[date]) {
+ allDomains.forEach(group => {
+ group.practices.forEach(p => {
+ const item = logs[date][p.syncKey];
+ if (item && item.done) {
+ completedCount++;
+ const effList = item.efficiencies || [];
+ if (effList.length > 0) {
+ const pAvg = effList.reduce((a, b) => a + b, 0) / effList.length;
+ dayEffs.push(pAvg);
+ }
+ }
+ });
+ });
+ }
 
-    let dayOpe = 0;
-    if (completedCount > 0 || dayEffs.length > 0) {
-      const accomplishmentRate = totalAvailablePractices > 0 ? (completedCount / totalAvailablePractices) * 100 : 0;
-      const ape = dayEffs.length > 0 ? (dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) : 0;
-      // Geometric Mean of Accomplishment Rate (%) and APE (%)
-      dayOpe = Math.round(Math.sqrt(accomplishmentRate * ape));
-    }
+ let dayOpe = 0;
+ if (completedCount > 0 || dayEffs.length > 0) {
+ const accomplishmentRate = totalAvailablePractices > 0 ? (completedCount / totalAvailablePractices) * 100 : 0;
+ const ape = dayEffs.length > 0 ? (dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) : 0;
+ dayOpe = Math.round(Math.sqrt(accomplishmentRate * ape));
+ }
 
-    const dayDiv = document.createElement('div');
-    dayDiv.classList.add('heatmap-day');
+ const dayDiv = document.createElement('div');
+ dayDiv.classList.add('heatmap-day');
 
-    if (dayOpe > 0) {
-      const opacity = 0.25 + (dayOpe / 100) * 0.75;
-      dayDiv.style.backgroundColor = `rgba(16, 185, 129, ${opacity})`;
-      dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: ${dayOpe}% OPE`);
-    } else {
-      dayDiv.style.backgroundColor = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
-      dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: No practices logged`);
-    }
+ if (dayOpe > 0) {
+ const opacity = 0.25 + (dayOpe / 100) * 0.75;
+ dayDiv.style.backgroundColor = `rgba(16, 185, 129, ${opacity})`;
+ dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: ${dayOpe}% OPE`);
+ } else {
+ dayDiv.style.backgroundColor = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+ dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: No practices logged`);
+ }
 
-    container.appendChild(dayDiv);
-  });
+ container.appendChild(dayDiv);
+ });
 }
 
 function updateAnalytics() {
@@ -2861,11 +3078,13 @@ function updateAnalytics() {
  document.getElementById('statCompleted').innerText = totalPracticesDone;
  document.getElementById('statEfficiency').innerText = overallAvgEff + '%';
  document.getElementById('statDays').innerText = activeDays;
+ hideDomainChartTooltip();
  renderDomainBalanceChart();
  renderDomainAccomplishmentChart();
  renderRollingTrendChart();
  renderQualityDistributionChart();
  renderHeatmap();
+ renderPracticeLedger();
 }
 
 function updateSlicerUI() {
@@ -2908,10 +3127,10 @@ function applySlicer(slicerType) {
  }
 
  const formatIso = d => {
-   const year = d.getFullYear();
-   const month = String(d.getMonth() + 1).padStart(2, '0');
-   const day = String(d.getDate()).padStart(2, '0');
-   return `${year}-${month}-${day}`;
+ const year = d.getFullYear();
+ const month = String(d.getMonth() + 1).padStart(2, '0');
+ const day = String(d.getDate()).padStart(2, '0');
+ return `${year}-${month}-${day}`;
  };
 
  document.getElementById('startDate').value = formatIso(startDateObj);
@@ -2922,162 +3141,157 @@ function applySlicer(slicerType) {
  updateSlicerUI();
 
  if (currentChartContext.type) {
-   if (currentChartContext.practiceIndex !== null) {
-     openPracticeLineChart(currentChartContext.type, currentChartContext.senseIndex, currentChartContext.practiceIndex);
-   } else if (currentChartContext.senseIndex !== null) {
-     openSubAnalyticsChart(currentChartContext.type, currentChartContext.senseIndex);
-   } else {
-     openAnalyticsChart(currentChartContext.type);
-   }
+ if (currentChartContext.practiceIndex !== null) {
+ openPracticeLineChart(currentChartContext.type, currentChartContext.senseIndex, currentChartContext.practiceIndex);
+ } else if (currentChartContext.senseIndex !== null) {
+ openSubAnalyticsChart(currentChartContext.type, currentChartContext.senseIndex);
+ } else {
+ openAnalyticsChart(currentChartContext.type);
+ }
  }
 }
 
 function adjustChartWidth(itemCount, minWidthPerItem = 90) {
-  const scrollInner = document.getElementById('chartScrollInner');
-  const parentWidth = document.getElementById('chartScrollBox').clientWidth;
-  const calculatedWidth = itemCount * minWidthPerItem;
+ const scrollInner = document.getElementById('chartScrollInner');
+ const parentWidth = document.getElementById('chartScrollBox').clientWidth;
+ const calculatedWidth = itemCount * minWidthPerItem;
 
-  if (calculatedWidth > parentWidth) {
-    scrollInner.style.width = calculatedWidth + 'px';
-  } else {
-    scrollInner.style.width = '100%';
-  }
+ if (calculatedWidth > parentWidth) {
+ scrollInner.style.width = calculatedWidth + 'px';
+ } else {
+ scrollInner.style.width = '100%';
+ }
 }
 
 function openAnalyticsChart(type) {
-  const categoryList = type === 'jnan' ? dataset.jnanendriyas : (type === 'karm' ? dataset.karmendriyas : (type === 'manas' ? dataset.manas : (type === 'arish' ? dataset.arishadvargas : dataset.identification)));
-  
-  if (!categoryList || categoryList.length === 0) {
-    alert('Practices for this section are coming soon!');
-    return;
-  }
+ const categoryList = type === 'jnan' ? dataset.jnanendriyas : (type === 'karm' ? dataset.karmendriyas : (type === 'manas' ? dataset.manas : (type === 'arish' ? dataset.arishadvargas : dataset.identification)));
+ 
+ if (!categoryList || categoryList.length === 0) {
+ alert('Practices for this section are coming soon!');
+ return;
+ }
 
-  pushModalHistoryState();
-  currentChartContext = { type: type, senseIndex: null, practiceIndex: null };
-  updateSlicerUI();
+ pushModalHistoryState();
+ currentChartContext = { type: type, senseIndex: null, practiceIndex: null };
+ updateSlicerUI();
 
-  const targetDates = getSelectedAnalyticsDates();
-  const chartTitle = type === 'jnan' ? 'Jnanendriyas — Overall Practice Efficiency' : (type === 'karm' ? 'Karmendriyas — Overall Practice Efficiency' : (type === 'manas' ? 'Manas — Overall Practice Efficiency' : (type === 'arish' ? 'Arishadvargas — Overall Practice Efficiency' : 'Identification — Overall Practice Efficiency')));
-  const xAxisTitle = type === 'jnan' ? 'Jnanendriyas': (type === 'karm' ? 'Karmendriyas' : (type === 'manas' ? 'Manas Domains' : (type === 'arish' ? 'Arishadvargas' : 'Identification')));
-  const chartColor = type === 'jnan' ? '#38bdf8' : (type === 'karm' ? '#f43f5e' : (type === 'manas' ? '#34d399' : (type === 'arish' ? '#a855f7' : '#f472b6')));
+ const targetDates = getSelectedAnalyticsDates();
+ const chartTitle = type === 'jnan' ? 'Jnanendriyas — Overall Practice Efficiency' : (type === 'karm' ? 'Karmendriyas — Overall Practice Efficiency' : (type === 'manas' ? 'Manas — Overall Practice Efficiency' : (type === 'arish' ? 'Arishadvargas — Overall Practice Efficiency' : 'Identification — Overall Practice Efficiency')));
+ const xAxisTitle = type === 'jnan' ? 'Jnanendriyas': (type === 'karm' ? 'Karmendriyas' : (type === 'manas' ? 'Manas Domains' : (type === 'arish' ? 'Arishadvargas' : 'Identification')));
+ const chartColor = type === 'jnan' ? '#38bdf8' : (type === 'karm' ? '#f43f5e' : (type === 'manas' ? '#34d399' : (type === 'arish' ? '#a855f7' : '#f472b6')));
 
-  const labels = [];
-  const opeData = [];
+ const labels = [];
+ const opeData = [];
 
-  categoryList.forEach(group => {
-    labels.push(group.sanskritLabel);
-    const totalPracticesInGroup = group.practices.length;
+ categoryList.forEach(group => {
+ labels.push(group.sanskritLabel);
+ const totalPracticesInGroup = group.practices.length;
 
-    let dailyOPEValues = [];
+ let dailyOPEValues = [];
 
-    targetDates.forEach(date => {
-      if (!logs[date]) return;
-      let completedCount = 0;
-      let totalGroupEfficiency = 0;
-      let groupEfficiencyEntriesCount = 0;
+ targetDates.forEach(date => {
+ if (!logs[date]) return;
+ let completedCount = 0;
+ let totalGroupEfficiency = 0;
+ let groupEfficiencyEntriesCount = 0;
 
-      group.practices.forEach(p => {
-        const item = logs[date][p.syncKey];
-        if (item && item.done) {
-          completedCount++;
-          const effList = item.efficiencies || [];
-          if (effList.length > 0) {
-            const practiceAvg = effList.reduce((a, b) => a + b, 0) / effList.length;
-            totalGroupEfficiency += practiceAvg;
-            groupEfficiencyEntriesCount++;
-          }
-        }
-      });
+ group.practices.forEach(p => {
+ const item = logs[date][p.syncKey];
+ if (item && item.done) {
+ completedCount++;
+ const effList = item.efficiencies || [];
+ if (effList.length > 0) {
+ const practiceAvg = effList.reduce((a, b) => a + b, 0) / effList.length;
+ totalGroupEfficiency += practiceAvg;
+ groupEfficiencyEntriesCount++;
+ }
+ }
+ });
 
-      if (completedCount > 0 || groupEfficiencyEntriesCount > 0) {
-        // Accomplishment rate normalized to percentage (0 - 100)
-        const accomplishmentRate = totalPracticesInGroup > 0 ? (completedCount / totalPracticesInGroup) * 100 : 0;
-        // Group Average Practice Efficiency (APE)
-        const ape = groupEfficiencyEntriesCount > 0 ? (totalGroupEfficiency / groupEfficiencyEntriesCount) : 0;
-        
-        // Daily OPE = Geometric Mean of (Accomplishment Rate, APE)
-        const dailyOpe = Math.sqrt(accomplishmentRate * ape);
-        dailyOPEValues.push(dailyOpe);
-      }
-    });
+ if (completedCount > 0 || groupEfficiencyEntriesCount > 0) {
+ const accomplishmentRate = totalPracticesInGroup > 0 ? (completedCount / totalPracticesInGroup) * 100 : 0;
+ const ape = groupEfficiencyEntriesCount > 0 ? (totalGroupEfficiency / groupEfficiencyEntriesCount) : 0;
+ const dailyOpe = Math.sqrt(accomplishmentRate * ape);
+ dailyOPEValues.push(dailyOpe);
+ }
+ });
 
-    // Multi-day average: simple average of active daily OPE values
-    const avgOPE = dailyOPEValues.length > 0 ? (dailyOPEValues.reduce((a, b) => a + b, 0) / dailyOPEValues.length) : 0;
-    opeData.push(Math.round(avgOPE * 100) / 100);
-  });
+ const avgOPE = dailyOPEValues.length > 0 ? (dailyOPEValues.reduce((a, b) => a + b, 0) / dailyOPEValues.length) : 0;
+ opeData.push(Math.round(avgOPE * 100) / 100);
+ });
 
-  adjustChartWidth(labels.length, 120);
+ adjustChartWidth(labels.length, 120);
 
-  document.getElementById('chartModalTitle').innerText = chartTitle;
-  document.getElementById('chartModalTitle').style.color = chartColor;
-  
-  document.getElementById('chartDetailsContent').innerHTML = `
-    <li><strong>X-Axis (Senses/Domains):</strong> Lists individual groups using Sanskrit English titles. Click any bar to open its detailed practices chart!</li>
-    <li><strong>Daily OPE Formula:</strong> Geometric Mean $\\sqrt{\\text{Accomplishment Rate (\\%)} \\times \\text{APE (\\%)}}$.</li>
-    <li><strong>Accomplishment Rate:</strong> Completed practices count divided by total practices in group (expressed as a percentage).</li>
-    <li><strong>Multi-day OPE:</strong> Simple arithmetic average across all active days in the selected range.</li>
-  `;
+ document.getElementById('chartModalTitle').innerText = chartTitle;
+ document.getElementById('chartModalTitle').style.color = chartColor;
+ 
+ document.getElementById('chartDetailsContent').innerHTML = `
+ <li><strong>X-Axis (Senses/Domains):</strong> Lists individual groups using Sanskrit English titles. Click any bar to open its detailed practices chart!</li>
+ <li><strong>Daily OPE Formula:</strong> Geometric Mean $\\sqrt{\\text{Accomplishment Rate (\\%)} \\times \\text{APE (\\%)}}$.</li>
+ <li><strong>Accomplishment Rate:</strong> Completed practices count divided by total practices in group (expressed as a percentage).</li>
+ <li><strong>Multi-day OPE:</strong> Simple arithmetic average across all active days in the selected range.</li>
+ `;
 
-  document.getElementById('chartModalOverlay').classList.add('active');
+ document.getElementById('chartModalOverlay').classList.add('active');
 
-  const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
-  const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+ const textTheme = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+ const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
 
-  const ctx = document.getElementById('modalOpeChart').getContext('2d');
+ const ctx = document.getElementById('modalOpeChart').getContext('2d');
 
-  if (activeChartInstance) {
-    activeChartInstance.destroy();
-  }
+ if (activeChartInstance) {
+ activeChartInstance.destroy();
+ }
 
-  setTimeout(() => {
-    activeChartInstance = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Group-wise Overall Practice Efficiency (G-OPE) %',
-          data: opeData,
-          backgroundColor: chartColor,
-          borderRadius: 6,
-          maxBarThickness: 50
-        }]
-      },
-      options: {
-        animation: {
-          duration: 1200,
-          easing: 'easeOutQuart'
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        resizeDelay: 200,
-        onClick: (evt, activeElements) => {
-          if (activeElements.length > 0) {
-            const index = activeElements[0].index;
-            openSubAnalyticsChart(type, index);
-          }
-        },
-        scales: {
-          x: {
-            title: { display: true, text: xAxisTitle, color: textTheme, font: { weight: 'bold', size: 12 } },
-            ticks: { color: textTheme, font: { size: 11, weight: '600' } },
-            grid: { color: borderTheme }
-          },
-          y: {
-            beginAtZero: true,
-            max: 100,
-            title: { display: true, text: 'G-OPE %', color: textTheme, font: { weight: 'bold', size: 12 } },
-            ticks: { color: textTheme, font: { size: 10 } },
-            grid: { color: borderTheme }
-          }
-        },
-        plugins: {
-          legend: {
-            labels: { color: textTheme, font: { size: 12 } }
-          }
-        }
-      }
-    });
-  }, 150);
+ setTimeout(() => {
+ activeChartInstance = new Chart(ctx, {
+ type: 'bar',
+ data: {
+ labels: labels,
+ datasets: [{
+ label: 'Group-wise Overall Practice Efficiency (G-OPE) %',
+ data: opeData,
+ backgroundColor: chartColor,
+ borderRadius: 6,
+ maxBarThickness: 50
+ }]
+ },
+ options: {
+ animation: {
+ duration: 1200,
+ easing: 'easeOutQuart'
+ },
+ responsive: true,
+ maintainAspectRatio: false,
+ resizeDelay: 200,
+ onClick: (evt, activeElements) => {
+ if (activeElements.length > 0) {
+ const index = activeElements[0].index;
+ openSubAnalyticsChart(type, index);
+ }
+ },
+ scales: {
+ x: {
+ title: { display: true, text: xAxisTitle, color: textTheme, font: { weight: 'bold', size: 12 } },
+ ticks: { color: textTheme, font: { size: 11, weight: '600' } },
+ grid: { color: borderTheme }
+ },
+ y: {
+ beginAtZero: true,
+ max: 100,
+ title: { display: true, text: 'G-OPE %', color: textTheme, font: { weight: 'bold', size: 12 } },
+ ticks: { color: textTheme, font: { size: 10 } },
+ grid: { color: borderTheme }
+ }
+ },
+ plugins: {
+ legend: {
+ labels: { color: textTheme, font: { size: 12 } }
+ }
+ }
+ }
+ });
+ }, 150);
 }
 
 function openSubAnalyticsChart(type, senseIndex) {
@@ -3089,7 +3303,7 @@ function openSubAnalyticsChart(type, senseIndex) {
  const categoryList = type === 'jnan' ? dataset.jnanendriyas : (type === 'karm' ? dataset.karmendriyas : (type === 'manas' ? dataset.manas : (type === 'arish' ? dataset.arishadvargas : dataset.identification)));
  const senseGroup = categoryList[senseIndex];
  const chartColor = type === 'jnan' ? '#38bdf8' : (type === 'karm' ? '#f43f5e' : (type === 'manas' ? '#34d399' : (type === 'arish' ? '#a855f7' : '#f472b6'))); 
- 
+
  const chartTitle = `${senseGroup.name} — Practice Efficiency`;
  const labels = [];
  const apeData = [];
@@ -3156,18 +3370,18 @@ function openSubAnalyticsChart(type, senseIndex) {
  }]
  },
  options: {
-  animation: {
-    duration: 1200,
-    easing: 'easeOutQuart'
-  },
-  responsive: true,
-  maintainAspectRatio: false,
-  resizeDelay: 200,
+ animation: {
+ duration: 1200,
+ easing: 'easeOutQuart'
+ },
+ responsive: true,
+ maintainAspectRatio: false,
+ resizeDelay: 200,
  onClick: (evt, activeElements) => {
-   if (activeElements.length > 0) {
-     const pIndex = activeElements[0].index;
-     openPracticeLineChart(type, senseIndex, pIndex);
-   }
+ if (activeElements.length > 0) {
+ const pIndex = activeElements[0].index;
+ openPracticeLineChart(type, senseIndex, pIndex);
+ }
  },
  scales: {
  x: {
@@ -3210,39 +3424,39 @@ function openPracticeLineChart(type, senseIndex, practiceIndex) {
  const mode = document.getElementById('analyticsMode').value;
 
  if (mode === 'current') {
-   const singleVal = document.getElementById('analyticsSingleDate').value || currentDate;
-   datesInOrder = [singleVal];
+ const singleVal = document.getElementById('analyticsSingleDate').value || currentDate;
+ datesInOrder = [singleVal];
  } else if (mode === 'range') {
-   const sStr = document.getElementById('startDate').value;
-   const eStr = document.getElementById('endDate').value;
-   
-   if (sStr && eStr) {
-     const [sy, sm, sd] = sStr.split('-').map(Number);
-     const [ey, em, ed] = eStr.split('-').map(Number);
-     let d = new Date(sy, sm - 1, sd);
-     const e = new Date(ey, em - 1, ed);
+ const sStr = document.getElementById('startDate').value;
+ const eStr = document.getElementById('endDate').value;
+ 
+ if (sStr && eStr) {
+ const [sy, sm, sd] = sStr.split('-').map(Number);
+ const [ey, em, ed] = eStr.split('-').map(Number);
+ let d = new Date(sy, sm - 1, sd);
+ const e = new Date(ey, em - 1, ed);
 
-     while (d <= e) {
-       const yr = d.getFullYear();
-       const mo = String(d.getMonth() + 1).padStart(2, '0');
-       const dy = String(d.getDate()).padStart(2, '0');
-       datesInOrder.push(`${yr}-${mo}-${dy}`);
-       d.setDate(d.getDate() + 1);
-     }
-   }
+ while (d <= e) {
+ const yr = d.getFullYear();
+ const mo = String(d.getMonth() + 1).padStart(2, '0');
+ const dy = String(d.getDate()).padStart(2, '0');
+ datesInOrder.push(`${yr}-${mo}-${dy}`);
+ d.setDate(d.getDate() + 1);
+ }
+ }
  } else if (mode === 'all') {
-   datesInOrder = Object.keys(logs).sort();
-   if (datesInOrder.length === 0) datesInOrder = [currentDate];
+ datesInOrder = Object.keys(logs).sort();
+ if (datesInOrder.length === 0) datesInOrder = [currentDate];
  }
 
  const timeLabels = datesInOrder.map(d => formatDateDDMMYY(d));
  const practiceApeSeries = datesInOrder.map(date => {
-   if (!logs[date]) return 0;
-   const item = logs[date][practice.syncKey];
-   if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
-     return Math.round(item.efficiencies.reduce((a, b) => a + b, 0) / item.efficiencies.length);
-   }
-   return 0;
+ if (!logs[date]) return 0;
+ const item = logs[date][practice.syncKey];
+ if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
+ return Math.round(item.efficiencies.reduce((a, b) => a + b, 0) / item.efficiencies.length);
+ }
+ return 0;
  });
 
  adjustChartWidth(timeLabels.length, 65);
@@ -3285,13 +3499,13 @@ function openPracticeLineChart(type, senseIndex, practiceIndex) {
  }]
  },
  options: {
-  animation: {
-    duration: 1200,
-    easing: 'easeOutQuart'
-  },
-  responsive: true,
-  maintainAspectRatio: false,
-  resizeDelay: 200,
+ animation: {
+ duration: 1200,
+ easing: 'easeOutQuart'
+ },
+ responsive: true,
+ maintainAspectRatio: false,
+ resizeDelay: 200,
  scales: {
  x: {
  title: { display: true, text: 'Time Period', color: textTheme, font: { weight: 'bold', size: 12 } },
@@ -3317,73 +3531,203 @@ function openPracticeLineChart(type, senseIndex, practiceIndex) {
 }
 
 function handleChartClose() {
-  if (currentChartContext.practiceIndex !== null) {
-    openSubAnalyticsChart(currentChartContext.type, currentChartContext.senseIndex);
-  } else if (currentChartContext.senseIndex !== null) {
-    openAnalyticsChart(currentChartContext.type);
-  } else {
-    document.getElementById('chartModalOverlay').classList.remove('active');
-  }
+ if (currentChartContext.practiceIndex !== null) {
+ openSubAnalyticsChart(currentChartContext.type, currentChartContext.senseIndex);
+ } else if (currentChartContext.senseIndex !== null) {
+ openAnalyticsChart(currentChartContext.type);
+ } else {
+ document.getElementById('chartModalOverlay').classList.remove('active');
+ }
 }
 
 function closeChartModal(event) {
  if (!event || event.target === document.getElementById('chartModalOverlay')) {
-   document.getElementById('chartModalOverlay').classList.remove('active');
+ document.getElementById('chartModalOverlay').classList.remove('active');
  }
 }
 
-// ==========================================
-// SCROLL ANIMATION OBSERVER FOR ALL CHARTS
-// ==========================================
 const chartObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    // Check if the container has come into the viewport
-    if (entry.isIntersecting) {
-      const canvas = entry.target.querySelector('canvas');
-      
-      if (canvas && canvas.id) {
-        let instance = null;
-        
-        // Map the canvas ID to your global chart variables
-        switch (canvas.id) {
-          case 'domainBalanceChart': 
-            instance = domainBalanceChartInstance; 
-            break;
-          case 'domainAccomplishmentChart': 
-            instance = domainAccomplishmentChartInstance; 
-            break;
-          case 'trendChart': 
-            instance = trendChartInstance; 
-            break;
-          case 'qualityDistributionChart': 
-            instance = distributionChartInstance; 
-            break;
-          // ADDED: Deep-Dive Modal Chart
-          case 'modalOpeChart':
-            instance = activeChartInstance;
-            break;
-        }
+ entries.forEach(entry => {
+ if (entry.isIntersecting) {
+ const canvas = entry.target.querySelector('canvas');
+ 
+ if (canvas && canvas.id) {
+ let instance = null;
+ 
+ switch (canvas.id) {
+ case 'domainBalanceChart': 
+ instance = domainBalanceChartInstance; 
+ break;
+ case 'domainAccomplishmentChart': 
+ instance = domainAccomplishmentChartInstance; 
+ break;
+ case 'trendChart': 
+ instance = trendChartInstance; 
+ break;
+ case 'qualityDistributionChart': 
+ instance = distributionChartInstance; 
+ break;
+ case 'modalOpeChart':
+ instance = activeChartInstance;
+ break;
+ }
 
-        // Reset and replay the animation
-        if (instance) {
-          instance.reset();
-          instance.update();
-        }
-      }
-    }
-  });
+ if (instance) {
+ instance.reset();
+ instance.update();
+ }
+ }
+ }
+ });
 }, { 
-  threshold: 0.2 // Triggers when 20% of the container is visible
+ threshold: 0.2
 });
 
-// Start observing once the window loads
 window.addEventListener('DOMContentLoaded', () => {
-  // Select both the standard chart cards AND the modal's canvas wrapper
-  document.querySelectorAll('.chart-card, .canvas-wrapper').forEach(container => {
-    chartObserver.observe(container);
-  });
+ document.querySelectorAll('.chart-card, .canvas-wrapper').forEach(container => {
+ chartObserver.observe(container);
+ });
 });
-</script>
 
+let ledgerSortCol = 'attendance';
+let ledgerSortDesc = true;
+
+function handleLedgerSort(col) {
+ if (ledgerSortCol === col) {
+ ledgerSortDesc = !ledgerSortDesc;
+ } else {
+ ledgerSortCol = col;
+ ledgerSortDesc = true; 
+ }
+ 
+ document.getElementById('sort-attendance').innerText = ledgerSortCol === 'attendance' ? (ledgerSortDesc ? '▼' : '▲') : '↕';
+ document.getElementById('sort-attendance').className = ledgerSortCol === 'attendance' ? 'sort-btn active' : 'sort-btn';
+ 
+ document.getElementById('sort-avgEffic').innerText = ledgerSortCol === 'avgEffic' ? (ledgerSortDesc ? '▼' : '▲') : '↕';
+ document.getElementById('sort-avgEffic').className = ledgerSortCol === 'avgEffic' ? 'sort-btn active' : 'sort-btn';
+ 
+ renderPracticeLedger();
+}
+
+function renderPracticeLedger() {
+ const tbody = document.getElementById('practiceLedgerBody');
+ if (!tbody) return;
+
+ tbody.innerHTML = '';
+ const targetDates = getSelectedAnalyticsDates();
+
+ const domainDefs = [
+ { key: 'jnanendriyas', typeKey: 'jnan', domainName: 'Jnanendriyas', color: '#38bdf8' },
+ { key: 'karmendriyas', typeKey: 'karm', domainName: 'Karmendriyas', color: '#f43f5e' },
+ { key: 'manas', typeKey: 'manas', domainName: 'Manas', color: '#34d399' },
+ { key: 'arishadvargas', typeKey: 'arish', domainName: 'Arishadvargas', color: '#a855f7' },
+ { key: 'identification', typeKey: 'identification', domainName: 'Identification', color: '#f472b6' }
+ ];
+
+ let practiceEntries = [];
+
+ domainDefs.forEach(({ key, typeKey, domainName, color }) => {
+ if (ledgerDomainFilter !== 'All' && ledgerDomainFilter.toLowerCase() !== domainName.toLowerCase()) {
+   return;
+ }
+
+ const groupList = dataset[key] || [];
+ groupList.forEach((group, gIdx) => {
+ group.practices.forEach((p, pIdx) => {
+ let attendanceCount = 0;
+ let efficiencySum = 0;
+ let effCount = 0;
+
+ targetDates.forEach(date => {
+ if (logs[date] && logs[date][p.syncKey]) {
+ const item = logs[date][p.syncKey];
+ if (item.done) {
+ attendanceCount++;
+ const effs = item.efficiencies || [];
+ if (effs.length > 0) {
+ efficiencySum += effs.reduce((a, b) => a + b, 0) / effs.length;
+ effCount++;
+ }
+ }
+ }
+ });
+
+ const avgEfficiency = effCount > 0 ? Math.round(efficiencySum / effCount) : 0;
+
+ practiceEntries.push({
+ name: p.name,
+ domain: domainName,
+ typeKey: typeKey,
+ groupIndex: gIdx,
+ practiceIndex: pIdx,
+ group: group.name,
+ color: color,
+ attendance: attendanceCount,
+ avgEffic: avgEfficiency
+ });
+ });
+ });
+ });
+
+ practiceEntries.sort((a, b) => {
+ let valA = a[ledgerSortCol];
+ let valB = b[ledgerSortCol];
+ if (valA === valB) {
+ return ledgerSortDesc ? b.attendance - a.attendance : a.attendance - b.attendance;
+ }
+ return ledgerSortDesc ? valB - valA : valA - valB;
+ });
+
+ if (practiceEntries.length === 0) {
+ tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 18px; color: var(--text-sub);">No practices found for domain "${ledgerDomainFilter}".</td></tr>`;
+ return;
+ }
+
+ practiceEntries.forEach((item, index) => {
+ const tr = document.createElement('tr');
+ tr.style.borderBottom = '1px solid var(--border)';
+ tr.style.cursor = 'pointer';
+ tr.style.transition = 'background 0.2s ease';
+
+ tr.onmouseenter = () => tr.style.backgroundColor = 'var(--card-sub-bg)';
+ tr.onmouseleave = () => tr.style.backgroundColor = 'transparent';
+
+ // Click anywhere on the row to toggle the tooltip
+ tr.onclick = (e) => {
+ e.stopPropagation();
+ const tooltip = document.getElementById(`ledger-tt-${index}`);
+ const isCurrentlyActive = tooltip ? tooltip.classList.contains('active') : false;
+ 
+ // Close all open tooltips
+ document.querySelectorAll('.ledger-tooltip-content.active').forEach(el => el.classList.remove('active'));
+ 
+ // Toggle clicked tooltip
+ if (tooltip && !isCurrentlyActive) {
+ tooltip.classList.add('active');
+ }
+ };
+
+ tr.innerHTML = `
+ <td style="padding: 10px 14px; font-weight: 500; position: relative;">
+ <span class="ledger-tooltip-wrapper">
+ <span class="practice-domain-indicator" style="background-color: ${item.color};"></span>
+ <span style="font-weight: 600;">${item.name}</span>
+ <div id="ledger-tt-${index}" class="ledger-tooltip-content" onclick="event.stopPropagation()">
+ <span>${item.domain} | ${item.group}</span>
+ <button class="tooltip-action-chip" onclick="openPracticeLineChart('${item.typeKey}', ${item.groupIndex}, ${item.practiceIndex})">➔ View Trend</button>
+ </div>
+ </span>
+ </td>
+ <td style="padding: 10px 14px; text-align: center; color: #000000; font-weight: 600;">
+ ${item.attendance} ${item.attendance === 1 ? 'day' : 'days'}
+ </td>
+ <td style="padding: 10px 14px; text-align: right; font-weight: bold; color: ${item.avgEffic >= 75 ? 'var(--success)' : item.avgEffic >= 40 ? 'var(--accent-gold)' : 'var(--text-sub)'};">
+ ${item.attendance > 0 ? item.avgEffic + '%' : '—'}
+ </td>
+ `;
+ tbody.appendChild(tr);
+ });
+}
+</script>
 </body>
 </html>
