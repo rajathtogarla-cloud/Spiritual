@@ -1397,14 +1397,14 @@
 </div>
 
 <!-- Comprehensive Practice Ledger -->
-<div class="chart-card" id="comprehensivePracticeLedgerCard" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
- <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 8px;">
-   <h2 style="font-size: 1.1rem; color: var(--accent-gold); margin: 0;">📋 Comprehensive Practice Ledger</h2>
-   <button id="resetLedgerFilterBtn" onclick="filterLedgerByDomain('All')" style="display: none; background: var(--nav-btn-bg); color: var(--text-main); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 600;">
+<div class="chart-card" id="comprehensivePracticeLedgerCard" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative;">
+ <div style="text-align: center; margin-bottom: 4px;">
+   <h2 style="font-size: 1.1rem; color: var(--accent-gold); margin: 0; display: inline-block;">📋 Comprehensive Practice Ledger</h2>
+   <button id="resetLedgerFilterBtn" onclick="filterLedgerByDomain('All')" style="display: none; position: absolute; right: 20px; top: 20px; background: var(--nav-btn-bg); color: var(--text-main); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 600;">
      ✕ Clear Domain Filter
    </button>
  </div>
- <p id="ledgerSubTitle" style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 15px;">
+ <p id="ledgerSubTitle" style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
  Hover or click over any practice name to view its details and trend line chart
  </p>
  <div class="ledger-scroll-frame">
