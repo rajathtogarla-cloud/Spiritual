@@ -481,8 +481,8 @@
  .practice-item:last-child { border-bottom: none; }
 
  .practice-item.sync-highlight {
- background: var(--link-glow);
- box-shadow: inset 0 0 10px var(--accent-jnan);
+ background: var(--item-glow-color, var(--link-glow)) !important;
+ box-shadow: inset 0 0 12px var(--item-domain-color, var(--accent-jnan)) !important;
  }
  
  .practice-main {
@@ -533,9 +533,9 @@
  transition: all 0.2s ease;
  }
  .link-badge.is-linked {
- border-color: var(--accent-jnan);
- color: var(--accent-jnan);
- background: rgba(56, 189, 248, 0.12);
+ border-color: var(--item-domain-color, var(--accent-jnan));
+ color: var(--item-domain-color, var(--accent-jnan));
+ background: var(--item-glow-color, rgba(56, 189, 248, 0.12));
  font-weight: bold;
  }
  .link-badge:hover {
@@ -858,8 +858,7 @@
  border: none;
  font-size: 1.8rem;
  color: var(--text-main);
- cursor: pointer;
- line-height: 1;
+ cursor: line-height: 1;
  z-index: 2;
  }
 
@@ -2108,6 +2107,19 @@ let ledgerDomainFilter = 'All';
 let undoStack = [];
 let redoStack = [];
 
+const DOMAIN_COLOR_MAP = {
+  'jnanendriyas': { varName: 'var(--accent-jnan)', hex: '#38bdf8', glow: 'rgba(56, 189, 248, 0.25)' },
+  'karmendriyas': { varName: 'var(--accent-karm)', hex: '#f43f5e', glow: 'rgba(244, 63, 94, 0.25)' },
+  'manas': { varName: 'var(--accent-manas)', hex: '#34d399', glow: 'rgba(52, 211, 153, 0.25)' },
+  'arishadvargas': { varName: 'var(--accent-arish)', hex: '#a855f7', glow: 'rgba(168, 85, 247, 0.25)' },
+  'identification': { varName: 'var(--accent-ident)', hex: '#f472b6', glow: 'rgba(244, 114, 182, 0.25)' }
+};
+
+function getDomainColorInfo(domainKey) {
+  const normKey = (domainKey || '').toLowerCase();
+  return DOMAIN_COLOR_MAP[normKey] || { varName: 'var(--accent-gold)', hex: '#fbbf24', glow: 'rgba(251, 191, 36, 0.25)' };
+}
+
 function toggleGroupCollapse(groupKey) {
   collapsedGroups[groupKey] = !collapsedGroups[groupKey];
   renderUI();
@@ -2117,8 +2129,7 @@ function toggleGroupCollapse(groupKey) {
 function pushState() {
   undoStack.push({
     logs: JSON.parse(JSON.stringify(logs)),
-    dataset: JSON.parse(JSON.stringify(dataset)),
-    linkGraph: JSON.parse(JSON.stringify(linkGraph))
+    dataset: JSON.parse(JSON.stringify(dataset))
   });
   if (undoStack.length > 50) undoStack.shift();
   redoStack = [];
@@ -2129,13 +2140,11 @@ function undo() {
   if (undoStack.length === 0) return;
   redoStack.push({
     logs: JSON.parse(JSON.stringify(logs)),
-    dataset: JSON.parse(JSON.stringify(dataset)),
-    linkGraph: JSON.parse(JSON.stringify(linkGraph))
+    dataset: JSON.parse(JSON.stringify(dataset))
   });
   const prevState = undoStack.pop();
   logs = prevState.logs;
   dataset = prevState.dataset;
-  linkGraph = prevState.linkGraph;
   
   saveLogsToLocal();
   if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
@@ -2150,13 +2159,11 @@ function redo() {
   if (redoStack.length === 0) return;
   undoStack.push({
     logs: JSON.parse(JSON.stringify(logs)),
-    dataset: JSON.parse(JSON.stringify(dataset)),
-    linkGraph: JSON.parse(JSON.stringify(linkGraph))
+    dataset: JSON.parse(JSON.stringify(dataset))
   });
   const nextState = redoStack.pop();
   logs = nextState.logs;
   dataset = nextState.dataset;
-  linkGraph = nextState.linkGraph;
   
   saveLogsToLocal();
   if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
@@ -2392,19 +2399,20 @@ function hideDomainChartTooltip() {
 function getAllPracticesFlat() {
  const list = [];
  const domains = [
- { key: 'jnanendriyas', domainName: 'Jnanendriyas' },
- { key: 'karmendriyas', domainName: 'Karmendriyas' },
- { key: 'manas', domainName: 'Manas' },
- { key: 'arishadvargas', domainName: 'Arishadvargas' },
- { key: 'identification', domainName: 'Identification' }
+ { key: 'jnanendriyas', domainName: 'Jnanendriyas', domainKey: 'jnanendriyas' },
+ { key: 'karmendriyas', domainName: 'Karmendriyas', domainKey: 'karmendriyas' },
+ { key: 'manas', domainName: 'Manas', domainKey: 'manas' },
+ { key: 'arishadvargas', domainName: 'Arishadvargas', domainKey: 'arishadvargas' },
+ { key: 'identification', domainName: 'Identification', domainKey: 'identification' }
  ];
 
- domains.forEach(({ key, domainName }) => {
+ domains.forEach(({ key, domainName, domainKey }) => {
  (dataset[key] || []).forEach(group => {
  group.practices.forEach(p => {
  list.push({
  ...p,
  domain: domainName,
+ domainKey: domainKey,
  groupName: group.name
  });
  });
@@ -2453,24 +2461,67 @@ function syncRetrospectiveDataForGroup(groupKeys) {
 }
 
 function toggleLinkPair(sourceKey, targetKey) {
- pushState();
- let groupA = getLinkedGroup(sourceKey);
- let groupB = getLinkedGroup(targetKey);
+  // pushState(); <-- Removed to keep linking outside undo/redo history
+  let groupA = getLinkedGroup(sourceKey);
+  let groupB = getLinkedGroup(targetKey);
 
- if (groupA.includes(targetKey)) {
- const newGroup = groupA.filter(k => k !== targetKey);
- newGroup.forEach(k => linkGraph[k] = [...newGroup]);
- linkGraph[targetKey] = [targetKey];
- } else {
- const merged = Array.from(new Set([...groupA, ...groupB]));
- merged.forEach(k => linkGraph[k] = [...merged]);
- syncRetrospectiveDataForGroup(merged);
- }
+  if (groupA.includes(targetKey)) {
+    const newGroup = groupA.filter(k => k !== targetKey);
+    newGroup.forEach(k => linkGraph[k] = [...newGroup]);
+    linkGraph[targetKey] = [targetKey];
+  } else {
+    const merged = Array.from(new Set([...groupA, ...groupB]));
+    merged.forEach(k => linkGraph[k] = [...merged]);
+    syncRetrospectiveDataForGroup(merged);
+  }
 
- saveLogsToLocal();
- if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
- renderUI();
- if (searchQuery) handleSearch(searchQuery);
+  saveLogsToLocal();
+  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+  renderUI();
+  renderLinkModalList(sourceKey);
+  if (searchQuery) handleSearch(searchQuery);
+}
+
+function renderLinkModalList(syncKey) {
+ const allFlat = getAllPracticesFlat();
+ const list = document.getElementById("modalTargetList");
+ if (!list) return;
+ list.innerHTML = "";
+
+ const activeLinks = getLinkedGroup(syncKey);
+ const otherPractices = allFlat.filter(p => p.syncKey !== syncKey);
+
+ otherPractices.sort((a, b) => {
+   const aLinked = activeLinks.includes(a.syncKey);
+   const bLinked = activeLinks.includes(b.syncKey);
+   if (aLinked && !bLinked) return -1;
+   if (!aLinked && bLinked) return 1;
+   return a.name.localeCompare(b.name);
+ });
+
+ otherPractices.forEach(p => {
+   const isLinked = activeLinks.includes(p.syncKey);
+   const dColor = getDomainColorInfo(p.domainKey);
+
+   const item = document.createElement("label");
+   item.className = "target-item";
+   if (isLinked) {
+     item.style.borderColor = dColor.varName;
+     item.style.background = dColor.glow;
+   }
+
+   item.innerHTML = `
+     <input type="checkbox" ${isLinked ? "checked" : ""} onchange="toggleLinkPair('${syncKey}', '${p.syncKey}')">
+     <div style="display: flex; flex-direction: column; flex: 1;">
+       <div style="display: flex; align-items: center; justify-content: space-between;">
+         <span style="font-weight: 600; color: ${isLinked ? dColor.varName : 'inherit'};">${p.name}</span>
+         ${isLinked ? `<span style="font-size: 0.72rem; font-weight: bold; color: ${dColor.varName}; background: var(--card-sub-bg); padding: 1px 6px; border-radius: 4px; border: 1px solid ${dColor.varName};">Linked</span>` : ''}
+       </div>
+       <span style="font-size: 0.75rem; color: var(--text-sub);">${p.domain} • ${p.groupName}</span>
+     </div>
+   `;
+   list.appendChild(item);
+ });
 }
 
 function openLinkModal(syncKey) {
@@ -2480,28 +2531,7 @@ function openLinkModal(syncKey) {
 
  pushModalHistoryState();
  document.getElementById("modalTargetTitle").innerText = `🔗 Connect: ${current.name}`;
-
- const list = document.getElementById("modalTargetList");
- list.innerHTML = "";
-
- const activeLinks = getLinkedGroup(syncKey);
-
- allFlat.forEach(p => {
- if (p.syncKey === syncKey) return;
- const isLinked = activeLinks.includes(p.syncKey);
-
- const item = document.createElement("label");
- item.className = "target-item";
- item.innerHTML = `
- <input type="checkbox" ${isLinked ? "checked" : ""} onchange="toggleLinkPair('${syncKey}', '${p.syncKey}')">
- <div style="display: flex; flex-direction: column;">
- <span style="font-weight: 600;">${p.name}</span>
- <span style="font-size: 0.75rem; color: var(--text-sub);">${p.domain} • ${p.groupName}</span>
- </div>
- `;
- list.appendChild(item);
- });
-
+ renderLinkModalList(syncKey);
  document.getElementById("linkModalOverlay").classList.add("active");
 }
 
@@ -2588,6 +2618,8 @@ function handleSearch(query) {
  const isCollapsed = !!collapsedGroups[groupKey];
  card.className = `indriya-card ${isCollapsed ? 'collapsed' : ''}`;
 
+ const domainColorInfo = getDomainColorInfo(group.domainKey);
+
  let html = `
  <div class="indriya-header" onclick="toggleGroupCollapse('${groupKey}')">
    <div class="indriya-header-title">
@@ -2609,7 +2641,7 @@ function handleSearch(query) {
  const isLinked = connCount > 0;
 
  html += `
- <li class="practice-item" data-sync-key="${p.syncKey}">
+ <li class="practice-item" data-sync-key="${p.syncKey}" style="--item-domain-color: ${domainColorInfo.varName}; --item-glow-color: ${domainColorInfo.glow};">
  <div class="practice-main">
  <label class="checkbox-label">
  <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
@@ -2992,6 +3024,8 @@ function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilte
  if (!targetContainer) return;
  targetContainer.innerHTML = '';
 
+ const domainColorInfo = getDomainColorInfo(domainKey);
+
  categoryList.forEach(group => {
  if (currentFilter !== 'All' && group.name !== currentFilter) return;
 
@@ -3016,7 +3050,7 @@ function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilte
  const isLinked = connCount > 0;
 
  practicesHtml += `
- <li class="practice-item" data-sync-key="${p.syncKey}">
+ <li class="practice-item" data-sync-key="${p.syncKey}" style="--item-domain-color: ${domainColorInfo.varName}; --item-glow-color: ${domainColorInfo.glow};">
  <div class="practice-main">
  <label class="checkbox-label">
  <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
