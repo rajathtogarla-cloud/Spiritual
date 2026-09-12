@@ -1821,70 +1821,91 @@ const dataset = {
  ],
 
  arishadvargas: [
- {
- name: "Kama (Desire/Lust) 🌪️",
- sanskritLabel: "Kama",
- practices: [
- { id: "a1_1", syncKey: "arish_vairagya", type: "ext", name: "Vairagya", desc: "Cultivating dispassion and non-attachment." },
- { id: "a1_2", syncKey: "arish_santosha", type: "ext", name: "Santosha", desc: "Cultivating contentment with what is present." },
- { id: "a1_3", syncKey: "arish_dama", type: "ext", name: "Dama", desc: "Active sense-restraint." },
- { id: "a1_4", syncKey: "arish_brahmacharya", type: "ext", name: "Brahmacharya", desc: "Wise conservation and direction of sexual energy." },
- { id: "a1_5", syncKey: "arish_tapas", type: "ext", name: "Tapas", desc: "Disciplined endurance." }
- ]
- },
- {
- name: "Krodha (Anger) 🔥",
- sanskritLabel: "Krodha",
- practices: [
- { id: "a2_1", syncKey: "arish_kshama", type: "ext", name: "Kshama", desc: "Cultivating forgiving qualities and letting go of resentment." },
- { id: "a2_2", syncKey: "arish_titiksha", type: "ext", name: "Titiksha", desc: "Practicing forbearance and enduring provocations without agitation." },
- { id: "a2_3", syncKey: "arish_shanti", type: "ext", name: "Shanti", desc: "Cultivating inner peace." },
- { id: "a2_4", syncKey: "arish_karuna", type: "ext", name: "Karuna", desc: "Extending compassion to oneself and others." },
- { id: "a2_5", syncKey: "arish_upeksha", type: "ext", name: "Upeksha", desc: "Maintaining equanimity." },
- { id: "a2_6", syncKey: "arish_ahimsa", type: "ext", name: "Ahimsa", desc: "Strict adherence to non-harming." }
- ]
- },
- {
- name: "Lobha (Greed) 🪤",
- sanskritLabel: "Lobha",
- practices: [
- { id: "a3_1", syncKey: "arish_dana", type: "ext", name: "Dana", desc: "Practicing generosity." },
- { id: "a3_2", syncKey: "arish_aparigraha", type: "ext", name: "Aparigraha", desc: "Non-grasping and non-hoarding." },
- { id: "a3_3", syncKey: "arish_tyaga", type: "ext", name: "Tyaga", desc: "Renunciation of the unnecessary." }
- ]
- },
- {
- name: "Moha (Delusion) 🌫️",
- sanskritLabel: "Moha",
- practices: [
- { id: "a4_1", syncKey: "arish_viveka", type: "ext", name: "Viveka", desc: "Applying discrimination between real and unreal." },
- { id: "a4_2", syncKey: "arish_vichara", type: "ext", name: "Vichara", desc: "Self-inquiry and investigation." },
- { id: "a4_3", syncKey: "arish_shravana", type: "ext", name: "Shravana", desc: "Right hearing and learning." },
- { id: "a4_4", syncKey: "arish_manana", type: "ext", name: "Manana", desc: "Reflective examination of teachings." },
- { id: "a4_5", syncKey: "arish_smriti", type: "ext", name: "Smriti", desc: "Maintaining clear remembrance." }
- ]
- },
- {
- name: "Mada (Pride/Arrogance) 🦚",
- sanskritLabel: "Mada",
- practices: [
- { id: "a5_1", syncKey: "arish_vinaya", type: "ext", name: "Vinaya", desc: "Cultivating humility & modesty." },
- { id: "a5_2", syncKey: "arish_seva", type: "ext", name: "Seva", desc: "Engaging in selfless service." },
- { id: "a5_3", syncKey: "arish_kritajnata", type: "ext", name: "Kritajnata", desc: "Expressing genuine gratitude." },
- { id: "a5_4", syncKey: "arish_samabhava", type: "ext", name: "Samabhava", desc: "Viewing all with equanimity and equal vision." },
- { id: "a5_5", syncKey: "arish_ishvararpana", type: "ext", name: "Ishvararpana", desc: "Offering actions and results to the Divine." }
- ]
- },
- {
- name: "Matsarya (Jealousy/Envy) 🐍",
- sanskritLabel: "Matsarya",
- practices: [
- { id: "a6_1", syncKey: "arish_mudita", type: "ext", name: "Mudita", desc: "Cultivating appreciative joy for others' success." },
- { id: "a6_2", syncKey: "arish_maitri", type: "ext", name: "Maitri", desc: "Fostering goodwill and friendliness." },
- { id: "a6_3", syncKey: "arish_prasada", type: "ext", name: "Prasada", desc: "Graciously accepting outcomes without envy." }
- ]
- }
- ],
+    {
+      name: "Kama (Desire/Lust) 🌪️",
+      sanskritLabel: "Kama",
+      practices: [
+        { id: "a1_1", syncKey: "arish_vairagya", type: "ext", name: "Vairagya 🍂", desc: "Cultivating dispassion and non-attachment." },
+        { id: "a1_2", syncKey: "arish_santosha", type: "ext", name: "Santosha 🪴", desc: "Cultivating contentment with what is present." },
+        { id: "a1_3", syncKey: "arish_dama", type: "ext", name: "Dama 🛡️", desc: "Active sense-restraint." },
+        { id: "a1_4", syncKey: "arish_brahmacharya", type: "ext", name: "Brahmacharya 🕉️", desc: "Wise conservation and direction of sexual energy." },
+        { id: "a1_5", syncKey: "arish_tapas", type: "ext", name: "Tapas 🔥", desc: "Disciplined endurance." },
+        { id: "a1_6", syncKey: "kama_sensory_reset", type: "ext", name: "Sensory Reset 🛑", desc: "Abstain from tempting media/stimulation; take cold showers and practice digital fasting." },
+        { id: "a1_7", syncKey: "kama_vigorous_asana", type: "ext", name: "Vigorous Asana 🧘", desc: "Practice Surya Namaskara/inversions engaging physical energy locks (Bandhas)." },
+        { id: "a1_8", syncKey: "kama_regulated_consumption", type: "ext", name: "Regulated Consumption 🥗", desc: "Eat/consume strictly according to bodily necessity rather than appetite." },
+        { id: "a1_9", syncKey: "kama_urge_postponement", type: "ext", name: "Urge Postponement ⏳", desc: "Enforce a mandatory waiting period for immediate impulses to acquire or consume." }
+      ]
+    },
+    {
+      name: "Krodha (Anger) 🔥",
+      sanskritLabel: "Krodha",
+      practices: [
+        { id: "a2_1", syncKey: "arish_kshama", type: "ext", name: "Kshama 🕊️", desc: "Cultivating forgiving qualities and letting go of resentment." },
+        { id: "a2_2", syncKey: "arish_titiksha", type: "ext", name: "Titiksha 🏔️", desc: "Practicing forbearance and enduring provocations without agitation." },
+        { id: "a2_3", syncKey: "arish_shanti", type: "ext", name: "Shanti 🌊", desc: "Cultivating inner peace." },
+        { id: "a2_4", syncKey: "arish_karuna", type: "ext", name: "Karuna 💖", desc: "Extending compassion to oneself and others." },
+        { id: "a2_5", syncKey: "arish_upeksha", type: "ext", name: "Upeksha ⚖️", desc: "Maintaining equanimity." },
+        { id: "a2_6", syncKey: "arish_ahimsa", type: "ext", name: "Ahimsa 🌸", desc: "Strict adherence to non-harming." },
+        { id: "a2_7", syncKey: "krodha_silence_protocol", type: "ext", name: "Silence Protocol 🤐", desc: "Halt speech immediately and maintain physical silence when emotional triggers surface." },
+        { id: "a2_8", syncKey: "krodha_physical_withdrawal", type: "ext", name: "Physical Withdrawal 🚶", desc: "Leave the immediate environment or take a walk before reacting physically or verbally." },
+        { id: "a2_9", syncKey: "krodha_physiological_cooling", type: "ext", name: "Physiological Cooling 🧊", desc: "Sit down, drink cold water, and execute cooling breathwork (Sitali/Sitkari)." },
+        { id: "a2_10", syncKey: "krodha_non_violent_boundaries", type: "ext", name: "Non-Violent Boundaries 🧘", desc: "Consciously relax facial tension/clenched fists; enforce boundaries against aggressive gestures." }
+      ]
+    },
+    {
+      name: "Lobha (Greed) 🪤",
+      sanskritLabel: "Lobha",
+      practices: [
+        { id: "a3_1", syncKey: "arish_dana", type: "ext", name: "Dana 🎁", desc: "Practicing generosity." },
+        { id: "a3_2", syncKey: "arish_aparigraha", type: "ext", name: "Aparigraha 👐", desc: "Non-grasping and non-hoarding." },
+        { id: "a3_3", syncKey: "arish_tyaga", type: "ext", name: "Tyaga 🍃", desc: "Renunciation of the unnecessary." },
+        { id: "a3_4", syncKey: "lobha_direct_giving", type: "ext", name: "Scheduled Physical Giving 🤝", desc: "Physically hand over money, food, or surplus goods directly to others." },
+        { id: "a3_5", syncKey: "lobha_possession_limits", type: "ext", name: "Possession Limits 📦", desc: "Establish non-negotiable caps on belongings and routinely purge unnecessary items." },
+        { id: "a3_6", syncKey: "lobha_one_in_one_out", type: "ext", name: "One-In / One-Out 🔄", desc: "Acquire a replacement item only when an old one is actively let go." }
+      ]
+    },
+    {
+      name: "Moha (Delusion) 🌫️",
+      sanskritLabel: "Moha",
+      practices: [
+        { id: "a4_1", syncKey: "arish_viveka", type: "ext", name: "Viveka 🗡️", desc: "Applying discrimination between real and unreal." },
+        { id: "a4_2", syncKey: "arish_vichara", type: "ext", name: "Vichara 🔍", desc: "Self-inquiry and investigation." },
+        { id: "a4_3", syncKey: "arish_shravana", type: "ext", name: "Shravana 👂", desc: "Right hearing and learning." },
+        { id: "a4_4", syncKey: "arish_manana", type: "ext", name: "Manana 💭", desc: "Reflective examination of teachings." },
+        { id: "a4_5", syncKey: "arish_smriti", type: "ext", name: "Smriti 🕯️", desc: "Maintaining clear remembrance." },
+        { id: "a4_6", syncKey: "moha_dynamic_movement", type: "ext", name: "Dynamic Movement 🏃", desc: "Shift out of speculative loops via fast-paced walking meditation or concrete physical labor." },
+        { id: "a4_7", syncKey: "moha_autonomic_reset", type: "ext", name: "Autonomic Reset 🧊", desc: "Splash cold water on the face and practice Nadi Shodhana to balance hemispheric activity." },
+        { id: "a4_8", syncKey: "moha_direct_observation", type: "ext", name: "Direct Observation 🔍", desc: "Physically inspect situations and personally verify facts before acting; organize your environment." },
+        { id: "a4_9", syncKey: "moha_information_filtering", type: "ext", name: "Information Filtering 🛡️", desc: "Intentionally avoid environments dominated by rumors, sensationalism, or exaggerated media." }
+      ]
+    },
+    {
+      name: "Mada (Pride/Arrogance) 🦚",
+      sanskritLabel: "Mada",
+      practices: [
+        { id: "a5_1", syncKey: "arish_vinaya", type: "ext", name: "Vinaya 🌱", desc: "Cultivating humility & modesty." },
+        { id: "a5_2", syncKey: "arish_seva", type: "ext", name: "Seva 🧹", desc: "Engaging in selfless service." },
+        { id: "a5_3", syncKey: "arish_kritajnata", type: "ext", name: "Kritajnata 🙏", desc: "Expressing genuine gratitude." },
+        { id: "a5_4", syncKey: "arish_samabhava", type: "ext", name: "Samabhava ⚖️", desc: "Viewing all with equanimity and equal vision." },
+        { id: "a5_5", syncKey: "arish_ishvararpana", type: "ext", name: "Ishvararpana 🪔", desc: "Offering actions and results to the Divine." },
+        { id: "a5_6", syncKey: "mada_full_prostrations", type: "ext", name: "Full Prostrations 🙇", desc: "Practice Sashtanga Pranama to physically lower your center of gravity." },
+        { id: "a5_7", syncKey: "mada_menial_tasks", type: "ext", name: "Manual Menial Tasks 🧹", desc: "Perform ordinary domestic tasks yourself rather than delegating them." },
+        { id: "a5_8", syncKey: "mada_status_reduction", type: "ext", name: "Status Reduction 🤝", desc: "Serve others equally regardless of standing, and receive feedback non-defensively." }
+      ]
+    },
+    {
+      name: "Matsarya (Jealousy/Envy) 🐍",
+      sanskritLabel: "Matsarya",
+      practices: [
+        { id: "a6_1", syncKey: "arish_mudita", type: "ext", name: "Mudita 🌻", desc: "Cultivating appreciative joy for others' success." },
+        { id: "a6_2", syncKey: "arish_maitri", type: "ext", name: "Maitri 🤝", desc: "Fostering goodwill and friendliness." },
+        { id: "a6_3", syncKey: "arish_prasada", type: "ext", name: "Prasada 🪔", desc: "Graciously accepting outcomes without envy." },
+        { id: "a6_4", syncKey: "matsarya_heart_opening", type: "ext", name: "Heart-Opening Asanas 🫁", desc: "Practice postures (Bhujangasana, Ustrasana) to release constriction in the solar plexus." },
+        { id: "a6_5", syncKey: "matsarya_active_celebration", type: "ext", name: "Active Celebration 👏", desc: "Congratulate others directly, present gifts, or physically applaud competitors' achievements." },
+        { id: "a6_6", syncKey: "matsarya_equal_courtesy", type: "ext", name: "Cooperation & Courtesy 🤲", desc: "Actively assist peers in succeeding and grant others the courtesy you desire for yourself." }
+      ]
+    }
+  ],
 
  identification: []
 };
