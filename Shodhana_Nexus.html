@@ -24,6 +24,7 @@
  --input-bg: #000000;
  --chip-bg: #18181b;
  --nav-btn-bg: #27272a;
+ --link-glow: rgba(56, 189, 248, 0.35);
  }
 
  :root[data-theme="light"] {
@@ -44,6 +45,7 @@
  --input-bg: #ffffff;
  --chip-bg: #f1f5f9;
  --nav-btn-bg: #e2e8f0;
+ --link-glow: rgba(2, 132, 199, 0.25);
  }
 
  * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
@@ -320,6 +322,12 @@
  cursor: pointer;
  font-weight: bold;
  font-size: 0.85rem;
+ transition: opacity 0.2s ease;
+ }
+
+ .date-nav-btn:disabled {
+ opacity: 0.35;
+ cursor: not-allowed;
  }
 
  .search-box-home {
@@ -433,6 +441,32 @@
  justify-content: space-between;
  align-items: center;
  border-bottom: 1px solid var(--border);
+ cursor: pointer;
+ user-select: none;
+ }
+
+ .indriya-header-title {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ .collapse-indicator {
+ display: inline-block;
+ font-size: 0.8rem;
+ transition: transform 0.2s ease;
+ }
+
+ .indriya-card.collapsed .collapse-indicator {
+ transform: rotate(-90deg);
+ }
+
+ .indriya-card.collapsed .practice-list {
+ display: none;
+ }
+
+ .indriya-card.collapsed .indriya-header {
+ border-bottom: none;
  }
  
  .practice-list { list-style: none; }
@@ -442,8 +476,14 @@
  display: flex;
  flex-direction: column;
  gap: 8px;
+ transition: background 0.3s ease, box-shadow 0.3s ease;
  }
  .practice-item:last-child { border-bottom: none; }
+
+ .practice-item.sync-highlight {
+ background: var(--link-glow);
+ box-shadow: inset 0 0 10px var(--accent-jnan);
+ }
  
  .practice-main {
  display: flex;
@@ -468,6 +508,60 @@
  }
  .practice-name { font-weight: 600; }
  .practice-desc { font-size: 0.85rem; color: var(--text-sub); margin-top: 2px; }
+
+ /* Actions & Badges */
+ .action-group {
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ flex-shrink: 0;
+ }
+
+ .link-badge {
+ font-size: 0.8rem;
+ padding: 3px 8px;
+ border-radius: 6px;
+ background: var(--card-sub-bg);
+ border: 1px solid var(--border);
+ color: var(--text-sub);
+ cursor: pointer;
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ gap: 4px;
+ user-select: none;
+ transition: all 0.2s ease;
+ }
+ .link-badge.is-linked {
+ border-color: var(--accent-jnan);
+ color: var(--accent-jnan);
+ background: rgba(56, 189, 248, 0.12);
+ font-weight: bold;
+ }
+ .link-badge:hover {
+ border-color: var(--accent-gold);
+ color: var(--accent-gold);
+ }
+
+ .delete-btn {
+ font-size: 0.8rem;
+ padding: 3px 8px;
+ border-radius: 6px;
+ background: var(--card-sub-bg);
+ border: 1px solid var(--border);
+ color: var(--text-sub);
+ cursor: pointer;
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ user-select: none;
+ transition: all 0.2s ease;
+ }
+ .delete-btn:hover {
+ border-color: var(--accent-karm);
+ color: var(--accent-karm);
+ background: rgba(244, 63, 94, 0.15);
+ }
 
  .duration-section {
  display: flex;
@@ -988,7 +1082,6 @@
  gap: 8px;
  }
 
- /* Dark Theme Tooltip Override */
  [data-theme="dark"] .ledger-tooltip-content {
  background: #18181b;
  color: #f8fafc;
@@ -996,7 +1089,6 @@
  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
  }
 
- /* Light Theme Tooltip Alternative */
  [data-theme="light"] .ledger-tooltip-content {
  background: #ffffff;
  color: #0f172a;
@@ -1010,7 +1102,6 @@
  pointer-events: auto;
  }
 
- /* Reusable Action Chip within Tooltips */
  .tooltip-action-chip {
  background: var(--card-sub-bg);
  color: var(--accent-gold);
@@ -1069,7 +1160,6 @@
  display: flex;
  }
 
- /* Color Box indicator inside Domain Tooltip */
  .domain-tooltip-color-box {
  display: inline-block;
  width: 9px;
@@ -1080,7 +1170,6 @@
  flex-shrink: 0;
  }
 
- /* Practice Row Color Box Indicator */
  .practice-domain-indicator {
  display: inline-block;
  width: 8px;
@@ -1091,7 +1180,6 @@
  flex-shrink: 0;
  }
 
- /* Scrollable Fixed Frame for Comprehensive Practice Ledger (4-5 items visible) */
  .ledger-scroll-frame {
  width: 100%;
  max-height: 350px;
@@ -1109,11 +1197,73 @@
  background: var(--card-sub-bg);
  box-shadow: 0 1px 0 var(--border);
  }
-</style>
+
+ /* Practice Inter-Linking Modal */
+ .link-modal-overlay {
+ position: fixed;
+ inset: 0;
+ background: rgba(0, 0, 0, 0.7);
+ backdrop-filter: blur(4px);
+ display: none;
+ align-items: center;
+ justify-content: center;
+ padding: 16px;
+ z-index: 1002;
+ }
+ .link-modal-overlay.active { display: flex; }
+
+ .link-modal-card {
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ max-width: 550px;
+ width: 100%;
+ padding: 20px;
+ display: flex;
+ flex-direction: column;
+ gap: 16px;
+ box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+ }
+
+ .link-modal-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ font-size: 1.1rem;
+ color: var(--accent-gold);
+ font-weight: bold;
+ }
+
+ .target-list {
+ display: flex;
+ flex-direction: column;
+ gap: 8px;
+ max-height: 350px;
+ overflow-y: auto;
+ padding-right: 4px;
+ }
+
+ .target-item {
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ padding: 10px 12px;
+ border-radius: 6px;
+ background: var(--card-sub-bg);
+ font-size: 0.85rem;
+ cursor: pointer;
+ border: 1px solid var(--border);
+ transition: border-color 0.2s ease;
+ }
+
+ .target-item:hover {
+ border-color: var(--accent-jnan);
+ }
+ </style>
 </head>
 <body onclick="handleBodyClick(event)">
 
-<!-- Authentication Container (Visible when logged out) -->
+<!-- Authentication Container -->
 <div id="auth-wrapper" class="container" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
  <div class="auth-card">
  <h2>Firebase Login 🌺</h2>
@@ -1124,7 +1274,7 @@
  </div>
 </div>
 
-<!-- Main App Dashboard Layout (Hidden until authenticated) -->
+<!-- Main App Dashboard Layout -->
 <div id="app-wrapper" class="app-dashboard-layout hidden">
  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -1141,12 +1291,16 @@
  </aside>
 
  <header>
- <div style="display: flex; align-items: center;">
- <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()">☰</button>
- <h1>Shodhana Nexus</h1>
- </div>
- <button onclick="handleLogout()" style="background: transparent; border: none; cursor: pointer; font-size: 1.4rem;" title="Logout">💔</button>
- </header>
+  <div style="display: flex; align-items: center;">
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()">☰</button>
+    <h1>Shodhana Nexus</h1>
+  </div>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <button class="date-nav-btn" id="globalUndoBtn" onclick="undo()" title="Undo" disabled>↶</button>
+    <button class="date-nav-btn" id="globalRedoBtn" onclick="redo()" title="Redo" disabled>↷</button>
+    <button onclick="handleLogout()" style="background: transparent; border: none; cursor: pointer; font-size: 1.4rem;" title="Logout">💔</button>
+  </div>
+</header>
 
  <main class="container">
  <div id="hub-view" class="view-section active">
@@ -1171,7 +1325,7 @@
  <div class="hub-card" onclick="openView('antahkarana-hub-view')">
  <div class="hub-icon">🛡️</div>
  <div class="hub-title" style="color: var(--accent-antah);">Antahkarana</div>
- <div class="hub-desc">Internal Instruments — Manas, Arishadvargas & Identification</div>
+ <div class="hub-desc">Internal Instruments — Manas, Arishadvargas &amp; Identification</div>
  </div>
  <div class="hub-card" onclick="openView('analytics-view')">
  <div class="hub-icon">📊</div>
@@ -1191,6 +1345,7 @@
  </div>
  <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
  <button class="date-nav-btn" id="filter-btn-jnan" onclick="toggleCompletionFilter('jnan')" title="Filter Practices">🔄 All</button>
+ <button class="date-nav-btn" onclick="promptAddPracticeContextual('jnan')" title="Add Practice">➕</button>
  <button class="date-nav-btn" onclick="resetContextualJnan()" title="Reset Selection">📛</button>
  </div>
  </div>
@@ -1212,6 +1367,7 @@
  </div>
  <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
  <button class="date-nav-btn" id="filter-btn-karm" onclick="toggleCompletionFilter('karm')" title="Filter Practices">🔄 All</button>
+ <button class="date-nav-btn" onclick="promptAddPracticeContextual('karm')" title="Add Practice">➕</button>
  <button class="date-nav-btn" onclick="resetContextualKarm()" title="Reset Selection">📛</button>
  </div>
  </div>
@@ -1255,6 +1411,7 @@
  </div>
  <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
  <button class="date-nav-btn" id="filter-btn-arish" onclick="toggleCompletionFilter('arish')" title="Filter Practices">🔄 All</button>
+ <button class="date-nav-btn" onclick="promptAddPracticeContextual('arish')" title="Add Practice">➕</button>
  <button class="date-nav-btn" onclick="resetContextualArish()" title="Reset Selection">📛</button>
  </div>
  </div>
@@ -1277,6 +1434,7 @@
  </div>
  <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
  <button class="date-nav-btn" id="filter-btn-manas" onclick="toggleCompletionFilter('manas')" title="Filter Practices">🔄 All</button>
+ <button class="date-nav-btn" onclick="promptAddPracticeContextual('manas')" title="Add Practice">➕</button>
  <button class="date-nav-btn" onclick="resetContextualManas()" title="Reset Selection">📛</button>
  </div>
  </div>
@@ -1358,7 +1516,6 @@
  </p>
  <div style="position: relative; width: 100%; height: 280px;">
  <canvas id="domainAccomplishmentChart"></canvas>
- <!-- Interactive Tooltip for Domain Accomplishment Rate Chart -->
  <div id="domainChartTooltip" class="domain-chart-tooltip" onclick="event.stopPropagation()">
    <span id="domainTooltipText" style="display: inline-flex; align-items: center;"></span>
    <button id="domainTooltipActionBtn" class="tooltip-action-chip">➔ Filter Ledger</button>
@@ -1422,7 +1579,7 @@
  </thead>
 
  <tbody id="practiceLedgerBody">
- <!-- Populated dynamically via renderPracticeLedger() -->
+ <!-- Populated dynamically -->
  </tbody>
  </table>
  </div>
@@ -1521,13 +1678,30 @@
  </div>
  
 <div class="chart-details-card" id="chartDetailsCard">
- <h3>Formula & Methodology Details</h3>
+ <h3>Formula &amp; Methodology Details</h3>
  <ul id="chartDetailsContent">
  <li><strong>X-Axis (Senses):</strong> Lists individual sense organ groups using Sanskrit English titles. Click any bar to open line chart.</li>
  <li><strong>Y-Axis (OPE):</strong> Overall Practice Efficiency averaged across all active days in range.</li>
  <li><strong>Accomplishment Ratio:</strong> Completed practices count divided by total available practices in that sense.</li>
  <li><strong>APE:</strong> Daily average efficiency across practices, simply averaged over active days.</li>
  </ul>
+ </div>
+ </div>
+</div>
+
+<!-- Practice Inter-Linking Modal -->
+<div class="link-modal-overlay" id="linkModalOverlay" onclick="closeLinkModal(event)">
+ <div class="link-modal-card" onclick="event.stopPropagation()">
+ <div class="link-modal-header">
+ <span id="modalTargetTitle">🔗 Connect Practices</span>
+ <button class="add-duration-btn" onclick="closeLinkModal()">&times;</button>
+ </div>
+ <p style="font-size: 0.8rem; color: var(--text-sub);">
+ Select practices to synchronize with this one. Actions and historical entries will be retrospectively merged.
+ </p>
+ <div class="target-list" id="modalTargetList"></div>
+ <div style="text-align: right; margin-top: 10px;">
+ <button class="auth-btn" style="width: auto; padding: 6px 18px; margin: 0;" onclick="closeLinkModal()">Done</button>
  </div>
  </div>
 </div>
@@ -1573,6 +1747,7 @@
  authWrapper.classList.remove("hidden");
  appWrapper.classList.add("hidden");
  logs = {};
+ linkGraph = {};
  if (unsubscribeFirestore) {
  unsubscribeFirestore();
  unsubscribeFirestore = null;
@@ -1609,10 +1784,14 @@
  if (docSnap.exists()) {
  const data = docSnap.data();
  logs = data.logs || {};
+ if (data.linkGraph) linkGraph = data.linkGraph;
+ if (data.dataset) dataset = data.dataset;
  } else {
  logs = {};
+ linkGraph = {};
  }
  saveLogsToLocal(); 
+ renderSubCategoryDropdowns();
  renderUI();
  updateAnalytics();
  isRemoteSyncing = false;
@@ -1629,7 +1808,7 @@
  const uid = auth.currentUser.uid;
  const docRef = doc(db, "userLogs", uid);
  try {
- await setDoc(docRef, { logs: logs, updatedAt: new Date().toISOString() }, { merge: true });
+ await setDoc(docRef, { logs: logs, linkGraph: linkGraph, dataset: dataset, updatedAt: new Date().toISOString() }, { merge: true });
  } catch (error) {
  console.error("Error writing logs to Firestore:", error);
  }
@@ -1637,7 +1816,7 @@
 </script>
 
 <script>
-const dataset = {
+let dataset = {
  jnanendriyas: [
  {
  name: "Chakṣu (Sight) 👁️",
@@ -1913,8 +2092,10 @@ const dataset = {
 let currentDate = new Date().toISOString().split('T')[0];
 let currentTheme = 'dark';
 let logs = {}; 
+let linkGraph = {};
 let activeFilter = { jnan: 'All', karm: 'All', arish: 'All', manas: 'All' };
 let completionFilter = { jnan: 'all', karm: 'all', arish: 'all', manas: 'all' };
+let collapsedGroups = {};
 let searchQuery = '';
 let activeChartInstance = null;
 let domainBalanceChartInstance = null;
@@ -1923,6 +2104,139 @@ let trendChartInstance = null;
 let distributionChartInstance = null;
 let currentChartContext = { type: null, senseIndex: null, practiceIndex: null };
 let ledgerDomainFilter = 'All';
+
+let undoStack = [];
+let redoStack = [];
+
+function toggleGroupCollapse(groupKey) {
+  collapsedGroups[groupKey] = !collapsedGroups[groupKey];
+  renderUI();
+  if (searchQuery) handleSearch(searchQuery);
+}
+
+function pushState() {
+  undoStack.push({
+    logs: JSON.parse(JSON.stringify(logs)),
+    dataset: JSON.parse(JSON.stringify(dataset)),
+    linkGraph: JSON.parse(JSON.stringify(linkGraph))
+  });
+  if (undoStack.length > 50) undoStack.shift();
+  redoStack = [];
+  updateHistoryButtons();
+}
+
+function undo() {
+  if (undoStack.length === 0) return;
+  redoStack.push({
+    logs: JSON.parse(JSON.stringify(logs)),
+    dataset: JSON.parse(JSON.stringify(dataset)),
+    linkGraph: JSON.parse(JSON.stringify(linkGraph))
+  });
+  const prevState = undoStack.pop();
+  logs = prevState.logs;
+  dataset = prevState.dataset;
+  linkGraph = prevState.linkGraph;
+  
+  saveLogsToLocal();
+  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+  updateHistoryButtons();
+  renderSubCategoryDropdowns();
+  renderUI();
+  updateAnalytics();
+  if (searchQuery) handleSearch(searchQuery);
+}
+
+function redo() {
+  if (redoStack.length === 0) return;
+  undoStack.push({
+    logs: JSON.parse(JSON.stringify(logs)),
+    dataset: JSON.parse(JSON.stringify(dataset)),
+    linkGraph: JSON.parse(JSON.stringify(linkGraph))
+  });
+  const nextState = redoStack.pop();
+  logs = nextState.logs;
+  dataset = nextState.dataset;
+  linkGraph = nextState.linkGraph;
+  
+  saveLogsToLocal();
+  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+  updateHistoryButtons();
+  renderSubCategoryDropdowns();
+  renderUI();
+  updateAnalytics();
+  if (searchQuery) handleSearch(searchQuery);
+}
+
+function updateHistoryButtons() {
+  const canUndo = undoStack.length > 0;
+  const canRedo = redoStack.length > 0;
+  
+  const uBtn = document.getElementById('globalUndoBtn');
+  const rBtn = document.getElementById('globalRedoBtn');
+  if (uBtn) uBtn.disabled = !canUndo;
+  if (rBtn) rBtn.disabled = !canRedo;
+}
+
+function promptAddPracticeContextual(viewType) {
+  const domainKeyMap = {
+    jnan: 'jnanendriyas',
+    karm: 'karmendriyas',
+    manas: 'manas',
+    arish: 'arishadvargas'
+  };
+  const dKey = domainKeyMap[viewType];
+  const categoryList = dataset[dKey];
+  if (!categoryList || categoryList.length === 0) return;
+
+  let targetGroup = null;
+  const currentFilterVal = activeFilter[viewType];
+  if (currentFilterVal && currentFilterVal !== 'All') {
+    targetGroup = categoryList.find(g => g.name === currentFilterVal);
+  }
+
+  if (!targetGroup) {
+    const groupNames = categoryList.map((g, i) => `${i + 1}. ${g.name}`).join('\n');
+    const chosen = prompt(`Select group to add practice into:\n\n${groupNames}\n\nEnter number (1-${categoryList.length}):`, "");
+    if (!chosen) return;
+    const idx = parseInt(chosen.trim(), 10) - 1;
+    if (!isNaN(idx) && idx >= 0 && idx < categoryList.length) {
+      targetGroup = categoryList[idx];
+    } else {
+      alert("Invalid selection.");
+      return;
+    }
+  }
+
+  promptAddPractice(dKey, targetGroup.name);
+}
+
+function promptAddPractice(domainKey, groupName) {
+  const categoryList = dataset[domainKey];
+  if (!categoryList) return;
+  const group = categoryList.find(g => g.name === groupName);
+  if (!group) return;
+
+  const name = prompt(`Enter new practice name for "${group.name}":`, "");
+  if (!name || !name.trim()) return;
+
+  const desc = prompt(`Enter description for "${name.trim()}":`, "");
+
+  pushState();
+  const newSyncKey = "custom_" + Date.now();
+  group.practices.push({
+    id: "c_" + Date.now(),
+    syncKey: newSyncKey,
+    type: "ext",
+    name: name.trim(),
+    desc: (desc && desc.trim()) ? desc.trim() : "Custom practice"
+  });
+
+  saveLogsToLocal();
+  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+  renderUI();
+  updateAnalytics();
+  if (searchQuery) handleSearch(searchQuery);
+}
 
 function formatDateDDMMYY(isoDateStr) {
  if (!isoDateStr) return '';
@@ -1941,6 +2255,7 @@ window.onload = () => {
  updateAnalyticsDisplay();
 
  loadLogsLocal();
+ updateHistoryButtons();
  renderSubCategoryDropdowns();
  renderUI();
  
@@ -1960,6 +2275,12 @@ const parentMap = {
 
 window.addEventListener('popstate', (event) => {
  const overlay = document.getElementById('chartModalOverlay');
+ const linkModal = document.getElementById('linkModalOverlay');
+
+ if (linkModal.classList.contains('active')) {
+   closeLinkModal();
+   return;
+ }
  
  if (overlay.classList.contains('active')) {
  if (currentChartContext.practiceIndex !== null) {
@@ -2068,6 +2389,168 @@ function hideDomainChartTooltip() {
  if (tooltip) tooltip.classList.remove('active');
 }
 
+function getAllPracticesFlat() {
+ const list = [];
+ const domains = [
+ { key: 'jnanendriyas', domainName: 'Jnanendriyas' },
+ { key: 'karmendriyas', domainName: 'Karmendriyas' },
+ { key: 'manas', domainName: 'Manas' },
+ { key: 'arishadvargas', domainName: 'Arishadvargas' },
+ { key: 'identification', domainName: 'Identification' }
+ ];
+
+ domains.forEach(({ key, domainName }) => {
+ (dataset[key] || []).forEach(group => {
+ group.practices.forEach(p => {
+ list.push({
+ ...p,
+ domain: domainName,
+ groupName: group.name
+ });
+ });
+ });
+ });
+ return list;
+}
+
+function getLinkedGroup(syncKey) {
+ return linkGraph[syncKey] || [syncKey];
+}
+
+function triggerPulse(groupKeys) {
+ groupKeys.forEach(k => {
+ const elements = document.querySelectorAll(`[data-sync-key="${k}"]`);
+ elements.forEach(el => {
+ el.classList.add('sync-highlight');
+ setTimeout(() => el.classList.remove('sync-highlight'), 600);
+ });
+ });
+}
+
+function syncRetrospectiveDataForGroup(groupKeys) {
+ Object.keys(logs).forEach(date => {
+ let isAnyDone = false;
+ let combinedEfficiencies = [];
+
+ groupKeys.forEach(key => {
+ const entry = logs[date][key];
+ if (entry) {
+ if (entry.done) isAnyDone = true;
+ if (entry.efficiencies && entry.efficiencies.length > 0) {
+ entry.efficiencies.forEach(score => combinedEfficiencies.push(score));
+ }
+ }
+ });
+
+ let mergedEfficiencies = [...new Set(combinedEfficiencies)];
+
+ groupKeys.forEach(key => {
+ if (!logs[date][key]) logs[date][key] = { done: false, efficiencies: [] };
+ logs[date][key].done = isAnyDone;
+ logs[date][key].efficiencies = [...mergedEfficiencies];
+ });
+ });
+}
+
+function toggleLinkPair(sourceKey, targetKey) {
+ pushState();
+ let groupA = getLinkedGroup(sourceKey);
+ let groupB = getLinkedGroup(targetKey);
+
+ if (groupA.includes(targetKey)) {
+ const newGroup = groupA.filter(k => k !== targetKey);
+ newGroup.forEach(k => linkGraph[k] = [...newGroup]);
+ linkGraph[targetKey] = [targetKey];
+ } else {
+ const merged = Array.from(new Set([...groupA, ...groupB]));
+ merged.forEach(k => linkGraph[k] = [...merged]);
+ syncRetrospectiveDataForGroup(merged);
+ }
+
+ saveLogsToLocal();
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+}
+
+function openLinkModal(syncKey) {
+ const allFlat = getAllPracticesFlat();
+ const current = allFlat.find(p => p.syncKey === syncKey);
+ if (!current) return;
+
+ pushModalHistoryState();
+ document.getElementById("modalTargetTitle").innerText = `🔗 Connect: ${current.name}`;
+
+ const list = document.getElementById("modalTargetList");
+ list.innerHTML = "";
+
+ const activeLinks = getLinkedGroup(syncKey);
+
+ allFlat.forEach(p => {
+ if (p.syncKey === syncKey) return;
+ const isLinked = activeLinks.includes(p.syncKey);
+
+ const item = document.createElement("label");
+ item.className = "target-item";
+ item.innerHTML = `
+ <input type="checkbox" ${isLinked ? "checked" : ""} onchange="toggleLinkPair('${syncKey}', '${p.syncKey}')">
+ <div style="display: flex; flex-direction: column;">
+ <span style="font-weight: 600;">${p.name}</span>
+ <span style="font-size: 0.75rem; color: var(--text-sub);">${p.domain} • ${p.groupName}</span>
+ </div>
+ `;
+ list.appendChild(item);
+ });
+
+ document.getElementById("linkModalOverlay").classList.add("active");
+}
+
+function closeLinkModal(event) {
+ if (!event || event.target === document.getElementById('linkModalOverlay') || event.type === 'click') {
+ document.getElementById("linkModalOverlay").classList.remove("active");
+ }
+}
+
+function deletePractice(syncKey) {
+ const allFlat = getAllPracticesFlat();
+ const target = allFlat.find(p => p.syncKey === syncKey);
+ if (!target) return;
+
+ if (!confirm(`Are you sure you want to delete "${target.name}"? This removes its definition, links, and all historical data entries.`)) {
+ return;
+ }
+
+ pushState();
+ const currentGroup = getLinkedGroup(syncKey);
+ const updatedGroup = currentGroup.filter(k => k !== syncKey);
+ if (updatedGroup.length > 0) {
+ updatedGroup.forEach(k => linkGraph[k] = [...updatedGroup]);
+ }
+ delete linkGraph[syncKey];
+
+ const domains = ['jnanendriyas', 'karmendriyas', 'manas', 'arishadvargas', 'identification'];
+ domains.forEach(d => {
+ if (dataset[d]) {
+ dataset[d].forEach(group => {
+ group.practices = group.practices.filter(p => p.syncKey !== syncKey);
+ });
+ }
+ });
+
+ Object.keys(logs).forEach(date => {
+ if (logs[date] && logs[date][syncKey]) {
+ delete logs[date][syncKey];
+ }
+ });
+
+ saveLogsToLocal();
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderSubCategoryDropdowns();
+ renderUI();
+ updateAnalytics();
+ if (searchQuery) handleSearch(searchQuery);
+}
+
 function handleSearch(query) {
  searchQuery = query.trim().toLowerCase();
  const resultsContainer = document.getElementById('search-results-container');
@@ -2085,10 +2568,10 @@ function handleSearch(query) {
  resultsContainer.innerHTML = '';
 
  const allCategories = [
- ...dataset.jnanendriyas.map(g => ({ ...g, categoryType: 'Jnanendriyas' })),
- ...dataset.karmendriyas.map(g => ({ ...g, categoryType: 'Karmendriyas' })),
- ...dataset.arishadvargas.map(g => ({ ...g, categoryType: 'Arishadvargas' })),
- ...dataset.manas.map(g => ({ ...g, categoryType: 'Manas' }))
+ ...dataset.jnanendriyas.map(g => ({ ...g, categoryType: 'Jnanendriyas', domainKey: 'jnanendriyas' })),
+ ...dataset.karmendriyas.map(g => ({ ...g, categoryType: 'Karmendriyas', domainKey: 'karmendriyas' })),
+ ...dataset.arishadvargas.map(g => ({ ...g, categoryType: 'Arishadvargas', domainKey: 'arishadvargas' })),
+ ...dataset.manas.map(g => ({ ...g, categoryType: 'Manas', domainKey: 'manas' }))
  ];
 
  let hasMatches = false;
@@ -2101,30 +2584,46 @@ function handleSearch(query) {
  if (matchingPractices.length > 0) {
  hasMatches = true;
  const card = document.createElement('div');
- card.className = 'indriya-card';
+ const groupKey = `search_${group.domainKey}_${group.name}`;
+ const isCollapsed = !!collapsedGroups[groupKey];
+ card.className = `indriya-card ${isCollapsed ? 'collapsed' : ''}`;
 
- let html = `<div class="indriya-header"><span>${group.categoryType} — ${group.name}</span></div><ul class="practice-list">`;
+ let html = `
+ <div class="indriya-header" onclick="toggleGroupCollapse('${groupKey}')">
+   <div class="indriya-header-title">
+     <span class="collapse-indicator">▼</span>
+     <span>${group.categoryType} — ${group.name}</span>
+   </div>
+ </div>
+ <ul class="practice-list">`;
 
  matchingPractices.forEach(p => {
  const data = getSyncData(p.syncKey);
  const isDone = data.done;
  const efficiencies = data.efficiencies || [];
  const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
-
  const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
 
+ const linked = getLinkedGroup(p.syncKey);
+ const connCount = linked.length - 1;
+ const isLinked = connCount > 0;
+
  html += `
- <li class="practice-item">
+ <li class="practice-item" data-sync-key="${p.syncKey}">
  <div class="practice-main">
  <label class="checkbox-label">
  <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
  <div>
- <div class="practice-name ${isDone ? 'completed-text' : ''}">
- ${p.name}
- </div>
+ <div class="practice-name ${isDone ? 'completed-text' : ''}">${p.name}</div>
  <div class="practice-desc">${p.desc}</div>
  </div>
  </label>
+ <div class="action-group">
+ <span class="link-badge ${isLinked ? 'is-linked' : ''}" onclick="openLinkModal('${p.syncKey}')" title="${isLinked ? `Connected to ${connCount} other practice(s)` : 'Connect to other practices'}">
+ 🔗${isLinked ? ` ${connCount}` : ''}
+ </span>
+ <span class="delete-btn" onclick="deletePractice('${p.syncKey}')" title="Delete Practice">🗑️</span>
+ </div>
  </div>
  
  <div class="duration-section ${dimmedClass}">
@@ -2239,6 +2738,7 @@ function resetContextualJnan() {
  const filterVal = activeFilter.jnan;
  const targetName = filterVal === 'All' ? 'All Jnanendriyas' : filterVal;
  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ pushState();
  if (!logs[currentDate]) logs[currentDate] = {};
  dataset.jnanendriyas.forEach(group => {
  if (filterVal === 'All' || group.name === filterVal) {
@@ -2258,6 +2758,7 @@ function resetContextualKarm() {
  const filterVal = activeFilter.karm;
  const targetName = filterVal === 'All' ? 'All Karmendriyas' : filterVal;
  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ pushState();
  if (!logs[currentDate]) logs[currentDate] = {};
  dataset.karmendriyas.forEach(group => {
  if (filterVal === 'All' || group.name === filterVal) {
@@ -2277,6 +2778,7 @@ function resetContextualManas() {
  const filterVal = activeFilter.manas;
  const targetName = filterVal === 'All' ? 'All Manas Practices' : filterVal;
  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ pushState();
  if (!logs[currentDate]) logs[currentDate] = {};
  dataset.manas.forEach(group => {
  if (filterVal === 'All' || group.name === filterVal) {
@@ -2296,6 +2798,7 @@ function resetContextualArish() {
  const filterVal = activeFilter.arish;
  const targetName = filterVal === 'All' ? 'All Antid' : filterVal;
  if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ pushState();
  if (!logs[currentDate]) logs[currentDate] = {};
  dataset.arishadvargas.forEach(group => {
  if (filterVal === 'All' || group.name === filterVal) {
@@ -2328,10 +2831,16 @@ function toggleCompletionFilter(type) {
 function loadLogsLocal() {
  const data = localStorage.getItem('indriya_nigraha_v2_logs');
  if (data) logs = JSON.parse(data);
+ const lg = localStorage.getItem('indriya_nigraha_link_graph');
+ if (lg) linkGraph = JSON.parse(lg);
+ const ds = localStorage.getItem('indriya_nigraha_custom_dataset');
+ if (ds) dataset = JSON.parse(ds);
 }
 
 function saveLogsToLocal() {
  localStorage.setItem('indriya_nigraha_v2_logs', JSON.stringify(logs));
+ localStorage.setItem('indriya_nigraha_link_graph', JSON.stringify(linkGraph));
+ localStorage.setItem('indriya_nigraha_custom_dataset', JSON.stringify(dataset));
 }
 
 function getSyncData(syncKey) {
@@ -2346,60 +2855,92 @@ function getSyncData(syncKey) {
 }
 
 function toggleDone(syncKey) {
- const item = getSyncData(syncKey);
- 
- if (!item.done) {
- const input = prompt("Enter Execution/Practice efficiency (0-100%):");
- const eff = parseInt(input, 10);
- 
- if (!isNaN(eff) && eff >= 0 && eff <= 100) {
- item.done = true;
- item.efficiencies.push(eff);
- } else {
- if (input !== null) {
- alert("Please enter a valid number between 0 and 100 to complete this practice.");
- }
- item.done = false;
- }
- } else {
- item.done = false;
- item.efficiencies = [];
- }
- 
- if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
- renderUI();
- if (searchQuery) handleSearch(searchQuery);
+  const group = getLinkedGroup(syncKey);
+  const item = getSyncData(syncKey);
+  const isCurrentlyDone = item.done;
+  
+  if (!isCurrentlyDone) {
+    const input = prompt("Enter Execution/Practice efficiency (0-100%):", "");
+    
+    // If user cancelled, entered empty string, or pure whitespace
+    if (input === null || input.trim() === "") {
+      renderUI(); // Re-render to revert the native checkbox state
+      return;
+    }
+
+    const eff = parseInt(input.trim(), 10);
+    
+    // Check if input is a valid number between 0 and 100
+    if (!isNaN(eff) && eff >= 0 && eff <= 100) {
+      pushState();
+      group.forEach(k => {
+        const d = getSyncData(k);
+        d.done = true;
+        d.efficiencies = [eff];
+      });
+    } else {
+      alert("Please enter a valid number between 0 and 100 to complete this practice.");
+      renderUI(); // Reset checkbox back to unchecked
+      return;
+    }
+  } else {
+    // Unchecking an already checked item
+    pushState();
+    group.forEach(k => {
+      const d = getSyncData(k);
+      d.done = false;
+      d.efficiencies = [];
+    });
+  }
+  
+  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+  renderUI();
+  if (searchQuery) handleSearch(searchQuery);
+  triggerPulse(group);
 }
 
 function addEfficiency(syncKey) {
+ const group = getLinkedGroup(syncKey);
  const item = getSyncData(syncKey);
  if (!item.done) {
  alert("Please check the practice first before adding efficiency percentages.");
  return;
  }
- const input = prompt("Enter Execution/Practice efficiency (0-100%):");
+ const input = prompt("Enter additional session efficiency (0-100%):", "");
  const eff = parseInt(input, 10);
  if (!isNaN(eff) && eff >= 0 && eff <= 100) {
- item.efficiencies.push(eff);
+ pushState();
+ group.forEach(k => {
+ const d = getSyncData(k);
+ d.done = true;
+ d.efficiencies.push(eff);
+ });
  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
  renderUI();
  if (searchQuery) handleSearch(searchQuery);
+ triggerPulse(group);
  } else if (input !== null) {
  alert("Please enter a number between 0 and 100.");
  }
 }
 
 function removeEfficiency(syncKey, index) {
- const item = getSyncData(syncKey);
- item.efficiencies.splice(index, 1);
- 
- if (item.efficiencies.length === 0) {
- item.done = false;
+ pushState();
+ const group = getLinkedGroup(syncKey);
+ group.forEach(k => {
+ const d = getSyncData(k);
+ if (d && d.efficiencies.length > index) {
+ d.efficiencies.splice(index, 1);
+ if (d.efficiencies.length === 0) {
+ d.done = false;
  }
+ }
+ });
  
  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
  renderUI();
  if (searchQuery) handleSearch(searchQuery);
+ triggerPulse(group);
 }
 
 function renderSubCategoryDropdowns() {
@@ -2408,29 +2949,37 @@ function renderSubCategoryDropdowns() {
  const manasDropdown = document.getElementById('manas-dropdown');
  const arishDropdown = document.getElementById('arish-dropdown');
 
+ if (jnanDropdown) {
  let jnanHtml = `<option value="All" ${activeFilter.jnan === 'All' ? 'selected' : ''}>All Senses</option>`;
  dataset.jnanendriyas.forEach(g => {
- jnanHtml += `<option value="${g.name}" ${activeFilter.jnan === g.name ? 'selected' : ''}>${g.sanskritLabel}</option>`;
+ jnanHtml += `<option value="${g.name}" ${activeFilter.jnan === g.name ? 'selected' : ''}>${g.sanskritLabel || g.name}</option>`;
  });
  jnanDropdown.innerHTML = jnanHtml;
+ }
 
+ if (karmDropdown) {
  let karmHtml = `<option value="All" ${activeFilter.karm === 'All' ? 'selected' : ''}>All Senses</option>`;
  dataset.karmendriyas.forEach(g => {
- karmHtml += `<option value="${g.name}" ${activeFilter.karm === g.name ? 'selected' : ''}>${g.sanskritLabel}</option>`;
+ karmHtml += `<option value="${g.name}" ${activeFilter.karm === g.name ? 'selected' : ''}>${g.sanskritLabel || g.name}</option>`;
  });
  karmDropdown.innerHTML = karmHtml;
+ }
 
+ if (manasDropdown) {
  let manasHtml = `<option value="All" ${activeFilter.manas === 'All' ? 'selected' : ''}>All Domains</option>`;
  dataset.manas.forEach(g => {
- manasHtml += `<option value="${g.name}" ${activeFilter.manas === g.name ? 'selected' : ''}>${g.sanskritLabel}</option>`;
+ manasHtml += `<option value="${g.name}" ${activeFilter.manas === g.name ? 'selected' : ''}>${g.sanskritLabel || g.name}</option>`;
  });
- if (manasDropdown) manasDropdown.innerHTML = manasHtml;
+ manasDropdown.innerHTML = manasHtml;
+ }
 
+ if (arishDropdown) {
  let arishHtml = `<option value="All" ${activeFilter.arish === 'All' ? 'selected' : ''}>All Antid</option>`;
  dataset.arishadvargas.forEach(g => {
- arishHtml += `<option value="${g.name}" ${activeFilter.arish === g.name ? 'selected' : ''}>${g.sanskritLabel}</option>`;
+ arishHtml += `<option value="${g.name}" ${activeFilter.arish === g.name ? 'selected' : ''}>${g.sanskritLabel || g.name}</option>`;
  });
  arishDropdown.innerHTML = arishHtml;
+ }
 }
 
 function filterCategory(type, name) {
@@ -2439,7 +2988,8 @@ function filterCategory(type, name) {
  renderUI();
 }
 
-function renderCategoryUI(categoryList, targetContainer, currentFilter, completionState = 'all') {
+function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilter, completionState = 'all') {
+ if (!targetContainer) return;
  targetContainer.innerHTML = '';
 
  categoryList.forEach(group => {
@@ -2461,8 +3011,12 @@ function renderCategoryUI(categoryList, targetContainer, currentFilter, completi
  const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
  const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
 
+ const linked = getLinkedGroup(p.syncKey);
+ const connCount = linked.length - 1;
+ const isLinked = connCount > 0;
+
  practicesHtml += `
- <li class="practice-item">
+ <li class="practice-item" data-sync-key="${p.syncKey}">
  <div class="practice-main">
  <label class="checkbox-label">
  <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
@@ -2471,6 +3025,12 @@ function renderCategoryUI(categoryList, targetContainer, currentFilter, completi
  <div class="practice-desc">${p.desc}</div>
  </div>
  </label>
+ <div class="action-group">
+ <span class="link-badge ${isLinked ? 'is-linked' : ''}" onclick="openLinkModal('${p.syncKey}')" title="${isLinked ? `Connected to ${connCount} other practice(s)` : 'Connect to other practices'}">
+ 🔗${isLinked ? ` ${connCount}` : ''}
+ </span>
+ <span class="delete-btn" onclick="deletePractice('${p.syncKey}')" title="Delete Practice">🗑️</span>
+ </div>
  </div>
  
  <div class="duration-section ${dimmedClass}">
@@ -2496,10 +3056,20 @@ function renderCategoryUI(categoryList, targetContainer, currentFilter, completi
  `;
  });
 
- if (practiceCount > 0) {
+ if (practiceCount > 0 || completionState === 'all') {
  const card = document.createElement('div');
- card.className = 'indriya-card';
- let html = `<div class="indriya-header"><span>${group.name}</span></div><ul class="practice-list">`;
+ const groupKey = `${domainKey}_${group.name}`;
+ const isCollapsed = !!collapsedGroups[groupKey];
+ card.className = `indriya-card ${isCollapsed ? 'collapsed' : ''}`;
+ 
+ let html = `
+ <div class="indriya-header" onclick="toggleGroupCollapse('${groupKey}')">
+   <div class="indriya-header-title">
+     <span class="collapse-indicator">▼</span>
+     <span>${group.name}</span>
+   </div>
+ </div>
+ <ul class="practice-list">`;
  html += practicesHtml;
  html += `</ul>`;
  card.innerHTML = html;
@@ -2509,13 +3079,13 @@ function renderCategoryUI(categoryList, targetContainer, currentFilter, completi
 }
 
 function renderUI() {
- renderCategoryUI(dataset.jnanendriyas, document.getElementById('jnanendriyas-container'), activeFilter.jnan, completionFilter.jnan);
- renderCategoryUI(dataset.karmendriyas, document.getElementById('karmendriyas-container'), activeFilter.karm, completionFilter.karm);
- renderCategoryUI(dataset.arishadvargas, document.getElementById('arish-container'), activeFilter.arish, completionFilter.arish);
+ renderCategoryUI('jnanendriyas', dataset.jnanendriyas, document.getElementById('jnanendriyas-container'), activeFilter.jnan, completionFilter.jnan);
+ renderCategoryUI('karmendriyas', dataset.karmendriyas, document.getElementById('karmendriyas-container'), activeFilter.karm, completionFilter.karm);
+ renderCategoryUI('arishadvargas', dataset.arishadvargas, document.getElementById('arish-container'), activeFilter.arish, completionFilter.arish);
 
  const manasContainer = document.getElementById('manas-container');
  if (manasContainer) {
- renderCategoryUI(dataset.manas, manasContainer, activeFilter.manas, completionFilter.manas);
+ renderCategoryUI('manas', dataset.manas, manasContainer, activeFilter.manas, completionFilter.manas);
  }
 }
 
@@ -3205,7 +3775,7 @@ function openAnalyticsChart(type) {
  const opeData = [];
 
  categoryList.forEach(group => {
- labels.push(group.sanskritLabel);
+ labels.push(group.sanskritLabel || group.name);
  const totalPracticesInGroup = group.practices.length;
 
  let dailyOPEValues = [];
@@ -3713,16 +4283,13 @@ function renderPracticeLedger() {
  tr.onmouseenter = () => tr.style.backgroundColor = 'var(--card-sub-bg)';
  tr.onmouseleave = () => tr.style.backgroundColor = 'transparent';
 
- // Click anywhere on the row to toggle the tooltip
  tr.onclick = (e) => {
  e.stopPropagation();
  const tooltip = document.getElementById(`ledger-tt-${index}`);
  const isCurrentlyActive = tooltip ? tooltip.classList.contains('active') : false;
  
- // Close all open tooltips
  document.querySelectorAll('.ledger-tooltip-content.active').forEach(el => el.classList.remove('active'));
  
- // Toggle clicked tooltip
  if (tooltip && !isCurrentlyActive) {
  tooltip.classList.add('active');
  }
@@ -3739,7 +4306,7 @@ function renderPracticeLedger() {
  </div>
  </span>
  </td>
- <td style="padding: 10px 14px; text-align: center; color: #000000; font-weight: 600;">
+ <td style="padding: 10px 14px; text-align: center; color: var(--text-main); font-weight: 600;">
  ${item.attendance} ${item.attendance === 1 ? 'day' : 'days'}
  </td>
  <td style="padding: 10px 14px; text-align: right; font-weight: bold; color: ${item.avgEffic >= 75 ? 'var(--success)' : item.avgEffic >= 40 ? 'var(--accent-gold)' : 'var(--text-sub)'};">
