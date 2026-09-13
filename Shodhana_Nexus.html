@@ -1702,19 +1702,31 @@
 
 <!-- Practice Inter-Linking Modal -->
 <div class="link-modal-overlay" id="linkModalOverlay" onclick="closeLinkModal(event)">
- <div class="link-modal-card" onclick="event.stopPropagation()">
- <div class="link-modal-header">
- <span id="modalTargetTitle">🔗 Connect Practices</span>
- <button class="add-duration-btn" onclick="closeLinkModal()">&times;</button>
- </div>
- <p style="font-size: 0.8rem; color: var(--text-sub);">
- Select practices to synchronize with this one. Actions and historical entries will be retrospectively merged.
- </p>
- <div class="target-list" id="modalTargetList"></div>
- <div style="text-align: right; margin-top: 10px;">
- <button class="auth-btn" style="width: auto; padding: 6px 18px; margin: 0;" onclick="closeLinkModal()">Done</button>
- </div>
- </div>
+  <div class="link-modal-card" onclick="event.stopPropagation()">
+    <div class="link-modal-header">
+      <span id="modalTargetTitle">🔗 Connect Practices</span>
+      <button class="add-duration-btn" onclick="closeLinkModal()">&times;</button>
+    </div>
+    
+    <!-- Search Bar in Linking Modal -->
+    <div style="display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px;">
+      <span style="font-size: 0.9rem; opacity: 0.7;">🔍</span>
+      <input 
+        type="search" 
+        id="linkModalSearchInput" 
+        placeholder="Search practices by name, group, or domain..." 
+        style="background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.85rem; width: 100%;" 
+        oninput="handleLinkModalSearch(this.value)">
+    </div>
+
+    <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: -6px;">
+      Select practices to synchronize with this one. Actions and historical entries will be retrospectively merged.
+    </p>
+    <div class="target-list" id="modalTargetList"></div>
+    <div style="text-align: right; margin-top: 10px;">
+      <button class="auth-btn" style="width: auto; padding: 6px 18px; margin: 0;" onclick="closeLinkModal()">Done</button>
+    </div>
+  </div>
 </div>
 
 <!-- Edit Practices Modal -->
@@ -1941,7 +1953,7 @@ let dataset = {
  practices: [
  { id: "k2_1", syncKey: "karma_yoga", type: "ext", name: "Karma Yoga 🛠️", desc: "Selfless service, cleaning, helping." },
  { id: "k2_2", syncKey: "conscious_action", type: "ext", name: "Conscious Action 🎯", desc: "Intention → Awareness → Deliberate physical action." },
- { id: "k2_3", syncKey: "kaya_sthairyam", type: "ext", name: "Kaya Sthairyam 🧘", desc: "Keeping hands completely still for set period." },
+ { id: "k2_3", syncKey: "kaya_sthairyam_pani", type: "ext", name: "Kaya Sthairyam 🧘", desc: "Keeping hands completely still for set period." },
  { id: "k2_4", syncKey: "fidget_discipline", type: "ext", name: "Fidgeting Discipline ✋", desc: "Reducing tapping, touching, unnecessary movement." },
  { id: "k2_5", syncKey: "digital_hand", type: "ext", name: "Digital-Hand Discipline 📱", desc: "No unconscious scrolling/checking." },
  { id: "k2_6", syncKey: "dana", type: "ext", name: "Dana 🎁", desc: "Training hands to give resources/time." },
@@ -1955,7 +1967,7 @@ let dataset = {
  { id: "k3_1", syncKey: "walking_meditation", type: "ext", name: "Walking Meditation 🚶", desc: "Awareness of lifting, placing, ground contact." },
  { id: "k3_2", syncKey: "mantra_japa", type: "ext", name: "Mantra Walking 📿", desc: "Synchronizing step with mantra." },
  { id: "k3_3", syncKey: "purposeful_movement", type: "ext", name: "Purposeful Movement 🎯", desc: "Asking 'Why am I moving?' before getting up." },
- { id: "k3_4", syncKey: "kaya_sthairyam", type: "ext", name: "Stillness Practice 🧘", desc: "Remaining physically present despite restlessness." },
+ { id: "k3_4", syncKey: "kaya_sthairyam_pada", type: "ext", name: "Stillness Practice 🧘", desc: "Remaining physically present despite restlessness." },
  { id: "k3_5", syncKey: "pradakshina", type: "ext", name: "Pradakshina 🛕", desc: "Conscious sacred circumambulation." },
  { id: "k3_6", syncKey: "grounding_practice", type: "ext", name: "Grounding Practice 🌍", desc: "Awareness of soles of feet during standing." }
  ]
@@ -2739,57 +2751,88 @@ function toggleLinkPair(sourceKey, targetKey) {
   if (searchQuery) handleSearch(searchQuery);
 }
 
-function renderLinkModalList(syncKey) {
- const allFlat = getAllPracticesFlat();
- const list = document.getElementById("modalTargetList");
- if (!list) return;
- list.innerHTML = "";
+let linkModalSearchQuery = '';
+let currentLinkingSyncKey = null;
 
- const activeLinks = getLinkedGroup(syncKey);
- const otherPractices = allFlat.filter(p => p.syncKey !== syncKey);
-
- otherPractices.sort((a, b) => {
-   const aLinked = activeLinks.includes(a.syncKey);
-   const bLinked = activeLinks.includes(b.syncKey);
-   if (aLinked && !bLinked) return -1;
-   if (!aLinked && bLinked) return 1;
-   return a.name.localeCompare(b.name);
- });
-
- otherPractices.forEach(p => {
-   const isLinked = activeLinks.includes(p.syncKey);
-   const dColor = getDomainColorInfo(p.domainKey);
-
-   const item = document.createElement("label");
-   item.className = "target-item";
-   if (isLinked) {
-     item.style.borderColor = dColor.varName;
-     item.style.background = dColor.glow;
-   }
-
-   item.innerHTML = `
-     <input type="checkbox" ${isLinked ? "checked" : ""} onchange="toggleLinkPair('${syncKey}', '${p.syncKey}')">
-     <div style="display: flex; flex-direction: column; flex: 1;">
-       <div style="display: flex; align-items: center; justify-content: space-between;">
-         <span style="font-weight: 600; color: ${isLinked ? dColor.varName : 'inherit'};">${p.name}</span>
-         ${isLinked ? `<span style="font-size: 0.72rem; font-weight: bold; color: ${dColor.varName}; background: var(--card-sub-bg); padding: 1px 6px; border-radius: 4px; border: 1px solid ${dColor.varName};">Linked</span>` : ''}
-       </div>
-       <span style="font-size: 0.75rem; color: var(--text-sub);">${p.domain} • ${p.groupName}</span>
-     </div>
-   `;
-   list.appendChild(item);
- });
+function handleLinkModalSearch(query) {
+  linkModalSearchQuery = query.trim().toLowerCase();
+  if (currentLinkingSyncKey) {
+    renderLinkModalList(currentLinkingSyncKey);
+  }
 }
 
 function openLinkModal(syncKey) {
- const allFlat = getAllPracticesFlat();
- const current = allFlat.find(p => p.syncKey === syncKey);
- if (!current) return;
+  const allFlat = getAllPracticesFlat();
+  const current = allFlat.find(p => p.syncKey === syncKey);
+  if (!current) return;
 
- pushModalHistoryState();
- document.getElementById("modalTargetTitle").innerText = `🔗 Connect: ${current.name}`;
- renderLinkModalList(syncKey);
- document.getElementById("linkModalOverlay").classList.add("active");
+  currentLinkingSyncKey = syncKey;
+  linkModalSearchQuery = '';
+  
+  const searchInput = document.getElementById("linkModalSearchInput");
+  if (searchInput) searchInput.value = '';
+
+  pushModalHistoryState();
+  document.getElementById("modalTargetTitle").innerText = `🔗 Connect: ${current.name}`;
+  renderLinkModalList(syncKey);
+  document.getElementById("linkModalOverlay").classList.add("active");
+}
+
+function renderLinkModalList(syncKey) {
+  const allFlat = getAllPracticesFlat();
+  const list = document.getElementById("modalTargetList");
+  if (!list) return;
+  list.innerHTML = "";
+
+  const activeLinks = getLinkedGroup(syncKey);
+  let otherPractices = allFlat.filter(p => p.syncKey !== syncKey);
+
+  // Apply search query filter
+  if (linkModalSearchQuery) {
+    otherPractices = otherPractices.filter(p => 
+      p.name.toLowerCase().includes(linkModalSearchQuery) ||
+      (p.desc && p.desc.toLowerCase().includes(linkModalSearchQuery)) ||
+      p.domain.toLowerCase().includes(linkModalSearchQuery) ||
+      p.groupName.toLowerCase().includes(linkModalSearchQuery)
+    );
+  }
+
+  if (otherPractices.length === 0) {
+    list.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-sub); font-size: 0.85rem;">No matching practices found.</div>`;
+    return;
+  }
+
+  otherPractices.sort((a, b) => {
+    const aLinked = activeLinks.includes(a.syncKey);
+    const bLinked = activeLinks.includes(b.syncKey);
+    if (aLinked && !bLinked) return -1;
+    if (!aLinked && bLinked) return 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  otherPractices.forEach(p => {
+    const isLinked = activeLinks.includes(p.syncKey);
+    const dColor = getDomainColorInfo(p.domainKey);
+
+    const item = document.createElement("label");
+    item.className = "target-item";
+    if (isLinked) {
+      item.style.borderColor = dColor.varName;
+      item.style.background = dColor.glow;
+    }
+
+    item.innerHTML = `
+      <input type="checkbox" ${isLinked ? "checked" : ""} onchange="toggleLinkPair('${syncKey}', '${p.syncKey}')">
+      <div style="display: flex; flex-direction: column; flex: 1;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-weight: 600; color: ${isLinked ? dColor.varName : 'inherit'};">${p.name}</span>
+          ${isLinked ? `<span style="font-size: 0.72rem; font-weight: bold; color: ${dColor.varName}; background: var(--card-sub-bg); padding: 1px 6px; border-radius: 4px; border: 1px solid ${dColor.varName};">Linked</span>` : ''}
+        </div>
+        <span style="font-size: 0.75rem; color: var(--text-sub);">${p.domain} • ${p.groupName}</span>
+      </div>
+    `;
+    list.appendChild(item);
+  });
 }
 
 function closeLinkModal(event) {
