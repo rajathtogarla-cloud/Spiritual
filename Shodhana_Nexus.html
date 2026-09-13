@@ -109,7 +109,7 @@
  height: 100vh;
  background: rgba(0, 0, 0, 0.5);
  backdrop-filter: blur(3px);
- z-index: 999;
+ z-index: 1005;
  opacity: 0;
  pointer-events: none;
  transition: opacity 0.3s ease;
@@ -128,12 +128,13 @@
  height: 100%;
  background: var(--card-bg);
  border-right: 1px solid var(--border);
- z-index: 1000;
+ z-index: 1010;
  transition: left 0.3s ease;
  display: flex;
  flex-direction: column;
  justify-content: space-between;
- padding: 20px;
+ padding: 20px 20px 85px 20px;
+ overflow-y: auto;
  box-shadow: 2px 0 12px rgba(0,0,0,0.4);
  }
 
@@ -145,7 +146,7 @@
  display: flex;
  justify-content: space-between;
  align-items: center;
- margin-bottom: 25px;
+ margin-bottom: 20px;
  padding-bottom: 15px;
  border-bottom: 1px solid var(--border);
  }
@@ -165,6 +166,15 @@
  }
 
  .sidebar-nav {
+ display: flex;
+ flex-direction: column;
+ gap: 10px;
+ }
+
+ .sidebar-footer {
+ border-top: 1px solid var(--border);
+ padding-top: 15px;
+ margin-top: 20px;
  display: flex;
  flex-direction: column;
  gap: 10px;
@@ -858,7 +868,8 @@
  border: none;
  font-size: 1.8rem;
  color: var(--text-main);
- cursor: line-height: 1;
+ cursor: pointer;
+ line-height: 1;
  z-index: 2;
  }
 
@@ -1285,7 +1296,16 @@
  </div>
  <nav class="sidebar-nav">
  <div class="nav-item" id="themeBtn" onclick="toggleTheme()">☀️ Light</div>
+ <div class="nav-item" onclick="openEditPracticesModal()">✏️ Edit Practices</div>
+ <div class="nav-item" onclick="triggerSidebarAddPractice()">➕ Add Practice</div>
+ <div class="nav-item" style="color: var(--accent-karm);" onclick="triggerSidebarResetProgress()">📛 Reset Progress</div>
  </nav>
+ </div>
+
+ <div class="sidebar-footer">
+ <div class="nav-item" onclick="exportDataToJson()">📤 Export JSON</div>
+ <div class="nav-item" onclick="triggerImportJson()">📥 Import JSON</div>
+ <input type="file" id="importJsonFileInput" accept=".json" style="display: none;" onchange="handleImportJsonFile(event)">
  </div>
  </aside>
 
@@ -1344,9 +1364,7 @@
  </div>
  <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
  <button class="date-nav-btn" id="filter-btn-jnan" onclick="toggleCompletionFilter('jnan')" title="Filter Practices">🔄 All</button>
- <button class="date-nav-btn" onclick="promptAddPracticeContextual('jnan')" title="Add Practice">➕</button>
- <button class="date-nav-btn" onclick="resetContextualJnan()" title="Reset Selection">📛</button>
- </div>
+ </div> 
  </div>
 
  <div class="section-title-wrapper">
@@ -1366,9 +1384,7 @@
  </div>
  <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
  <button class="date-nav-btn" id="filter-btn-karm" onclick="toggleCompletionFilter('karm')" title="Filter Practices">🔄 All</button>
- <button class="date-nav-btn" onclick="promptAddPracticeContextual('karm')" title="Add Practice">➕</button>
- <button class="date-nav-btn" onclick="resetContextualKarm()" title="Reset Selection">📛</button>
- </div>
+ </div> 
  </div>
 
  <div class="section-title-wrapper">
@@ -1410,9 +1426,7 @@
  </div>
  <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
  <button class="date-nav-btn" id="filter-btn-arish" onclick="toggleCompletionFilter('arish')" title="Filter Practices">🔄 All</button>
- <button class="date-nav-btn" onclick="promptAddPracticeContextual('arish')" title="Add Practice">➕</button>
- <button class="date-nav-btn" onclick="resetContextualArish()" title="Reset Selection">📛</button>
- </div>
+ </div> 
  </div>
 
  <div class="section-title-wrapper">
@@ -1433,9 +1447,7 @@
  </div>
  <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
  <button class="date-nav-btn" id="filter-btn-manas" onclick="toggleCompletionFilter('manas')" title="Filter Practices">🔄 All</button>
- <button class="date-nav-btn" onclick="promptAddPracticeContextual('manas')" title="Add Practice">➕</button>
- <button class="date-nav-btn" onclick="resetContextualManas()" title="Reset Selection">📛</button>
- </div>
+ </div> 
  </div>
 
  <div class="section-title-wrapper">
@@ -1701,6 +1713,30 @@
  <div class="target-list" id="modalTargetList"></div>
  <div style="text-align: right; margin-top: 10px;">
  <button class="auth-btn" style="width: auto; padding: 6px 18px; margin: 0;" onclick="closeLinkModal()">Done</button>
+ </div>
+ </div>
+</div>
+
+<!-- Edit Practices Modal -->
+<div class="link-modal-overlay" id="editPracticesModalOverlay" onclick="closeEditPracticesModal(event)">
+ <div class="link-modal-card" onclick="event.stopPropagation()" style="max-width: 650px;">
+ <div class="link-modal-header">
+ <span>✏️ Edit Practice Titles &amp; Descriptions</span>
+ <button class="add-duration-btn" onclick="closeEditPracticesModal()">&times;</button>
+ </div>
+ 
+ <!-- Search Practice inside Edit Modal -->
+ <div style="display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px;">
+   <span style="font-size: 0.9rem; opacity: 0.7;">🔍</span>
+   <input type="search" id="editModalSearchInput" placeholder="Search practices by name or description..." style="background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.85rem; width: 100%;" oninput="handleEditModalSearch(this.value)">
+ </div>
+
+ <p style="font-size: 0.8rem; color: var(--text-sub);">
+ Modify the title or description of any practice. Updates reflect immediately across all categories and logs.
+ </p>
+ <div class="target-list" id="editPracticesList" style="max-height: 400px; gap: 12px;"></div>
+ <div style="text-align: right; margin-top: 10px;">
+ <button class="auth-btn" style="width: auto; padding: 6px 18px; margin: 0;" onclick="closeEditPracticesModal()">Done</button>
  </div>
  </div>
 </div>
@@ -2096,6 +2132,7 @@ let activeFilter = { jnan: 'All', karm: 'All', arish: 'All', manas: 'All' };
 let completionFilter = { jnan: 'all', karm: 'all', arish: 'all', manas: 'all' };
 let collapsedGroups = {};
 let searchQuery = '';
+let editModalSearchQuery = '';
 let activeChartInstance = null;
 let domainBalanceChartInstance = null;
 let domainAccomplishmentChartInstance = null;
@@ -2182,6 +2219,221 @@ function updateHistoryButtons() {
   const rBtn = document.getElementById('globalRedoBtn');
   if (uBtn) uBtn.disabled = !canUndo;
   if (rBtn) rBtn.disabled = !canRedo;
+}
+
+function getCurrentActiveDomainKey() {
+  const activeSection = document.querySelector('.view-section.active');
+  if (!activeSection) return 'jnanendriyas';
+  const id = activeSection.id;
+  if (id === 'jnan-view') return 'jnanendriyas';
+  if (id === 'karm-view') return 'karmendriyas';
+  if (id === 'manas-view') return 'manas';
+  if (id === 'arish-view') return 'arishadvargas';
+  if (id === 'identification-view') return 'identification';
+  return 'jnanendriyas';
+}
+
+function triggerSidebarAddPractice() {
+  closeSidebar();
+  const domainKey = getCurrentActiveDomainKey();
+  const domainKeyToView = {
+    'jnanendriyas': 'jnan',
+    'karmendriyas': 'karm',
+    'manas': 'manas',
+    'arishadvargas': 'arish'
+  };
+  promptAddPracticeContextual(domainKeyToView[domainKey] || 'jnan');
+}
+
+function triggerSidebarResetProgress() {
+  closeSidebar();
+  const domainKey = getCurrentActiveDomainKey();
+  if (domainKey === 'jnanendriyas') resetContextualJnan();
+  else if (domainKey === 'karmendriyas') resetContextualKarm();
+  else if (domainKey === 'manas') resetContextualManas();
+  else if (domainKey === 'arishadvargas') resetContextualArish();
+}
+
+function openEditPracticesModal() {
+  closeSidebar();
+  pushModalHistoryState();
+  editModalSearchQuery = '';
+  const searchInput = document.getElementById('editModalSearchInput');
+  if (searchInput) searchInput.value = '';
+  renderEditPracticesList();
+  document.getElementById('editPracticesModalOverlay').classList.add('active');
+}
+
+function closeEditPracticesModal(event) {
+  if (!event || event.target === document.getElementById('editPracticesModalOverlay') || event.type === 'click') {
+    document.getElementById('editPracticesModalOverlay').classList.remove('active');
+  }
+}
+
+function handleEditModalSearch(query) {
+  editModalSearchQuery = query.trim().toLowerCase();
+  renderEditPracticesList();
+}
+
+function renderEditPracticesList() {
+  const container = document.getElementById('editPracticesList');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  let allFlat = getAllPracticesFlat();
+
+  if (editModalSearchQuery) {
+    allFlat = allFlat.filter(p => 
+      p.name.toLowerCase().includes(editModalSearchQuery) || 
+      (p.desc && p.desc.toLowerCase().includes(editModalSearchQuery)) ||
+      p.domain.toLowerCase().includes(editModalSearchQuery) ||
+      p.groupName.toLowerCase().includes(editModalSearchQuery)
+    );
+  }
+
+  if (allFlat.length === 0) {
+    container.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-sub); font-size: 0.85rem;">No matching practices found.</div>`;
+    return;
+  }
+
+  allFlat.forEach(p => {
+    const dColor = getDomainColorInfo(p.domainKey);
+    const card = document.createElement('div');
+    card.className = 'target-item';
+    card.style.flexDirection = 'column';
+    card.style.alignItems = 'stretch';
+    card.style.cursor = 'default';
+    card.style.borderColor = dColor.varName;
+    card.style.background = dColor.glow;
+
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-size: 0.75rem; color: ${dColor.varName}; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+          <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: ${dColor.varName};"></span>
+          ${p.domain} • ${p.groupName}
+        </span>
+        <button class="tooltip-action-chip" style="border-color: ${dColor.varName}; color: ${dColor.varName};" onclick="savePracticeEdits('${p.syncKey}', this)">Save</button>
+      </div>
+      <input type="text" class="auth-input" style="margin-bottom: 6px; padding: 6px 10px; font-weight: 600; border-color: ${dColor.varName};" value="${p.name.replace(/"/g, '&quot;')}" placeholder="Practice Name" data-edit-name="${p.syncKey}">
+      <textarea class="auth-input" style="margin-bottom: 0; padding: 6px 10px; font-size: 0.8rem; resize: vertical; min-height: 50px; border-color: ${dColor.varName};" placeholder="Practice Description" data-edit-desc="${p.syncKey}">${p.desc || ''}</textarea>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function savePracticeEdits(syncKey, btnElement) {
+  const nameInput = document.querySelector(`[data-edit-name="${syncKey}"]`);
+  const descInput = document.querySelector(`[data-edit-desc="${syncKey}"]`);
+  if (!nameInput || !descInput) return;
+
+  const newName = nameInput.value.trim();
+  const newDesc = descInput.value.trim();
+
+  if (!newName) {
+    alert("Practice name cannot be empty.");
+    return;
+  }
+
+  pushState();
+
+  const domains = ['jnanendriyas', 'karmendriyas', 'manas', 'arishadvargas', 'identification'];
+  domains.forEach(d => {
+    if (dataset[d]) {
+      dataset[d].forEach(group => {
+        group.practices.forEach(p => {
+          if (p.syncKey === syncKey) {
+            p.name = newName;
+            p.desc = newDesc;
+          }
+        });
+      });
+    }
+  });
+
+  saveLogsToLocal();
+  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+  renderUI();
+  updateAnalytics();
+  if (searchQuery) handleSearch(searchQuery);
+
+  if (btnElement) {
+    const origText = btnElement.innerText;
+    btnElement.innerText = "✓ Saved";
+    btnElement.style.borderColor = "var(--success)";
+    btnElement.style.color = "var(--success)";
+    setTimeout(() => {
+      btnElement.innerText = origText;
+      btnElement.style.borderColor = "";
+      btnElement.style.color = "";
+    }, 1500);
+  }
+}
+
+function exportDataToJson() {
+  closeSidebar();
+  const data = {
+    version: "2.0",
+    exportDate: new Date().toISOString(),
+    dataset: dataset,
+    logs: logs,
+    linkGraph: linkGraph
+  };
+  const jsonStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `shodhana_nexus_backup_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function triggerImportJson() {
+  closeSidebar();
+  const fileInput = document.getElementById('importJsonFileInput');
+  if (fileInput) fileInput.click();
+}
+
+function handleImportJsonFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (!parsed || (typeof parsed !== 'object')) {
+        throw new Error("Invalid JSON structure");
+      }
+
+      if (!confirm("Importing this JSON will merge and overwrite current practice data and logs. Do you wish to continue?")) {
+        event.target.value = '';
+        return;
+      }
+
+      pushState();
+
+      if (parsed.dataset) dataset = parsed.dataset;
+      if (parsed.logs) logs = parsed.logs;
+      if (parsed.linkGraph) linkGraph = parsed.linkGraph;
+
+      saveLogsToLocal();
+      if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+      
+      renderSubCategoryDropdowns();
+      renderUI();
+      updateAnalytics();
+      if (searchQuery) handleSearch(searchQuery);
+
+      alert("Data successfully imported!");
+    } catch (err) {
+      alert("Error importing JSON: " + err.message);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
 }
 
 function promptAddPracticeContextual(viewType) {
@@ -2283,13 +2535,19 @@ const parentMap = {
 window.addEventListener('popstate', (event) => {
  const overlay = document.getElementById('chartModalOverlay');
  const linkModal = document.getElementById('linkModalOverlay');
+ const editModal = document.getElementById('editPracticesModalOverlay');
 
- if (linkModal.classList.contains('active')) {
+ if (editModal && editModal.classList.contains('active')) {
+   closeEditPracticesModal();
+   return;
+ }
+
+ if (linkModal && linkModal.classList.contains('active')) {
    closeLinkModal();
    return;
  }
  
- if (overlay.classList.contains('active')) {
+ if (overlay && overlay.classList.contains('active')) {
  if (currentChartContext.practiceIndex !== null) {
  openSubAnalyticsChart(currentChartContext.type, currentChartContext.senseIndex);
  } else if (currentChartContext.senseIndex !== null) {
@@ -2461,7 +2719,6 @@ function syncRetrospectiveDataForGroup(groupKeys) {
 }
 
 function toggleLinkPair(sourceKey, targetKey) {
-  // pushState(); <-- Removed to keep linking outside undo/redo history
   let groupA = getLinkedGroup(sourceKey);
   let groupB = getLinkedGroup(targetKey);
 
@@ -2894,15 +3151,13 @@ function toggleDone(syncKey) {
   if (!isCurrentlyDone) {
     const input = prompt("Enter Execution/Practice efficiency (0-100%):", "");
     
-    // If user cancelled, entered empty string, or pure whitespace
     if (input === null || input.trim() === "") {
-      renderUI(); // Re-render to revert the native checkbox state
+      renderUI(); 
       return;
     }
 
     const eff = parseInt(input.trim(), 10);
     
-    // Check if input is a valid number between 0 and 100
     if (!isNaN(eff) && eff >= 0 && eff <= 100) {
       pushState();
       group.forEach(k => {
@@ -2912,11 +3167,10 @@ function toggleDone(syncKey) {
       });
     } else {
       alert("Please enter a valid number between 0 and 100 to complete this practice.");
-      renderUI(); // Reset checkbox back to unchecked
+      renderUI(); 
       return;
     }
   } else {
-    // Unchecking an already checked item
     pushState();
     group.forEach(k => {
       const d = getSyncData(k);
