@@ -3510,7 +3510,7 @@ function renderDomainBalanceChart() {
  backgroundColor: 'rgba(251, 191, 36, 0.25)',
  borderColor: '#fbbf24',
  pointBackgroundColor: '#fbbf24',
- pointBorderColor: textTheme,
+ pointBorderColor: '#fbbf24',
  borderWidth: 2,
  pointRadius: 4
  }]
@@ -3690,12 +3690,8 @@ function filterLedgerByDomain(domainName) {
       : `Filtered by: <strong>${domainName}</strong>. Click row to reveal tooltip.`;
   }
 
-  if (domainName === 'All') {
-    const mainContainer = document.querySelector('main.container');
-    if (mainContainer) {
-      mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  } else {
+  // Smooth scroll into the ledger only when a specific domain is filtered
+  if (domainName !== 'All') {
     const ledgerEl = document.getElementById('comprehensivePracticeLedgerCard');
     if (ledgerEl) {
       ledgerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -3777,15 +3773,15 @@ const goldAccent = getComputedStyle(document.documentElement).getPropertyValue('
  {
   label: 'Daily APE %',
   data: rawDailyData,
-  borderColor: goldAccent,
-  backgroundColor: goldAccent,
-  pointBackgroundColor: goldAccent,
+  borderColor: '#a1a1aa',
+  backgroundColor: '#a1a1aa',
+  pointBackgroundColor: '#a1a1aa',
   borderWidth: 1.5,
   borderDash: [4, 4],
   pointRadius: 2,
   fill: false,
   tension: 0.3
-},
+ },
  {
  label: '7-Day Rolling Avg %',
  data: rollingAvgData,
