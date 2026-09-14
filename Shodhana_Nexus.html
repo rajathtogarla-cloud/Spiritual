@@ -3653,44 +3653,54 @@ function renderDomainAccomplishmentChart() {
    }
  },
  plugins: {
- legend: {
- position: 'right',
- labels: {
- color: textTheme,
- padding: 12,
- font: { size: 11, weight: '600' }
- },
- onClick: (e, legendItem) => {
-   filterLedgerByDomain(legendItem.text);
- }
- },
- tooltip: {
-   enabled: false
- }
- }
+  legend: {
+    position: 'right',
+    labels: {
+      color: textTheme,
+      padding: 12,
+      font: { size: 11, weight: '600' }
+    },
+    onClick: (e, legendItem, legend) => {
+      const chart = legend.chart;
+      chart.toggleDataVisibility(legendItem.index);
+      chart.update();
+      hideDomainChartTooltip();
+    }
+  },
+  tooltip: {
+    enabled: false
+  }
+}
  }
  });
 }
 
 function filterLedgerByDomain(domainName) {
- ledgerDomainFilter = domainName;
- renderPracticeLedger();
+  ledgerDomainFilter = domainName;
+  renderPracticeLedger();
 
- const resetBtn = document.getElementById('resetLedgerFilterBtn');
- const subTitle = document.getElementById('ledgerSubTitle');
- if (resetBtn) {
-   resetBtn.style.display = domainName === 'All' ? 'none' : 'inline-block';
- }
- if (subTitle) {
-   subTitle.innerHTML = domainName === 'All'
-     ? 'Hover or click over any practice name to view its details and trend line chart'
-     : `Filtered by: <strong>${domainName}</strong>. Click row to reveal tooltip.`;
- }
+  const resetBtn = document.getElementById('resetLedgerFilterBtn');
+  const subTitle = document.getElementById('ledgerSubTitle');
+  if (resetBtn) {
+    resetBtn.style.display = domainName === 'All' ? 'none' : 'inline-block';
+  }
+  if (subTitle) {
+    subTitle.innerHTML = domainName === 'All'
+      ? 'Hover or click over any practice name to view its details and trend line chart'
+      : `Filtered by: <strong>${domainName}</strong>. Click row to reveal tooltip.`;
+  }
 
- const ledgerEl = document.getElementById('comprehensivePracticeLedgerCard');
- if (ledgerEl) {
-   ledgerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
- }
+  if (domainName === 'All') {
+    const mainContainer = document.querySelector('main.container');
+    if (mainContainer) {
+      mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  } else {
+    const ledgerEl = document.getElementById('comprehensivePracticeLedgerCard');
+    if (ledgerEl) {
+      ledgerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 }
 
 function renderRollingTrendChart() {
@@ -3742,17 +3752,22 @@ function renderRollingTrendChart() {
  }
 
  const scrollInner = document.getElementById('trendChartScrollInner');
- if (scrollInner) {
- const parentWidth = scrollInner.parentElement.clientWidth;
- const calculatedWidth = last30Days.length * 28;
+if (scrollInner) {
+  const scrollParent = scrollInner.parentElement;
+  const parentWidth = scrollParent.clientWidth;
+  const calculatedWidth = last30Days.length * 28;
 
- if (calculatedWidth > parentWidth) {
- scrollInner.style.width = calculatedWidth + 'px';
- } else {
- scrollInner.style.width = '100%';
- }
- }
+  if (calculatedWidth > parentWidth) {
+    scrollInner.style.width = calculatedWidth + 'px';
+    requestAnimationFrame(() => {
+      scrollParent.scrollLeft = scrollParent.scrollWidth - scrollParent.clientWidth;
+    });
+  } else {
+    scrollInner.style.width = '100%';
+  }
+}
 
+const goldAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent-gold').trim() || '#fbbf24';
  const ctx = canvas.getContext('2d');
  trendChartInstance = new Chart(ctx, {
  type: 'line',
@@ -3760,15 +3775,17 @@ function renderRollingTrendChart() {
  labels: timeLabels,
  datasets: [
  {
- label: 'Daily APE %',
- data: rawDailyData,
- borderColor: borderTheme,
- borderWidth: 1.5,
- borderDash: [4, 4],
- pointRadius: 2,
- fill: false,
- tension: 0.3
- },
+  label: 'Daily APE %',
+  data: rawDailyData,
+  borderColor: goldAccent,
+  backgroundColor: goldAccent,
+  pointBackgroundColor: goldAccent,
+  borderWidth: 1.5,
+  borderDash: [4, 4],
+  pointRadius: 2,
+  fill: false,
+  tension: 0.3
+},
  {
  label: '7-Day Rolling Avg %',
  data: rollingAvgData,
