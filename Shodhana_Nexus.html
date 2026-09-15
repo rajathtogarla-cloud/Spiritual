@@ -1566,11 +1566,16 @@
 
 <!-- Comprehensive Practice Ledger -->
 <div class="chart-card" id="comprehensivePracticeLedgerCard" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative;">
- <div style="text-align: center; margin-bottom: 4px;">
-   <h2 style="font-size: 1.1rem; color: var(--accent-gold); margin: 0; display: inline-block;">📋 Comprehensive Practice Ledger</h2>
-   <button id="resetLedgerFilterBtn" onclick="filterLedgerByDomain('All')" style="display: none; position: absolute; right: 20px; top: 20px; background: var(--nav-btn-bg); color: var(--text-main); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 600;">
+ 
+ <!-- Clear Filter Button positioned in the top right corner above the heading -->
+ <div style="display: flex; justify-content: flex-end; margin-bottom: 6px; min-height: 28px;">
+   <button id="resetLedgerFilterBtn" onclick="filterLedgerByDomain('All')" style="display: none; background: var(--nav-btn-bg); color: var(--text-main); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 600; transition: background 0.2s ease;">
      ✕ Clear Domain Filter
    </button>
+ </div>
+
+ <div style="text-align: center; margin-bottom: 4px;">
+   <h2 style="font-size: 1.1rem; color: var(--accent-gold); margin: 0; display: inline-block;">📋 Comprehensive Practice Ledger</h2>
  </div>
  <p id="ledgerSubTitle" style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
  Hover or click over any practice name to view its details and trend line chart
@@ -3676,6 +3681,7 @@ function renderDomainAccomplishmentChart() {
 }
 
 function filterLedgerByDomain(domainName) {
+  const previousFilter = ledgerDomainFilter;
   ledgerDomainFilter = domainName;
   renderPracticeLedger();
 
@@ -3690,13 +3696,23 @@ function filterLedgerByDomain(domainName) {
       : `Filtered by: <strong>${domainName}</strong>. Click row to reveal tooltip.`;
   }
 
-  // Target the container directly to prevent the outer window from shifting
+  const container = document.querySelector('main.container');
+
   if (domainName !== 'All') {
+    // Scroll down to the Ledger table when a filter is applied
     const ledgerEl = document.getElementById('comprehensivePracticeLedgerCard');
-    const container = document.querySelector('main.container');
     if (ledgerEl && container) {
       container.scrollTo({
-        top: ledgerEl.offsetTop - 20, // 20px padding offset
+        top: ledgerEl.offsetTop - 20,
+        behavior: 'smooth'
+      });
+    }
+  } else if (previousFilter !== 'All') {
+    // Scroll back up to the Accomplishment Chart when clearing the filter
+    const chartCard = document.getElementById('domainAccomplishmentCard');
+    if (chartCard && container) {
+      container.scrollTo({
+        top: chartCard.offsetTop - 20,
         behavior: 'smooth'
       });
     }
