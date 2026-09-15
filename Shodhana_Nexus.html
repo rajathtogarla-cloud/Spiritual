@@ -3690,11 +3690,15 @@ function filterLedgerByDomain(domainName) {
       : `Filtered by: <strong>${domainName}</strong>. Click row to reveal tooltip.`;
   }
 
-  // Smooth scroll into the ledger only when a specific domain is filtered
+  // Target the container directly to prevent the outer window from shifting
   if (domainName !== 'All') {
     const ledgerEl = document.getElementById('comprehensivePracticeLedgerCard');
-    if (ledgerEl) {
-      ledgerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const container = document.querySelector('main.container');
+    if (ledgerEl && container) {
+      container.scrollTo({
+        top: ledgerEl.offsetTop - 20, // 20px padding offset
+        behavior: 'smooth'
+      });
     }
   }
 }
