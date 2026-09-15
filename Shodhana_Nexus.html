@@ -3683,6 +3683,8 @@ function renderDomainAccomplishmentChart() {
 function filterLedgerByDomain(domainName) {
   const previousFilter = ledgerDomainFilter;
   ledgerDomainFilter = domainName;
+  
+  // 1. Update the table DOM first
   renderPracticeLedger();
 
   const resetBtn = document.getElementById('resetLedgerFilterBtn');
@@ -3696,27 +3698,34 @@ function filterLedgerByDomain(domainName) {
       : `Filtered by: <strong>${domainName}</strong>. Click row to reveal tooltip.`;
   }
 
-  const container = document.querySelector('main.container');
+  // 2. Wait 50ms for the browser to repaint the new table heights, then scroll
+  setTimeout(() => {
+    const container = document.querySelector('main.container');
+    if (!container) return;
 
-  if (domainName !== 'All') {
-    // Scroll down to the Ledger table when a filter is applied
-    const ledgerEl = document.getElementById('comprehensivePracticeLedgerCard');
-    if (ledgerEl && container) {
+    let targetEl = null;
+
+    if (domainName !== 'All') {
+      // Scroll down to the Ledger table when a filter is applied
+      targetEl = document.getElementById('comprehensivePracticeLedgerCard');
+    } else if (previousFilter !== 'All') {
+      // Scroll back up to the Accomplishment Chart when clearing the filter
+      targetEl = document.getElementById('domainAccomplishmentCard');
+    }
+
+    if (targetEl) {
+      // Bulletproof calculation to get the exact scroll position within the container
+      const targetPos = targetEl.getBoundingClientRect().top 
+                      + container.scrollTop 
+                      - container.getBoundingClientRect().top 
+                      - 20; // 20px visual buffer at the top
+      
       container.scrollTo({
-        top: ledgerEl.offsetTop - 20,
+        top: targetPos,
         behavior: 'smooth'
       });
     }
-  } else if (previousFilter !== 'All') {
-    // Scroll back up to the Accomplishment Chart when clearing the filter
-    const chartCard = document.getElementById('domainAccomplishmentCard');
-    if (chartCard && container) {
-      container.scrollTo({
-        top: chartCard.offsetTop - 20,
-        behavior: 'smooth'
-      });
-    }
-  }
+  }, 50);
 }
 
 function renderRollingTrendChart() {
