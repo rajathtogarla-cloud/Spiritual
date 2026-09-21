@@ -1341,9 +1341,9 @@
  <div class="hub-title" style="color: var(--accent-karm);">Karmendriyas</div>
  <div class="hub-desc">5 Executive Senses — Speech (Vāk), Grasping (Pāṇi), Movement (Pāda), Generation (Upastha), Elimination (Pāyu)</div>
  </div>
- <div class="hub-card" onclick="openView('antahkarana-hub-view')">
+ <div class="hub-card" onclick="openView('antarsamyama-hub-view')">
  <div class="hub-icon">🛡️</div>
- <div class="hub-title" style="color: var(--accent-antah);">Antahkarana</div>
+ <div class="hub-title" style="color: var(--accent-antah);">Antarsamyama</div>
  <div class="hub-desc">Internal Instruments — Manas, Arishadvargas &amp; Identification</div>
  </div>
  <div class="hub-card" onclick="openView('analytics-view')">
@@ -1394,8 +1394,8 @@
  <div id="karmendriyas-container"></div>
  </div>
 
- <div id="antahkarana-hub-view" class="view-section">
- <h2 class="section-title" style="color: var(--accent-antah); margin-bottom: 20px; border-bottom: none;">🛡️ Antahkarana Hub</h2>
+ <div id="antarsamyama-hub-view" class="view-section">
+ <h2 class="section-title" style="color: var(--accent-antah); margin-bottom: 20px; border-bottom: none;">🛡️ Antarsamyama Hub</h2>
  <div class="hub-grid">
  <div class="hub-card" onclick="openView('manas-view')">
  <div class="hub-icon">💭</div>
@@ -1430,7 +1430,7 @@
  </div>
 
  <div class="section-title-wrapper">
- <h2 class="section-title" style="color: var(--accent-arish);">🛡️ Arishadvargas 👇</h2>
+ <h2 class="section-title" style="color: var(--accent-arish);">🔖 Arishadvargas 👇</h2>
  <select id="arish-dropdown" class="indriya-dropdown" onchange="filterCategory('arish', this.value)"></select>
  </div>
  <div id="arish-container"></div>
@@ -1661,8 +1661,8 @@
  <div class="nav-item" id="bottom-nav-karm" onclick="navTo('karm-view')">
  <span style="font-size: 1.1rem;">🛠️</span> Karmendriyas
  </div>
- <div class="nav-item" id="bottom-nav-antahkarana" onclick="navTo('antahkarana-hub-view')">
- <span style="font-size: 1.1rem;">🛡️</span> Antahkarana
+ <div class="nav-item" id="bottom-nav-antarsamyama" onclick="navTo('antarsamyama-hub-view')">
+ <span style="font-size: 1.1rem;">🛡️</span> Antarsamyama
  </div>
  <div class="nav-item" id="bottom-nav-analytics" onclick="navTo('analytics-view')">
  <span style="font-size: 1.1rem;">📊</span> Analytics
@@ -2542,10 +2542,10 @@ const parentMap = {
  'jnan-view': 'hub-view',
  'karm-view': 'hub-view',
  'analytics-view': 'hub-view',
- 'antahkarana-hub-view': 'hub-view',
- 'arish-view': 'antahkarana-hub-view',
- 'manas-view': 'antahkarana-hub-view',
- 'identification-view': 'antahkarana-hub-view',
+ 'antarsamyama-hub-view': 'hub-view',
+ 'arish-view': 'antarsamyama-hub-view',
+ 'manas-view': 'antarsamyama-hub-view',
+ 'identification-view': 'antarsamyama-hub-view',
  'settings-view': 'hub-view'
 };
 
@@ -3017,8 +3017,8 @@ function openView(viewId, pushToHistory = true) {
  if (viewId === 'hub-view') document.getElementById('bottom-nav-home').classList.add('active');
  if (viewId === 'jnan-view') document.getElementById('bottom-nav-jnan').classList.add('active');
  if (viewId === 'karm-view') document.getElementById('bottom-nav-karm').classList.add('active');
- if (viewId === 'antahkarana-hub-view' || viewId === 'arish-view' || viewId === 'manas-view' || viewId === 'identification-view') {
- document.getElementById('bottom-nav-antahkarana').classList.add('active');
+ if (viewId === 'antarsamyama-hub-view' || viewId === 'arish-view' || viewId === 'manas-view' || viewId === 'identification-view') {
+ document.getElementById('bottom-nav-antarsamyama').classList.add('active');
  }
  if (viewId === 'analytics-view') {
  document.getElementById('bottom-nav-analytics').classList.add('active');
