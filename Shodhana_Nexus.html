@@ -1341,9 +1341,9 @@
  <div class="hub-title" style="color: var(--accent-karm);">Karmendriyas</div>
  <div class="hub-desc">5 Executive Senses — Speech (Vāk), Grasping (Pāṇi), Movement (Pāda), Generation (Upastha), Elimination (Pāyu)</div>
  </div>
- <div class="hub-card" onclick="openView('antarsamyama-hub-view')">
+ <div class="hub-card" onclick="openView('antarmukha-hub-view')">
  <div class="hub-icon">🛡️</div>
- <div class="hub-title" style="color: var(--accent-antah);">Antarsamyama</div>
+ <div class="hub-title" style="color: var(--accent-antah);">Antarmukha</div>
  <div class="hub-desc">Internal Instruments — Manas, Arishadvargas &amp; Identification</div>
  </div>
  <div class="hub-card" onclick="openView('analytics-view')">
@@ -1394,8 +1394,8 @@
  <div id="karmendriyas-container"></div>
  </div>
 
- <div id="antarsamyama-hub-view" class="view-section">
- <h2 class="section-title" style="color: var(--accent-antah); margin-bottom: 20px; border-bottom: none;">🛡️ Antarsamyama Hub</h2>
+ <div id="antarmukha-hub-view" class="view-section">
+ <h2 class="section-title" style="color: var(--accent-antah); margin-bottom: 20px; border-bottom: none;">🛡️ Antarmukha Hub</h2>
  <div class="hub-grid">
  <div class="hub-card" onclick="openView('manas-view')">
  <div class="hub-icon">💭</div>
@@ -1403,7 +1403,7 @@
  <div class="hub-desc">Internal representation, elaboration, and mental movement</div>
  </div>
  <div class="hub-card" onclick="openView('arish-view')">
- <div class="hub-icon">🔖</div>
+ <div class="hub-icon">♨️</div>
  <div class="hub-title" style="color: var(--accent-arish);">Arishadvargas</div>
  <div class="hub-desc">Transforming antidotes for the 6 inner enemies</div>
  </div>
@@ -1430,7 +1430,7 @@
  </div>
 
  <div class="section-title-wrapper">
- <h2 class="section-title" style="color: var(--accent-arish);">🔖 Arishadvargas 👇</h2>
+ <h2 class="section-title" style="color: var(--accent-arish);">♨️ Arishadvargas 👇</h2>
  <select id="arish-dropdown" class="indriya-dropdown" onchange="filterCategory('arish', this.value)"></select>
  </div>
  <div id="arish-container"></div>
@@ -1459,10 +1459,23 @@
 
  <!-- IDENTIFICATION VIEW -->
  <div id="identification-view" class="view-section">
+ <div class="top-toolbar">
+ <div class="date-controls">
+ <button class="date-nav-btn" onclick="shiftDate(-1)">❮</button>
+ <div class="date-picker-wrapper">
+ <span class="formatted-date-display global-date-display"></span>
+ <input type="date" class="hidden-date-input global-date-input" onchange="setDateFromInput(this.value)">
+ </div>
+ <button class="date-nav-btn" onclick="shiftDate(1)">❯</button>
+ <button class="date-nav-btn" id="filter-btn-identification" onclick="toggleCompletionFilter('identification')" title="Filter Practices">🔄 All</button>
+ </div> 
+ </div>
+
  <div class="section-title-wrapper">
  <h2 class="section-title" style="color: var(--accent-ident);">🪞 Identification 👇</h2>
+ <select id="identification-dropdown" class="indriya-dropdown" onchange="filterCategory('identification', this.value)"></select>
  </div>
- <p style="color: var(--text-sub); text-align: center; margin-top: 40px;">Practices coming soon...</p>
+ <div id="identification-container"></div>
  </div>
 
  <div id="analytics-view" class="view-section">
@@ -1622,7 +1635,7 @@
  
 <div class="analytics-section-wrapper">
  <button class="analytics-btn" style="color: var(--accent-arish);" onclick="openAnalyticsChart('arish')">
- 🛡️ Arishadvargas Deep-Dive
+ ♨️ Arishadvargas Deep-Dive
  </button>
  </div>
 
@@ -1661,8 +1674,8 @@
  <div class="nav-item" id="bottom-nav-karm" onclick="navTo('karm-view')">
  <span style="font-size: 1.1rem;">🛠️</span> Karmendriyas
  </div>
- <div class="nav-item" id="bottom-nav-antarsamyama" onclick="navTo('antarsamyama-hub-view')">
- <span style="font-size: 1.1rem;">🛡️</span> Antarsamyama
+ <div class="nav-item" id="bottom-nav-antarmukha" onclick="navTo('antarmukha-hub-view')">
+ <span style="font-size: 1.1rem;">🛡️</span> Antarmukha
  </div>
  <div class="nav-item" id="bottom-nav-analytics" onclick="navTo('analytics-view')">
  <span style="font-size: 1.1rem;">📊</span> Analytics
@@ -1829,28 +1842,57 @@
  };
 
  function startFirestoreListener(uid) {
- const docRef = doc(db, "userLogs", uid);
- 
- unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
- isRemoteSyncing = true;
- if (docSnap.exists()) {
- const data = docSnap.data();
- logs = data.logs || {};
- if (data.linkGraph) linkGraph = data.linkGraph;
- if (data.dataset) dataset = data.dataset;
- } else {
- logs = {};
- linkGraph = {};
- }
- saveLogsToLocal(); 
- renderSubCategoryDropdowns();
- renderUI();
- updateAnalytics();
- isRemoteSyncing = false;
- }, (error) => {
- console.error("Firestore listener error:", error);
- isRemoteSyncing = false;
- });
+   const docRef = doc(db, "userLogs", uid);
+   
+   // 1. Snapshot the hardcoded file baseline into memory before onSnapshot can touch it
+   const localBaselineDataset = JSON.parse(JSON.stringify(dataset));
+
+   unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
+     isRemoteSyncing = true;
+     if (docSnap.exists()) {
+       const data = docSnap.data();
+       logs = data.logs || {};
+       if (data.linkGraph) linkGraph = data.linkGraph;
+       
+       if (data.dataset) {
+         // Pull and keep your newer cloud practices intact
+         dataset = data.dataset; 
+
+         let hasNewDomains = false;
+
+         // Check every domain defined in your file
+         Object.keys(localBaselineDataset).forEach((domainKey) => {
+           // If missing or empty in Firestore, inject the local domain
+           if (!dataset[domainKey] || (Array.isArray(dataset[domainKey]) && dataset[domainKey].length === 0)) {
+             dataset[domainKey] = localBaselineDataset[domainKey];
+             hasNewDomains = true;
+             console.log(`Discovered and injected new domain: ${domainKey}`);
+           }
+         });
+
+         // Upload the merged dataset to Firestore only if a new domain was added
+         if (hasNewDomains) {
+           setTimeout(() => {
+             if (typeof window.saveLogsToFirestore === 'function') {
+               window.saveLogsToFirestore();
+             }
+           }, 500);
+         }
+       }
+     } else {
+       logs = {};
+       linkGraph = {};
+     }
+     
+     saveLogsToLocal(); 
+     renderSubCategoryDropdowns();
+     renderUI();
+     updateAnalytics();
+     isRemoteSyncing = false;
+   }, (error) => {
+     console.error("Firestore listener error:", error);
+     isRemoteSyncing = false;
+   });
  }
 
  window.saveLogsToFirestore = async function() {
@@ -2138,15 +2180,111 @@ let dataset = {
     }
   ],
 
- identification: []
+ identification: [
+ {
+ name: "Sthula Sharira (Gross Body) 🧱",
+ sanskritLabel: "Sthūla",
+ practices: [
+ { id: "id_s1", syncKey: "id_neti_body", type: "int", name: "Neti-Neti Body Inquiry 🧘", desc: "Systematically examine body parts ('Am I this body?') to discern: 'This is known by me; therefore it is not me.'" },
+ { id: "id_s2", syncKey: "id_body_scan", type: "int", name: "Body Scanning with Witnessing 🔍", desc: "Move attention head-to-toe, noting sensations as objects known by Awareness." },
+ { id: "id_s3", syncKey: "id_physical_stillness", type: "int", name: "Physical Stillness and Somatic Witnessing 🚶", desc: "Sit motionless for 15-30 minutes daily, silently watching sensations without reacting." },
+ { id: "id_s4", syncKey: "id_marana_smriti", type: "int", name: "Death Contemplation (Marana-Smriti) 💀", desc: "Reflect on physical impermanence and element dissolution to loosen body-identity." },
+ { id: "id_s5", syncKey: "id_appearance_deapp", type: "int", name: "Appearance De-appropriation 🪞", desc: "View the body in a mirror as a temporary instrument, not 'me'." },
+ { id: "id_s6", syncKey: "id_health_equanimity", type: "int", name: "Health and Illness Equanimity ⚖️", desc: "Treat health and sickness as transient bodily conditions that do not define Awareness." },
+ { id: "id_s7", syncKey: "id_possession_deapp", type: "int", name: "Possession De-appropriation 📦", desc: "Audit belongings, releasing psychological ownership while retaining functional utility." },
+ { id: "id_s8", syncKey: "id_body_karma_yoga", type: "int", name: "Body as Instrument (Karma Yoga) 🛠️", desc: "Dedicate physical action to selfless service without identifying as the actor." }
+ ]
+ },
+ {
+ name: "Sukshma - Jnanendriyas (Sense Faculties) 👁️",
+ sanskritLabel: "Jñānendriya",
+ practices: [
+ { id: "id_sk_j1", syncKey: "id_perception_wit", type: "int", name: "Perception Witnessing 👂", desc: "Observe sensory streams as incoming data rather than personal identity." },
+ { id: "id_sk_j2", syncKey: "id_perceiver_deapp", type: "int", name: "Perceiver De-appropriation 🫴", desc: "Drop 'I am the seer/hearer'; rest as the witness of perception." },
+ { id: "id_sk_j3", syncKey: "id_sensory_equan", type: "int", name: "Sensory Equanimity ⚖️", desc: "Maintain neutrality whether senses are sharp, impaired, pleasant, or unpleasant." },
+ { id: "id_sk_j4", syncKey: "id_pref_neutral", type: "int", name: "Preference Neutralization 🛑", desc: "Observe sensory likes and dislikes (raga-dvesha) upon contact without adopting them as identity." }
+ ]
+ },
+ {
+ name: "Sukshma - Karmendriyas (Action Faculties) 🖐️",
+ sanskritLabel: "Karmendriya",
+ practices: [
+ { id: "id_sk_k1", syncKey: "id_action_wit", type: "int", name: "Action and Speech Witnessing 🗣️", desc: "Observe speech and movement as physiological operations unfolding in awareness." },
+ { id: "id_sk_k2", syncKey: "id_kartrtva_tyaga", type: "int", name: "Doership De-appropriation (Kartritva-Tyaga) 🫴", desc: "Release claims of agency ('Action belongs to the instruments')." },
+ { id: "id_sk_k3", syncKey: "id_skill_equan", type: "int", name: "Skill Equanimity ⚖️", desc: "Remain unattached to physical eloquence, dexterity, clumsiness, or fatigue." },
+ { id: "id_sk_k4", syncKey: "id_organs_inst", type: "int", name: "Organs as Pure Instruments 🛠️", desc: "Employ motor faculties for functional necessity without using performance to bolster ego." }
+ ]
+ },
+ {
+ name: "Sukshma - Prana (Vital Force) ⚡",
+ sanskritLabel: "Prāṇa",
+ practices: [
+ { id: "id_sk_p1", syncKey: "id_prana_wit", type: "int", name: "Prana Witnessing 🧘", desc: "Observe vitality and breath rhythms without labeling them 'my energy'." },
+ { id: "id_sk_p2", syncKey: "id_pranayama_wit", type: "int", name: "Pranayama with Witnessing 🫁", desc: "Regulate breath while consciously holding the stance of the uninvolved witness." },
+ { id: "id_sk_p3", syncKey: "id_energy_equan", type: "int", name: "Energy Fluctuation Equanimity ⚖️", desc: "Maintain baseline neutrality through energy spikes and states of exhaustion." },
+ { id: "id_sk_p4", syncKey: "id_prana_ishvararpana", type: "int", name: "Prana as Instrument (Ishvararpana) 🪔", desc: "Direct vital energy into service, offering output to the Divine rather than claiming it." }
+ ]
+ },
+ {
+ name: "Sukshma - Buddhi (Intellect and Judgement) 💡",
+ sanskritLabel: "Buddhi",
+ practices: [
+ { id: "id_sk_b1", syncKey: "id_opinion_deapp", type: "int", name: "Opinion De-appropriation 🫴", desc: "Hold mental models and perspectives as practical tools rather than personal truths." },
+ { id: "id_sk_b2", syncKey: "id_rightness_equan", type: "int", name: "Rightness Equanimity ⚖️", desc: "Relinquish the compulsive impulse to defend, argue, or be proven right." },
+ { id: "id_sk_b3", syncKey: "id_knowledge_deapp", type: "int", name: "Knowledge De-appropriation 📚", desc: "Discard the identity of the 'expert', treating knowledge as shared information." },
+ { id: "id_sk_b4", syncKey: "id_conclusion_deapp", type: "int", name: "Conclusion De-appropriation 🔄", desc: "Hold deductions lightly as current understanding subject to change." },
+ { id: "id_sk_b5", syncKey: "id_intellect_inst", type: "int", name: "Intellect as Instrument 🛠️", desc: "Apply logic to practical tasks without tying intellectual competence to self-worth." }
+ ]
+ },
+ {
+ name: "Sukshma - Ahankara (Ego and Roles) 🎭",
+ sanskritLabel: "Ahaṅkāra",
+ practices: [
+ { id: "id_sk_a1", syncKey: "id_personality_wit", type: "int", name: "Personality Witnessing 👁️", desc: "Watch character traits and defense mechanisms play out without adopting them as the Self." },
+ { id: "id_sk_a2", syncKey: "id_ego_wit", type: "int", name: "Ego Witnessing 🧘", desc: "Directly witness sensations of superiority or inferiority without indulging or fighting them." },
+ { id: "id_sk_a3", syncKey: "id_functional_self", type: "int", name: "Functional Self vs. Ultimate Self ⚖️", desc: "Utilize the functional ego as an operating system while knowing it is not the ultimate Subject." },
+ { id: "id_sk_a4", syncKey: "id_role_wit", type: "int", name: "Role Witnessing 👁️", desc: "Maintain continuous awareness throughout daily tasks (acting in the role of parent/professional)." },
+ { id: "id_sk_a5", syncKey: "id_reputation_deapp", type: "int", name: "Reputation De-appropriation 🫴", desc: "Release investment in social standing, public estimation, and image management." },
+ { id: "id_sk_a6", syncKey: "id_status_deapp", type: "int", name: "Status De-appropriation 📊", desc: "Recognize titles and ranks as transient social conveniences." },
+ { id: "id_sk_a7", syncKey: "id_role_transition", type: "int", name: "Role Transition Practice 🔄", desc: "Consciously drop one identity before stepping into another." },
+ { id: "id_sk_a8", syncKey: "id_service_role_deapp", type: "int", name: "Service as Role De-appropriation 🤝", desc: "Undertake humble, invisible tasks detached from prestige or validation." }
+ ]
+ },
+ {
+ name: "Sukshma - Citta (Memory and Narrative) 📜",
+ sanskritLabel: "Citta",
+ practices: [
+ { id: "id_sk_c1", syncKey: "id_memory_wit", type: "int", name: "Memory Witnessing 👁️", desc: "Notice past events arising into current awareness as inert mental objects." },
+ { id: "id_sk_c2", syncKey: "id_narrative_deapp", type: "int", name: "Narrative De-appropriation 🫴", desc: "Drop psychological attachment to personal life stories (victim, hero, underdog)." },
+ { id: "id_sk_c3", syncKey: "id_past_deapp", type: "int", name: "Past De-appropriation 🔄", desc: "Acknowledge history as departed data possessing no authority over the present moment." },
+ { id: "id_sk_c4", syncKey: "id_story_wit", type: "int", name: "Story Witnessing 📖", desc: "Recognize internal commentary and myth-making as continuous mental fiction." },
+ { id: "id_sk_c5", syncKey: "id_memory_inst", type: "int", name: "Memory as Instrument 🛠️", desc: "Retrieve factual memories strictly for functional utility rather than identity validation." }
+ ]
+ },
+ {
+ name: "Karana Sharira (Causal Body) 🌌",
+ sanskritLabel: "Kāraṇa",
+ practices: [
+ { id: "id_k1", syncKey: "id_root_ignorance_wit", type: "int", name: "Root Ignorance Witnessing 👁️", desc: "Observe the primordial feeling of separateness or unexamined unknowing prior to thought." },
+ { id: "id_k2", syncKey: "id_latent_vasanas_wit", type: "int", name: "Latent Impression Witnessing (Vasanas) 🌱", desc: "Detect unsprouted causal seeds and subconscious impulses at their root before they crystallize into personal identity." },
+ { id: "id_k3", syncKey: "id_doership_seed_deapp", type: "int", name: "Doership Seed De-appropriation (Akartritva) 🫴", desc: "Dissolve the root assumption of being an autonomous agent ('I am not the doer')." },
+ { id: "id_k4", syncKey: "id_experiencer_deapp", type: "int", name: "Experiencer De-appropriation (Abhoktritva) 🧘", desc: "Reassign experiences as impersonal movements within consciousness rather than personal possessions." },
+ { id: "id_k5", syncKey: "id_spiritual_journey_deapp", type: "int", name: "Spiritual Journey De-appropriation 🛤️", desc: "Release subtle ego identity built around being a seeker or advanced practitioner." },
+ { id: "id_k6", syncKey: "id_blankness_void_wit", type: "int", name: "Blankness and Void Witnessing (Susupti) 😴", desc: "Observe deep sleep, darkness, or non-conceptual states without mistaking absence of objects for non-existence." },
+ { id: "id_k7", syncKey: "id_bliss_deapp", type: "int", name: "Bliss De-appropriation (Ananda) 🌸", desc: "Enjoy uncaused quietude and peace without claiming the experience as 'my state' or an egoic attainment." },
+ { id: "id_k8", syncKey: "id_causal_body_neti_wit", type: "int", name: "Causal Body Witnessing and Neti-Neti 🌌", desc: "Systematically discard even the subtle sense of individual existence ('Not this, not this')." },
+ { id: "id_k9", syncKey: "id_abiding_pure_consciousness", type: "int", name: "Abiding as Pure Consciousness (Turiya) ♾️", desc: "Rest as pristine, unconfined non-dual Awareness, remaining completely unbound across all states." }
+ ]
+ }
+ ]
 };
 
 let currentDate = new Date().toISOString().split('T')[0];
 let currentTheme = 'dark';
 let logs = {}; 
 let linkGraph = {};
-let activeFilter = { jnan: 'All', karm: 'All', arish: 'All', manas: 'All' };
-let completionFilter = { jnan: 'all', karm: 'all', arish: 'all', manas: 'all' };
+let activeFilter = { jnan: 'All', karm: 'All', arish: 'All', manas: 'All', identification: 'All' };
+let completionFilter = { jnan: 'all', karm: 'all', arish: 'all', manas: 'all', identification: 'all' };
 let collapsedGroups = {};
 let searchQuery = '';
 let editModalSearchQuery = '';
@@ -2257,7 +2395,8 @@ function triggerSidebarAddPractice() {
     'jnanendriyas': 'jnan',
     'karmendriyas': 'karm',
     'manas': 'manas',
-    'arishadvargas': 'arish'
+    'arishadvargas': 'arish',
+    'identification': 'identification'
   };
   promptAddPracticeContextual(domainKeyToView[domainKey] || 'jnan');
 }
@@ -2269,6 +2408,7 @@ function triggerSidebarResetProgress() {
   else if (domainKey === 'karmendriyas') resetContextualKarm();
   else if (domainKey === 'manas') resetContextualManas();
   else if (domainKey === 'arishadvargas') resetContextualArish();
+  else if (domainKey === 'identification') resetContextualIdentification();
 }
 
 function openEditPracticesModal() {
@@ -2542,10 +2682,10 @@ const parentMap = {
  'jnan-view': 'hub-view',
  'karm-view': 'hub-view',
  'analytics-view': 'hub-view',
- 'antarsamyama-hub-view': 'hub-view',
- 'arish-view': 'antarsamyama-hub-view',
- 'manas-view': 'antarsamyama-hub-view',
- 'identification-view': 'antarsamyama-hub-view',
+ 'antarmukha-hub-view': 'hub-view',
+ 'arish-view': 'antarmukha-hub-view',
+ 'manas-view': 'antarmukha-hub-view',
+ 'identification-view': 'antarmukha-hub-view',
  'settings-view': 'hub-view'
 };
 
@@ -2906,7 +3046,8 @@ function handleSearch(query) {
  ...dataset.jnanendriyas.map(g => ({ ...g, categoryType: 'Jnanendriyas', domainKey: 'jnanendriyas' })),
  ...dataset.karmendriyas.map(g => ({ ...g, categoryType: 'Karmendriyas', domainKey: 'karmendriyas' })),
  ...dataset.arishadvargas.map(g => ({ ...g, categoryType: 'Arishadvargas', domainKey: 'arishadvargas' })),
- ...dataset.manas.map(g => ({ ...g, categoryType: 'Manas', domainKey: 'manas' }))
+ ...dataset.manas.map(g => ({ ...g, categoryType: 'Manas', domainKey: 'manas' })),
+ ...((dataset.identification || []).map(g => ({ ...g, categoryType: 'Identification', domainKey: 'identification' })))
  ];
 
  let hasMatches = false;
@@ -3017,8 +3158,8 @@ function openView(viewId, pushToHistory = true) {
  if (viewId === 'hub-view') document.getElementById('bottom-nav-home').classList.add('active');
  if (viewId === 'jnan-view') document.getElementById('bottom-nav-jnan').classList.add('active');
  if (viewId === 'karm-view') document.getElementById('bottom-nav-karm').classList.add('active');
- if (viewId === 'antarsamyama-hub-view' || viewId === 'arish-view' || viewId === 'manas-view' || viewId === 'identification-view') {
- document.getElementById('bottom-nav-antarsamyama').classList.add('active');
+ if (viewId === 'antarmukha-hub-view' || viewId === 'arish-view' || viewId === 'manas-view' || viewId === 'identification-view') {
+ document.getElementById('bottom-nav-antarmukha').classList.add('active');
  }
  if (viewId === 'analytics-view') {
  document.getElementById('bottom-nav-analytics').classList.add('active');
@@ -3138,6 +3279,26 @@ function resetContextualArish() {
  pushState();
  if (!logs[currentDate]) logs[currentDate] = {};
  dataset.arishadvargas.forEach(group => {
+ if (filterVal === 'All' || group.name === filterVal) {
+ group.practices.forEach(p => {
+ logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
+ });
+ }
+ });
+ saveLogsToLocal();
+ if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ renderUI();
+ if (searchQuery) handleSearch(searchQuery);
+ }
+}
+
+function resetContextualIdentification() {
+ const filterVal = activeFilter.identification;
+ const targetName = filterVal === 'All' ? 'All Identification Practices' : filterVal;
+ if (confirm(`Are you sure you want to reset progress for "${targetName}" on ${formatDateDDMMYY(currentDate)}?`)) {
+ pushState();
+ if (!logs[currentDate]) logs[currentDate] = {};
+ dataset.identification.forEach(group => {
  if (filterVal === 'All' || group.name === filterVal) {
  group.practices.forEach(p => {
  logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
@@ -3282,6 +3443,8 @@ function renderSubCategoryDropdowns() {
  const karmDropdown = document.getElementById('karm-dropdown');
  const manasDropdown = document.getElementById('manas-dropdown');
  const arishDropdown = document.getElementById('arish-dropdown');
+ const identDropdown = document.getElementById('identification-dropdown');
+
 
  if (jnanDropdown) {
  let jnanHtml = `<option value="All" ${activeFilter.jnan === 'All' ? 'selected' : ''}>All Senses</option>`;
@@ -3313,6 +3476,14 @@ function renderSubCategoryDropdowns() {
  arishHtml += `<option value="${g.name}" ${activeFilter.arish === g.name ? 'selected' : ''}>${g.sanskritLabel || g.name}</option>`;
  });
  arishDropdown.innerHTML = arishHtml;
+ }
+
+ if (identDropdown) {
+ let identHtml = `<option value="All" ${activeFilter.identification === 'All' ? 'selected' : ''}>All Layers</option>`;
+ (dataset.identification || []).forEach(g => {
+ identHtml += `<option value="${g.name}" ${activeFilter.identification === g.name ? 'selected' : ''}>${g.sanskritLabel || g.name}</option>`;
+ });
+ identDropdown.innerHTML = identHtml;
  }
 }
 
@@ -3422,6 +3593,11 @@ function renderUI() {
  const manasContainer = document.getElementById('manas-container');
  if (manasContainer) {
  renderCategoryUI('manas', dataset.manas, manasContainer, activeFilter.manas, completionFilter.manas);
+ }
+
+ const identContainer = document.getElementById('identification-container');
+ if (identContainer && dataset.identification) {
+ renderCategoryUI('identification', dataset.identification, identContainer, activeFilter.identification, completionFilter.identification);
  }
 }
 
