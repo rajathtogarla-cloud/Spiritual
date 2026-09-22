@@ -25,6 +25,8 @@
  --chip-bg: #18181b;
  --nav-btn-bg: #27272a;
  --link-glow: rgba(56, 189, 248, 0.35);
+ --modal-overlay: rgba(0, 0, 0, 0.85);
+ --item-hover: rgba(255, 255, 255, 0.04);
  }
 
  :root[data-theme="light"] {
@@ -46,6 +48,8 @@
  --chip-bg: #f1f5f9;
  --nav-btn-bg: #e2e8f0;
  --link-glow: rgba(2, 132, 199, 0.25);
+ --modal-overlay: rgba(15, 23, 42, 0.55);
+ --item-hover: rgba(0, 0, 0, 0.03);
  }
 
  * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
@@ -1158,6 +1162,27 @@
  display: flex;
  }
 
+ /* Dedicated Quality Distribution Custom Tooltip */
+ .dist-chart-custom-tooltip {
+ position: absolute;
+ display: none;
+ z-index: 100;
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ color: var(--text-main);
+ border-radius: 8px;
+ padding: 10px 14px;
+ font-size: 12px;
+ pointer-events: auto;
+ transform: translate(-50%, -115%);
+ box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+ transition: all 0.15s ease;
+ }
+
+ .dist-chart-custom-tooltip.active {
+ display: block;
+ }
+
  .domain-tooltip-color-box {
  display: inline-block;
  width: 9px;
@@ -1199,7 +1224,7 @@
  .link-modal-overlay {
  position: fixed;
  inset: 0;
- background: rgba(0, 0, 0, 0.7);
+ background: var(--modal-overlay);
  backdrop-filter: blur(4px);
  display: none;
  align-items: center;
@@ -1212,30 +1237,31 @@
  .link-modal-card {
  background: var(--card-bg);
  border: 1px solid var(--border);
- border-radius: 12px;
- max-width: 550px;
+ border-radius: 14px;
+ max-width: 650px;
  width: 100%;
- padding: 20px;
+ padding: 22px;
  display: flex;
  flex-direction: column;
  gap: 16px;
- box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+ box-shadow: 0 10px 32px rgba(0,0,0,0.5);
  }
 
  .link-modal-header {
  display: flex;
  justify-content: space-between;
  align-items: center;
- font-size: 1.1rem;
- color: var(--accent-gold);
+ font-size: 1.15rem;
  font-weight: bold;
+ border-bottom: 1px solid var(--border);
+ padding-bottom: 12px;
  }
 
  .target-list {
  display: flex;
  flex-direction: column;
  gap: 8px;
- max-height: 350px;
+ max-height: 440px;
  overflow-y: auto;
  padding-right: 4px;
  }
@@ -1255,6 +1281,83 @@
 
  .target-item:hover {
  border-color: var(--accent-jnan);
+ }
+
+ /* Clean Text Trace Path Breadcrumb */
+ .breadcrumb-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: var(--text-sub);
+  background: transparent;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+ }
+
+ .breadcrumb-node {
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity 0.2s ease;
+ }
+
+ .breadcrumb-node:hover {
+  opacity: 0.75;
+ }
+
+ .breadcrumb-node.current {
+  cursor: default;
+  font-weight: 700;
+  opacity: 1;
+ }
+
+ .breadcrumb-separator {
+  opacity: 0.4;
+  font-size: 0.75rem;
+  user-select: none;
+ }
+
+ .count-badge {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  white-space: nowrap;
+ }
+
+ .hierarchy-nav-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+ }
+
+ .hierarchy-nav-card:hover {
+  border-color: var(--accent-gold);
+  background: var(--item-hover);
+ }
+
+ .hierarchy-nav-card.practice-item-card {
+  cursor: default;
+ }
+
+ .hierarchy-nav-card.practice-item-card:hover {
+  border-color: var(--border);
+  background: transparent;
  }
  </style>
 </head>
@@ -1541,13 +1644,23 @@
  </div>
 </div>
 
-<div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+<div class="chart-card" id="qualityDistributionCard" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative;">
  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">📊 Quality Distribution</h2>
  <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
- Frequency of individual practice efficiency scores across the selected date(s)
+ Frequency of individual practice efficiency scores across the selected date(s). Click any bar to inspect logged practices.
  </p>
  <div style="position: relative; width: 100%; height: 280px;">
  <canvas id="qualityDistributionChart"></canvas>
+ <div id="distChartTooltip" class="dist-chart-custom-tooltip" onclick="event.stopPropagation()">
+   <div style="font-weight: 700; margin-bottom: 4px;" id="distTooltipHeading"></div>
+   <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+     <span id="distTooltipColorBox" style="display: inline-block; width: 12px; height: 12px; border: 1px solid #fff; border-radius: 2px;"></span>
+     <span id="distTooltipText"></span>
+   </div>
+   <div style="text-align: right;">
+     <button id="distTooltipActionBtn" class="tooltip-action-chip" style="font-size: 0.72rem; padding: 2px 8px;">➔ View Practices</button>
+   </div>
+ </div>
  </div>
 </div>
 
@@ -1710,6 +1823,26 @@
  </div>
 </div>
 
+<!-- Quality Distribution Practices Breakdown Modal (Progressive Drilldown) -->
+<div class="link-modal-overlay" id="distPracticesModalOverlay" onclick="closeDistPracticesModal(event)">
+  <div class="link-modal-card" onclick="event.stopPropagation()">
+    <div class="link-modal-header">
+      <span id="distModalTitle">📊 Quality Breakdown</span>
+      <button style="background: transparent; border: none; color: var(--text-main); font-size: 1.4rem; line-height: 1; cursor: pointer;" onclick="closeDistPracticesModal()" title="Close">&times;</button>
+    </div>
+
+    <!-- Clean Text-Only Trace Path -->
+    <div id="modalBreadcrumb" class="breadcrumb-bar" style="display: none;"></div>
+
+    <!-- Dynamic Drilldown Content List -->
+    <div class="target-list" id="distModalPracticesList"></div>
+
+    <div style="text-align: right; margin-top: 10px;">
+      <button class="auth-btn" style="width: auto; padding: 6px 18px; margin: 0;" onclick="closeDistPracticesModal()">Done</button>
+    </div>
+  </div>
+</div>
+
 <!-- Firebase Modular SDK Integration Script -->
 <script type="module">
  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -1849,20 +1982,54 @@ let distributionChartInstance = null;
 let currentChartContext = { type: null, senseIndex: null, practiceIndex: null };
 let ledgerDomainFilter = 'All';
 
+// Stores per-bucket practice entries from Quality Distribution
+let currentDistBucketData = [[], [], [], [], []];
+let currentActiveHierarchy = null;
+let currentDistBucketIndex = null;
+let distNavTier = 'domains'; // 'domains' | 'groups' | 'practices'
+let distSelectedDomainName = null;
+let distSelectedGroupName = null;
+
 let undoStack = [];
 let redoStack = [];
 
 const DOMAIN_COLOR_MAP = {
-  'jnanendriyas': { varName: 'var(--accent-jnan)', hex: '#38bdf8', glow: 'rgba(56, 189, 248, 0.25)' },
-  'karmendriyas': { varName: 'var(--accent-karm)', hex: '#f43f5e', glow: 'rgba(244, 63, 94, 0.25)' },
-  'manas': { varName: 'var(--accent-manas)', hex: '#34d399', glow: 'rgba(52, 211, 153, 0.25)' },
-  'arishadvargas': { varName: 'var(--accent-arish)', hex: '#a855f7', glow: 'rgba(168, 85, 247, 0.25)' },
-  'identification': { varName: 'var(--accent-ident)', hex: '#f472b6', glow: 'rgba(244, 114, 182, 0.25)' }
+  'jnanendriyas': { varName: 'var(--accent-jnan)', hex: '#38bdf8', glow: 'rgba(56, 189, 248, 0.25)', emoji: '🧠' },
+  'karmendriyas': { varName: 'var(--accent-karm)', hex: '#f43f5e', glow: 'rgba(244, 63, 94, 0.25)', emoji: '🛠️' },
+  'manas': { varName: 'var(--accent-manas)', hex: '#34d399', glow: 'rgba(52, 211, 153, 0.25)', emoji: '💭' },
+  'arishadvargas': { varName: 'var(--accent-arish)', hex: '#a855f7', glow: 'rgba(168, 85, 247, 0.25)', emoji: '🐦‍🔥' },
+  'identification': { varName: 'var(--accent-ident)', hex: '#f472b6', glow: 'rgba(244, 114, 182, 0.25)', emoji: '🪞' }
+};
+
+const GROUP_EMOJI_MAP = {
+  'Chakṣu': '👁️',
+  'Śrotra': '👂',
+  'Ghrāṇa': '👃',
+  'Rasa': '👅',
+  'Tvak': '✋',
+  'Vāk': '🗣️',
+  'Pāṇi': '🤲',
+  'Pāda': '🦶',
+  'Upastha': '🌱',
+  'Pāyu': '🍂',
+  'Chitta Vrittis': '🌊',
+  'Manas Inwardness': '🧘',
+  'Kama': '🔥',
+  'Krodha': '⚡',
+  'Lobha': '🪙',
+  'Moha': '🌫️',
+  'Mada': '👑',
+  'Matsarya': '🐍',
+  'Ego Layers': '🎭'
 };
 
 function getDomainColorInfo(domainKey) {
   const normKey = (domainKey || '').toLowerCase();
-  return DOMAIN_COLOR_MAP[normKey] || { varName: 'var(--accent-gold)', hex: '#fbbf24', glow: 'rgba(251, 191, 36, 0.25)' };
+  return DOMAIN_COLOR_MAP[normKey] || { varName: 'var(--accent-gold)', hex: '#fbbf24', glow: 'rgba(251, 191, 36, 0.25)', emoji: '📁' };
+}
+
+function getGroupEmoji(groupName) {
+  return GROUP_EMOJI_MAP[groupName] || '🔹';
 }
 
 /**
@@ -2271,6 +2438,25 @@ window.addEventListener('popstate', (event) => {
  const overlay = document.getElementById('chartModalOverlay');
  const linkModal = document.getElementById('linkModalOverlay');
  const editModal = document.getElementById('editPracticesModalOverlay');
+ const distModal = document.getElementById('distPracticesModalOverlay');
+
+ if (distModal && distModal.classList.contains('active')) {
+   if (distNavTier === 'practices') {
+     distNavTier = 'groups';
+     distSelectedGroupName = null;
+     renderDrilldownView();
+     return;
+   } else if (distNavTier === 'groups') {
+     distNavTier = 'domains';
+     distSelectedDomainName = null;
+     distSelectedGroupName = null;
+     renderDrilldownView();
+     return;
+   } else {
+     closeDistPracticesModal();
+     return;
+   }
+ }
 
  if (editModal && editModal.classList.contains('active')) {
    closeEditPracticesModal();
@@ -2382,11 +2568,246 @@ function handleBodyClick(event) {
  if (!event.target.closest('#domainAccomplishmentCard')) {
  hideDomainChartTooltip();
  }
+
+ if (!event.target.closest('#qualityDistributionCard')) {
+ hideDistChartTooltip();
+ }
 }
 
 function hideDomainChartTooltip() {
  const tooltip = document.getElementById('domainChartTooltip');
  if (tooltip) tooltip.classList.remove('active');
+}
+
+function hideDistChartTooltip() {
+ const tooltip = document.getElementById('distChartTooltip');
+ if (tooltip) tooltip.classList.remove('active');
+}
+
+function openDistPracticesModal(bucketIndex) {
+  currentDistBucketIndex = bucketIndex;
+  const rawEntries = currentDistBucketData[bucketIndex] || [];
+
+  const hierarchy = {};
+  rawEntries.forEach(entry => {
+    const dName = entry.domain || 'Other';
+    const gName = entry.groupName || 'General';
+
+    if (!hierarchy[dName]) {
+      hierarchy[dName] = {
+        domainKey: entry.domainKey,
+        totalEntries: 0,
+        groups: {}
+      };
+    }
+    if (!hierarchy[dName].groups[gName]) {
+      hierarchy[dName].groups[gName] = {
+        totalEntries: 0,
+        practices: {}
+      };
+    }
+    if (!hierarchy[dName].groups[gName].practices[entry.syncKey]) {
+      hierarchy[dName].groups[gName].practices[entry.syncKey] = {
+        name: entry.name,
+        desc: entry.desc,
+        scores: []
+      };
+    }
+
+    hierarchy[dName].totalEntries++;
+    hierarchy[dName].groups[gName].totalEntries++;
+    hierarchy[dName].groups[gName].practices[entry.syncKey].scores.push(entry.score);
+  });
+
+  currentActiveHierarchy = hierarchy;
+  distNavTier = 'domains';
+  distSelectedDomainName = null;
+  distSelectedGroupName = null;
+
+  renderDrilldownView();
+  pushModalHistoryState();
+  document.getElementById('distPracticesModalOverlay').classList.add('active');
+}
+
+function renderDrilldownView() {
+  const bucketLabels = ['0–20%', '21–40%', '41–60%', '61–80%', '81–100%'];
+  const label = bucketLabels[currentDistBucketIndex];
+
+  const title = document.getElementById('distModalTitle');
+  const breadcrumb = document.getElementById('modalBreadcrumb');
+  const list = document.getElementById('distModalPracticesList');
+
+  title.innerHTML = `📊 Quality: ${label}`;
+  title.style.color = 'var(--accent-gold)';
+  list.innerHTML = '';
+
+  if (!currentActiveHierarchy || Object.keys(currentActiveHierarchy).length === 0) {
+    list.innerHTML = `<div style="text-align: center; padding: 25px; color: var(--text-sub); font-size: 0.85rem;">No practices logged in this bracket.</div>`;
+    breadcrumb.style.display = 'none';
+    return;
+  }
+
+  // -----------------------------------------------------------------
+  // TIER 1: Domains sorted by highest total entries descending
+  // -----------------------------------------------------------------
+  if (distNavTier === 'domains') {
+    breadcrumb.style.display = 'none';
+
+    const sortedDomainNames = Object.keys(currentActiveHierarchy).sort((a, b) => {
+      return currentActiveHierarchy[b].totalEntries - currentActiveHierarchy[a].totalEntries;
+    });
+
+    sortedDomainNames.forEach(domainName => {
+      const dObj = currentActiveHierarchy[domainName];
+      const dMeta = getDomainColorInfo(dObj.domainKey);
+
+      const card = document.createElement('div');
+      card.className = 'hierarchy-nav-card';
+      card.style.borderLeft = `4px solid ${dMeta.varName}`;
+      card.onclick = () => drillIntoDomain(domainName);
+
+      card.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.15rem;">${dMeta.emoji}</span>
+          <span style="font-weight: 700; font-size: 0.95rem; color: ${dMeta.varName};">${domainName}</span>
+          <span style="font-size: 0.72rem; color: var(--text-sub);">➔</span>
+        </div>
+        <span class="count-badge">
+          ${dObj.totalEntries} ${dObj.totalEntries === 1 ? 'entry' : 'entries'}
+        </span>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  // -----------------------------------------------------------------
+  // TIER 2: Groups sorted by highest total entries descending
+  // -----------------------------------------------------------------
+  else if (distNavTier === 'groups') {
+    breadcrumb.style.display = 'flex';
+
+    const dObj = currentActiveHierarchy[distSelectedDomainName];
+    const dMeta = getDomainColorInfo(dObj.domainKey);
+
+    breadcrumb.innerHTML = `
+      <span class="breadcrumb-node" onclick="handleModalBack('domains')">All Domains</span>
+      <span class="breadcrumb-separator">❯</span>
+      <span class="breadcrumb-node current" style="color: ${dMeta.varName};">${distSelectedDomainName}</span>
+    `;
+
+    const sortedGroupNames = Object.keys(dObj.groups).sort((a, b) => {
+      return dObj.groups[b].totalEntries - dObj.groups[a].totalEntries;
+    });
+
+    sortedGroupNames.forEach(groupName => {
+      const gObj = dObj.groups[groupName];
+      const gEmoji = getGroupEmoji(groupName);
+
+      const card = document.createElement('div');
+      card.className = 'hierarchy-nav-card';
+      card.onclick = () => drillIntoGroup(groupName);
+
+      card.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1rem;">${gEmoji}</span>
+          <span style="font-weight: 600; font-size: 0.9rem; color: ${dMeta.varName};">${groupName}</span>
+          <span style="font-size: 0.72rem; color: var(--text-sub);">➔</span>
+        </div>
+        <span class="count-badge">
+          ${gObj.totalEntries} ${gObj.totalEntries === 1 ? 'entry' : 'entries'}
+        </span>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  // -----------------------------------------------------------------
+  // TIER 3: Practices sorted by highest entry count (tie-broken by avg score)
+  // -----------------------------------------------------------------
+  else if (distNavTier === 'practices') {
+    breadcrumb.style.display = 'flex';
+
+    const dObj = currentActiveHierarchy[distSelectedDomainName];
+    const gObj = dObj.groups[distSelectedGroupName];
+    const dMeta = getDomainColorInfo(dObj.domainKey);
+
+    breadcrumb.innerHTML = `
+      <span class="breadcrumb-node" onclick="handleModalBack('domains')">All Domains</span>
+      <span class="breadcrumb-separator">❯</span>
+      <span class="breadcrumb-node" style="color: ${dMeta.varName};" onclick="drillIntoDomain('${distSelectedDomainName}')">${distSelectedDomainName}</span>
+      <span class="breadcrumb-separator">❯</span>
+      <span class="breadcrumb-node current" style="color: ${dMeta.varName};">${distSelectedGroupName}</span>
+    `;
+
+    const sortedPractices = Object.values(gObj.practices).sort((a, b) => {
+      const countDiff = b.scores.length - a.scores.length;
+      if (countDiff !== 0) return countDiff;
+
+      const avgA = a.scores.reduce((sum, v) => sum + v, 0) / a.scores.length;
+      const avgB = b.scores.reduce((sum, v) => sum + v, 0) / b.scores.length;
+      return avgB - avgA;
+    });
+
+    sortedPractices.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'hierarchy-nav-card practice-item-card';
+      card.style.flexDirection = 'column';
+      card.style.alignItems = 'stretch';
+      card.style.gap = '4px';
+
+      const avgScore = Math.round(item.scores.reduce((a, b) => a + b, 0) / item.scores.length);
+
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-main); display: inline-flex; align-items: center; gap: 6px;">
+            <span>🎯</span> <span>${item.name}</span>
+          </span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="count-badge">
+              ${item.scores.length} ${item.scores.length === 1 ? 'entry' : 'entries'}
+            </span>
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-main);">
+              Avg: ${avgScore}%
+            </span>
+          </div>
+        </div>
+        ${item.desc ? `<div style="font-size: 0.75rem; color: var(--text-sub); padding-left: 22px;">${item.desc}</div>` : ''}
+      `;
+      list.appendChild(card);
+    });
+  }
+}
+
+function drillIntoDomain(domainName) {
+  distSelectedDomainName = domainName;
+  distNavTier = 'groups';
+  pushModalHistoryState();
+  renderDrilldownView();
+}
+
+function drillIntoGroup(groupName) {
+  distSelectedGroupName = groupName;
+  distNavTier = 'practices';
+  pushModalHistoryState();
+  renderDrilldownView();
+}
+
+function handleModalBack(targetTier = null) {
+  if (targetTier === 'domains' || (distNavTier === 'groups' && !targetTier)) {
+    distNavTier = 'domains';
+    distSelectedDomainName = null;
+    distSelectedGroupName = null;
+  } else if (distNavTier === 'practices') {
+    distNavTier = 'groups';
+    distSelectedGroupName = null;
+  }
+  renderDrilldownView();
+}
+
+function closeDistPracticesModal(event) {
+ if (!event || event.target === document.getElementById('distPracticesModalOverlay') || event.type === 'click') {
+   document.getElementById('distPracticesModalOverlay').classList.remove('active');
+ }
 }
 
 function getAllPracticesFlat() {
@@ -3633,18 +4054,45 @@ function renderQualityDistributionChart() {
  const borderTheme = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
 
  const distributionBuckets = [0, 0, 0, 0, 0];
+ currentDistBucketData = [[], [], [], [], []];
+
+ const allFlatPractices = getAllPracticesFlat();
+ const practiceMap = {};
+ allFlatPractices.forEach(p => {
+   practiceMap[p.syncKey] = p;
+ });
 
  targetDates.forEach(date => {
  if (!logs[date]) return;
  Object.keys(logs[date]).forEach(key => {
  const item = logs[date][key];
  if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
+ const practiceMeta = practiceMap[key] || { 
+   name: 'Unknown Practice', 
+   domain: 'Practice', 
+   domainKey: 'jnanendriyas', 
+   groupName: '', 
+   desc: '' 
+ };
  item.efficiencies.forEach(score => {
- if (score <= 20) distributionBuckets[0]++;
- else if (score <= 40) distributionBuckets[1]++;
- else if (score <= 60) distributionBuckets[2]++;
- else if (score <= 80) distributionBuckets[3]++;
- else distributionBuckets[4]++;
+ let bIdx = 0;
+ if (score <= 20) bIdx = 0;
+ else if (score <= 40) bIdx = 1;
+ else if (score <= 60) bIdx = 2;
+ else if (score <= 80) bIdx = 3;
+ else bIdx = 4;
+
+ distributionBuckets[bIdx]++;
+ currentDistBucketData[bIdx].push({
+   score: score,
+   date: date,
+   syncKey: key,
+   name: practiceMeta.name,
+   domain: practiceMeta.domain,
+   domainKey: practiceMeta.domainKey,
+   groupName: practiceMeta.groupName,
+   desc: practiceMeta.desc
+ });
  });
  }
  });
@@ -3654,15 +4102,18 @@ function renderQualityDistributionChart() {
  distributionChartInstance.destroy();
  }
 
+ const colors = ['#ef4444', '#f59e0b', '#a855f7', '#38bdf8', '#10b981'];
+ const bucketLabels = ['0–20%', '21–40%', '41–60%', '61–80%', '81–100%'];
+
  const ctx = canvas.getContext('2d');
  distributionChartInstance = new Chart(ctx, {
  type: 'bar',
  data: {
- labels: ['0–20%', '21–40%', '41–60%', '61–80%', '81–100%'],
+ labels: bucketLabels,
  datasets: [{
  label: 'Practice Entries',
  data: distributionBuckets,
- backgroundColor: ['#ef4444', '#f59e0b', '#a855f7', '#38bdf8', '#10b981'],
+ backgroundColor: colors,
  borderRadius: 6
  }]
  },
@@ -3670,6 +4121,34 @@ function renderQualityDistributionChart() {
  responsive: true,
  maintainAspectRatio: false,
  resizeDelay: 200,
+ onClick: (evt, elements) => {
+   const tooltip = document.getElementById('distChartTooltip');
+   if (elements.length > 0) {
+     const index = elements[0].index;
+     const clickedLabel = bucketLabels[index];
+     const entriesCount = distributionBuckets[index];
+     const barColor = colors[index];
+
+     const { x, y } = elements[0].element;
+     tooltip.style.left = `${x}px`;
+     tooltip.style.top = `${y}px`;
+
+     document.getElementById('distTooltipHeading').textContent = clickedLabel;
+     document.getElementById('distTooltipColorBox').style.backgroundColor = barColor;
+     document.getElementById('distTooltipText').innerHTML = `Entries logged: <strong>${entriesCount}</strong>`;
+
+     const actionBtn = document.getElementById('distTooltipActionBtn');
+     actionBtn.onclick = (e) => {
+       e.stopPropagation();
+       hideDistChartTooltip();
+       openDistPracticesModal(index);
+     };
+
+     tooltip.classList.add('active');
+   } else {
+     hideDistChartTooltip();
+   }
+ },
  scales: {
  x: {
  ticks: { color: textTheme, font: { size: 11, weight: '600' } },
@@ -3684,9 +4163,7 @@ function renderQualityDistributionChart() {
  plugins: {
  legend: { display: false },
  tooltip: {
- callbacks: {
- label: (ctx) => ` Entries logged: ${ctx.raw}`
- }
+ enabled: false
  }
  }
  }
@@ -3738,8 +4215,7 @@ function renderHeatmap() {
  completedCount++;
  const effList = item.efficiencies || [];
  if (effList.length > 0) {
- const pAvg = effList.reduce((a, b) => a + b, 0) / effList.length;
- dayEffs.push(pAvg);
+ dayEffs.push(effList.reduce((a, b) => a + b, 0) / effList.length);
  }
  }
  });
@@ -3814,6 +4290,7 @@ function updateAnalytics() {
  document.getElementById('statEfficiency').innerText = overallAvgEff + '%';
  document.getElementById('statDays').innerText = activeDays;
  hideDomainChartTooltip();
+ hideDistChartTooltip();
  renderDomainBalanceChart();
  renderDomainAccomplishmentChart();
  renderRollingTrendChart();
