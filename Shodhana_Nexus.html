@@ -221,7 +221,6 @@
  justify-content: center;
  }
 
- /* Colorful Theme-Adaptive Static Bottom Navigation Bar */
  .main-footnote-nav {
  position: fixed;
  bottom: 0;
@@ -519,7 +518,6 @@
  .practice-name { font-weight: 600; }
  .practice-desc { font-size: 0.85rem; color: var(--text-sub); margin-top: 2px; }
 
- /* Actions & Badges */
  .action-group {
  display: flex;
  align-items: center;
@@ -770,13 +768,8 @@
  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
  }
 
- .analytics-btn.jnan-btn {
- color: var(--accent-jnan);
- }
-
- .analytics-btn.karm-btn {
- color: var(--accent-karm);
- }
+ .analytics-btn.jnan-btn { color: var(--accent-jnan); }
+ .analytics-btn.karm-btn { color: var(--accent-karm); }
 
  .date-picker-wrapper {
  position: relative;
@@ -953,14 +946,12 @@
  padding-bottom: 0;
  }
 
- /* Sync Subheading Colors with Section Themes */
  #jnan-view .indriya-header { color: var(--accent-jnan); border-bottom-color: var(--accent-jnan); }
  #karm-view .indriya-header { color: var(--accent-karm); border-bottom-color: var(--accent-karm); }
  #arish-view .indriya-header { color: var(--accent-arish); border-bottom-color: var(--accent-arish); }
  #manas-view .indriya-header { color: var(--accent-manas); border-bottom-color: var(--accent-manas); }
  #identification-view .indriya-header { color: var(--accent-ident); border-bottom-color: var(--accent-ident); }
 
- /* Auth and Sync Overlay Styles */
  .auth-card {
  max-width: 400px;
  margin: 40px auto;
@@ -1007,7 +998,6 @@
  .chart-modal-container { padding: 15px; }
  }
 
- /* Heatmap Styles */
 .heatmap-container {
  display: flex;
  flex-wrap: wrap;
@@ -1049,7 +1039,6 @@
  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
- /* Practice Ledger Sorting & Chart.js Style Tooltip */
  .sort-btn {
  cursor: pointer;
  user-select: none;
@@ -1133,7 +1122,6 @@
  color: #000000;
  }
 
- /* Floating Interactive Tooltip for Domain Accomplishment Chart */
  .domain-chart-tooltip {
  position: absolute;
  display: none;
@@ -1208,7 +1196,6 @@
  box-shadow: 0 1px 0 var(--border);
  }
 
- /* Practice Inter-Linking Modal */
  .link-modal-overlay {
  position: fixed;
  inset: 0;
@@ -1273,7 +1260,6 @@
 </head>
 <body onclick="handleBodyClick(event)">
 
-<!-- Authentication Container -->
 <div id="auth-wrapper" class="container" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
  <div class="auth-card">
  <h2>Firebase Login 🌺</h2>
@@ -1284,7 +1270,6 @@
  </div>
 </div>
 
-<!-- Main App Dashboard Layout -->
 <div id="app-wrapper" class="app-dashboard-layout hidden">
  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -1319,7 +1304,7 @@
     <button class="date-nav-btn" id="globalRedoBtn" onclick="redo()" title="Redo" disabled>↷</button>
     <button onclick="handleLogout()" style="background: transparent; border: none; cursor: pointer; font-size: 1.4rem;" title="Logout">💔</button>
   </div>
-</header>
+ </header>
 
  <main class="container">
  <div id="hub-view" class="view-section active">
@@ -1403,7 +1388,7 @@
  <div class="hub-desc">Internal representation, elaboration, and mental movement</div>
  </div>
  <div class="hub-card" onclick="openView('arish-view')">
- <div class="hub-icon">♨️</div>
+ <div class="hub-icon">🐦‍🔥</div>
  <div class="hub-title" style="color: var(--accent-arish);">Arishadvargas</div>
  <div class="hub-desc">Transforming antidotes for the 6 inner enemies</div>
  </div>
@@ -1415,7 +1400,6 @@
  </div>
  </div>
 
- <!-- ARISHADVARGAS VIEW -->
  <div id="arish-view" class="view-section">
  <div class="top-toolbar">
  <div class="date-controls">
@@ -1430,13 +1414,12 @@
  </div>
 
  <div class="section-title-wrapper">
- <h2 class="section-title" style="color: var(--accent-arish);">♨️ Arishadvargas 👇</h2>
+ <h2 class="section-title" style="color: var(--accent-arish);">🐦‍🔥 Arishadvargas 👇</h2>
  <select id="arish-dropdown" class="indriya-dropdown" onchange="filterCategory('arish', this.value)"></select>
  </div>
  <div id="arish-container"></div>
  </div>
 
- <!-- MANAS VIEW -->
  <div id="manas-view" class="view-section">
  <div class="top-toolbar">
  <div class="date-controls">
@@ -1457,7 +1440,6 @@
  <div id="manas-container"></div>
  </div>
 
- <!-- IDENTIFICATION VIEW -->
  <div id="identification-view" class="view-section">
  <div class="top-toolbar">
  <div class="date-controls">
@@ -1524,9 +1506,9 @@
  </div>
 
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
- <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">⚖️ Domain Balance (D-OPE %)</h2>
+ <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">⚖️ Domain Balance (Dual-Gated D-OPE %)</h2>
  <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
- Domain Overall Practice Efficiency harmony across all 5 domains
+ Dual-Gated Sigmoid harmonic balance across all 5 domains
  </p>
  <div style="position: relative; width: 100%; height: 280px;">
  <canvas id="domainBalanceChart"></canvas>
@@ -1550,7 +1532,7 @@
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">📈 7-Day Rolling Momentum</h2>
  <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;">
- Smooths Daily APE % using an expanding window (Days 1–6) before locking into a 7-day rolling average over the past 30 days
+ Smooths Daily Dual-Gated OPE % using an expanding window (Days 1–6) before locking into a 7-day rolling average over the past 30 days
  </p>
  <div style="position: relative; width: 100%; height: 280px; overflow-x: auto; overflow-y: hidden;">
  <div id="trendChartScrollInner" style="height: 100%; min-width: 100%;">
@@ -1572,15 +1554,12 @@
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">🔥 30-Day Tapas Consistency</h2>
  <p style="font-size: 0.8rem; color: var(--text-sub); text-align: center; margin-bottom: 10px;">
- Daily Overall Practice Efficiency (OPE) across all domains combined (darker green = higher mastery)
+ Daily Overall Practice Efficiency (Dual-Gated OPE) across all domains combined (darker green = higher mastery)
  </p>
  <div class="heatmap-container" id="heatmapContainer"></div>
 </div>
 
-<!-- Comprehensive Practice Ledger -->
 <div class="chart-card" id="comprehensivePracticeLedgerCard" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative;">
- 
- <!-- Clear Filter Button positioned in the top right corner above the heading -->
  <div style="display: flex; justify-content: flex-end; margin-bottom: 6px; min-height: 28px;">
    <button id="resetLedgerFilterBtn" onclick="filterLedgerByDomain('All')" style="display: none; background: var(--nav-btn-bg); color: var(--text-main); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 600; transition: background 0.2s ease;">
      ✕ Clear Domain Filter
@@ -1607,50 +1586,33 @@
  </tr>
  </thead>
 
- <tbody id="practiceLedgerBody">
- <!-- Populated dynamically -->
- </tbody>
+ <tbody id="practiceLedgerBody"></tbody>
  </table>
  </div>
 </div>
 
  <div class="analytics-buttons-wrapper">
  <div class="analytics-section-wrapper">
- <button class="analytics-btn jnan-btn" onclick="openAnalyticsChart('jnan')">
- 🧠 Jnanendriyas Deep-Dive
- </button>
+ <button class="analytics-btn jnan-btn" onclick="openAnalyticsChart('jnan')">🧠 Jnanendriyas Deep-Dive</button>
  </div>
-
  <div class="analytics-section-wrapper">
- <button class="analytics-btn karm-btn" onclick="openAnalyticsChart('karm')">
- 🛠️ Karmendriyas Deep-Dive
- </button>
+ <button class="analytics-btn karm-btn" onclick="openAnalyticsChart('karm')">🛠️ Karmendriyas Deep-Dive</button>
  </div>
-
  <div class="analytics-section-wrapper">
- <button class="analytics-btn" style="color: var(--accent-manas);" onclick="openAnalyticsChart('manas')">
- 💭 Manas Deep-Dive
- </button>
+ <button class="analytics-btn" style="color: var(--accent-manas);" onclick="openAnalyticsChart('manas')">💭 Manas Deep-Dive</button>
  </div>
- 
-<div class="analytics-section-wrapper">
- <button class="analytics-btn" style="color: var(--accent-arish);" onclick="openAnalyticsChart('arish')">
- ♨️ Arishadvargas Deep-Dive
- </button>
- </div>
-
  <div class="analytics-section-wrapper">
- <button class="analytics-btn" style="color: var(--accent-ident);" onclick="openAnalyticsChart('identification')">
- 🪞 Identification Deep-Dive
- </button>
+ <button class="analytics-btn" style="color: var(--accent-arish);" onclick="openAnalyticsChart('arish')">🐦‍🔥 Arishadvargas Deep-Dive</button>
+ </div>
+ <div class="analytics-section-wrapper">
+ <button class="analytics-btn" style="color: var(--accent-ident);" onclick="openAnalyticsChart('identification')">🪞 Identification Deep-Dive</button>
  </div>
  </div>
  </div>
 
  <div id="settings-view" class="view-section">
  <h2 class="section-title" style="color: var(--text-main);">⚙️ Settings</h2>
- 
-<div class="settings-container">
+ <div class="settings-container">
  <div class="settings-row">
  <span>Theme Mode</span>
  <div class="nav-item" id="themeBtnSettings" style="width: auto; padding: 8px 16px;" onclick="toggleTheme()">☀️ Light</div>
@@ -1663,35 +1625,21 @@
  </div>
  </main>
 
- <!-- Colorful Theme-Adaptive Static Fixed Bottom Navigation Bar -->
  <div class="main-footnote-nav">
- <div class="nav-item active" id="bottom-nav-home" onclick="navTo('hub-view')">
- <span style="font-size: 1.1rem;">🏠</span> Home
- </div>
- <div class="nav-item" id="bottom-nav-jnan" onclick="navTo('jnan-view')">
- <span style="font-size: 1.1rem;">🧠</span> Jnanendriyas
- </div>
- <div class="nav-item" id="bottom-nav-karm" onclick="navTo('karm-view')">
- <span style="font-size: 1.1rem;">🛠️</span> Karmendriyas
- </div>
- <div class="nav-item" id="bottom-nav-antarmukha" onclick="navTo('antarmukha-hub-view')">
- <span style="font-size: 1.1rem;">🛡️</span> Antarmukha
- </div>
- <div class="nav-item" id="bottom-nav-analytics" onclick="navTo('analytics-view')">
- <span style="font-size: 1.1rem;">📊</span> Analytics
- </div>
+ <div class="nav-item active" id="bottom-nav-home" onclick="navTo('hub-view')"><span style="font-size: 1.1rem;">🏠</span> Home</div>
+ <div class="nav-item" id="bottom-nav-jnan" onclick="navTo('jnan-view')"><span style="font-size: 1.1rem;">🧠</span> Jnanendriyas</div>
+ <div class="nav-item" id="bottom-nav-karm" onclick="navTo('karm-view')"><span style="font-size: 1.1rem;">🛠️</span> Karmendriyas</div>
+ <div class="nav-item" id="bottom-nav-antarmukha" onclick="navTo('antarmukha-hub-view')"><span style="font-size: 1.1rem;">🛡️</span> Antarmukha</div>
+ <div class="nav-item" id="bottom-nav-analytics" onclick="navTo('analytics-view')"><span style="font-size: 1.1rem;">📊</span> Analytics</div>
  </div>
 </div>
 
-<!-- Dynamic In-App Mobile Chart Modal -->
 <div class="chart-modal-overlay" id="chartModalOverlay" onclick="closeChartModal(event)">
  <div class="chart-modal-container" onclick="event.stopPropagation()">
  <button class="chart-modal-close" onclick="handleChartClose()">&times;</button>
- <div class="chart-modal-header">
- <h2 id="chartModalTitle">Efficiency Chart</h2>
- </div>
+ <div class="chart-modal-header"><h2 id="chartModalTitle">Efficiency Chart</h2></div>
  
-<div class="slicer-toolbar">
+ <div class="slicer-toolbar">
  <button class="slicer-btn" id="slicer-1D" onclick="applySlicer('1D')">1D</button>
  <button class="slicer-btn" id="slicer-1W" onclick="applySlicer('1W')">1W</button>
  <button class="slicer-btn" id="slicer-1M" onclick="applySlicer('1M')">1M</button>
@@ -1706,7 +1654,7 @@
  </div>
  </div>
  
-<div class="chart-details-card" id="chartDetailsCard">
+ <div class="chart-details-card" id="chartDetailsCard">
  <h3>Formula &amp; Methodology Details</h3>
  <ul id="chartDetailsContent">
  <li><strong>X-Axis (Senses):</strong> Lists individual sense organ groups using Sanskrit English titles. Click any bar to open line chart.</li>
@@ -1718,7 +1666,6 @@
  </div>
 </div>
 
-<!-- Practice Inter-Linking Modal -->
 <div class="link-modal-overlay" id="linkModalOverlay" onclick="closeLinkModal(event)">
   <div class="link-modal-card" onclick="event.stopPropagation()">
     <div class="link-modal-header">
@@ -1726,15 +1673,9 @@
       <button class="add-duration-btn" onclick="closeLinkModal()">&times;</button>
     </div>
     
-    <!-- Search Bar in Linking Modal -->
     <div style="display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px;">
       <span style="font-size: 0.9rem; opacity: 0.7;">🔍</span>
-      <input 
-        type="search" 
-        id="linkModalSearchInput" 
-        placeholder="Search practices by name, group, or domain..." 
-        style="background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.85rem; width: 100%;" 
-        oninput="handleLinkModalSearch(this.value)">
+      <input type="search" id="linkModalSearchInput" placeholder="Search practices by name, group, or domain..." style="background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.85rem; width: 100%;" oninput="handleLinkModalSearch(this.value)">
     </div>
 
     <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: -6px;">
@@ -1747,7 +1688,6 @@
   </div>
 </div>
 
-<!-- Edit Practices Modal -->
 <div class="link-modal-overlay" id="editPracticesModalOverlay" onclick="closeEditPracticesModal(event)">
  <div class="link-modal-card" onclick="event.stopPropagation()" style="max-width: 650px;">
  <div class="link-modal-header">
@@ -1755,7 +1695,6 @@
  <button class="add-duration-btn" onclick="closeEditPracticesModal()">&times;</button>
  </div>
  
- <!-- Search Practice inside Edit Modal -->
  <div style="display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px;">
    <span style="font-size: 0.9rem; opacity: 0.7;">🔍</span>
    <input type="search" id="editModalSearchInput" placeholder="Search practices by name or description..." style="background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.85rem; width: 100%;" oninput="handleEditModalSearch(this.value)">
@@ -1843,9 +1782,6 @@
 
  function startFirestoreListener(uid) {
    const docRef = doc(db, "userLogs", uid);
-   
-   // 1. Snapshot the hardcoded file baseline into memory before onSnapshot can touch it
-   const localBaselineDataset = JSON.parse(JSON.stringify(dataset));
 
    unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
      isRemoteSyncing = true;
@@ -1853,31 +1789,8 @@
        const data = docSnap.data();
        logs = data.logs || {};
        if (data.linkGraph) linkGraph = data.linkGraph;
-       
        if (data.dataset) {
-         // Pull and keep your newer cloud practices intact
-         dataset = data.dataset; 
-
-         let hasNewDomains = false;
-
-         // Check every domain defined in your file
-         Object.keys(localBaselineDataset).forEach((domainKey) => {
-           // If missing or empty in Firestore, inject the local domain
-           if (!dataset[domainKey] || (Array.isArray(dataset[domainKey]) && dataset[domainKey].length === 0)) {
-             dataset[domainKey] = localBaselineDataset[domainKey];
-             hasNewDomains = true;
-             console.log(`Discovered and injected new domain: ${domainKey}`);
-           }
-         });
-
-         // Upload the merged dataset to Firestore only if a new domain was added
-         if (hasNewDomains) {
-           setTimeout(() => {
-             if (typeof window.saveLogsToFirestore === 'function') {
-               window.saveLogsToFirestore();
-             }
-           }, 500);
-         }
+         dataset = data.dataset;
        }
      } else {
        logs = {};
@@ -1910,373 +1823,13 @@
 </script>
 
 <script>
+// Minimal structure placeholder; hydrates fully from Firestore on authentication
 let dataset = {
- jnanendriyas: [
- {
- name: "Chakṣu (Sight) 👁️",
- sanskritLabel: "Chakṣu",
- practices: [
- { id: "j1_1", syncKey: "trataka", type: "ext", name: "Trataka 🔥", desc: "Steady gazing at a fixed object." },
- { id: "j1_2", syncKey: "visual_pratyahara", type: "ext", name: "Visual Pratyahara 🧘", desc: "Withdraw visual attention without reacting." },
- { id: "j1_3", syncKey: "screen_discipline", type: "ext", name: "Screen Discipline 📱", desc: "Predetermined screen windows, no feeds/reels." },
- { id: "j1_4", syncKey: "conscious_darshana", type: "ext", name: "Conscious Darsana 🙏", desc: "Contemplative visual focus on deity/symbol." },
- { id: "j1_5", syncKey: "nature_observation", type: "ext", name: "Nature Observation 🌿", desc: "Observing nature without seeking entertainment." },
- { id: "j1_6", syncKey: "visual_fasting", type: "ext", name: "Visual Fasting 🌑", desc: "Periods with minimal visual input/novelty." }
- ]
- },
- {
- name: "Śrotra (Hearing) 👂",
- sanskritLabel: "Śrotra",
- practices: [
- { id: "j2_1", syncKey: "mauna", type: "ext", name: "Mauna 🤫", desc: "Observing periods of silence." },
- { id: "j2_2", syncKey: "auditory_pratyahara", type: "ext", name: "Auditory Pratyahara 🧘", desc: "Letting sounds pass without following them." },
- { id: "j2_3", syncKey: "satsanga_shravana", type: "ext", name: "Satsanga Sravana 📖", desc: "Intentional listening to teachings/mantras." },
- { id: "j2_4", syncKey: "conscious_listening", type: "ext", name: "Conscious Listening 👂", desc: "Listening fully without preparing a response." },
- { id: "j2_5", syncKey: "sound_fasting", type: "ext", name: "Sound Fasting 🔇", desc: "Periods without music, podcasts, or background noise." },
- { id: "j2_6", syncKey: "speech_discipline", type: "ext", name: "Speech Discipline 🗣️", desc: "Truthful, measured, non-gossiping speech." },
- { id: "j2_7", syncKey: "equanimous_hearing", type: "ext", name: "Equanimous Hearing ⚖️", desc: "Hearing pleasant, unpleasant, and neutral sounds without pursuit or resistance." }
- ]
- },
- {
- name: "Ghrāṇa (Smell) 👃",
- sanskritLabel: "Ghrāṇa",
- practices: [
- { id: "j3_1", syncKey: "mindful_smelling", type: "ext", name: "Mindful Smelling 👃", desc: "Noticing smell without immediate pursuit/avoidance." },
- { id: "j3_2", syncKey: "equanimity_smell", type: "ext", name: "Equanimity Practice ⚖️", desc: "Pleasant/unpleasant smells do not control reaction." },
- { id: "j3_3", syncKey: "env_regulation", type: "ext", name: "Environmental Regulation 🌿", desc: "Avoiding smell triggers for compulsive behavior." },
- { id: "j3_4", syncKey: "fragrance_contemplation", type: "ext", name: "Natural Fragrance Contemplation 🌸", desc: "Mild natural scents used for mindful awareness." },
- { id: "j3_5", syncKey: "breath_awareness", type: "ext", name: "Breath Awareness 🌬️", desc: "Nasal breath as an anchor." },
- { id: "j3_6", syncKey: "olfactory_fasting", type: "ext", name: "Olfactory Fasting 🌿", desc: "Avoiding perfumes, scented items, and unnecessary olfactory stimulation." }
- ]
- },
- {
- name: "Rasa (Taste) 👅",
- sanskritLabel: "Rasa",
- practices: [
- { id: "j4_1", syncKey: "mindful_eating", type: "ext", name: "Mindful Eating 🧘", desc: "Eating with awareness of actual taste without distraction." },
- { id: "j4_2", syncKey: "deliberate_tasting", type: "ext", name: "Deliberate Tasting 👅", desc: "Experiencing flavor consciously rather than consuming mechanically." },
- { id: "j4_3", syncKey: "portion_discipline", type: "ext", name: "Portion Discipline ⚖️", desc: "Deciding appropriate quantity beforehand without taste-driven overeating." },
- { id: "j4_4", syncKey: "taste_stimulation_reg", type: "ext", name: "Taste Stimulation Regulation 🍬", desc: "Reducing dependence on intense salt, sugar, fat, and flavor combinations." },
- { id: "j4_5", syncKey: "hunger_taste_distinction", type: "ext", name: "Hunger–Taste Distinction 🧠", desc: "Distinguishing physiological hunger from eating for taste pleasure." },
- { id: "j4_6", syncKey: "eating_windows", type: "ext", name: "Eating Windows ⏰", desc: "Consistent eating periods without continuous sensory grazing." },
- { id: "j4_7", syncKey: "upavasa", type: "ext", name: "Upavāsa 🙏", desc: "Periodic discipline fasting for mastery over compulsive eating." },
- { id: "j4_8", syncKey: "naivedya", type: "ext", name: "Naivedya / Īśvara-Arpaṇa 🪔", desc: "Offering food to the Divine before eating with spiritual intent." },
- { id: "j4_9", syncKey: "taste_equanimity", type: "ext", name: "Taste Equanimity ⚖️", desc: "Experiencing all flavors without allowing preference to dictate behavior." },
- { id: "j4_10", syncKey: "sufficiency", type: "ext", name: "Sufficiency 🌿", desc: "Stopping when sufficient instead of continuing for sensory pleasure." }
- ]
- },
- {
- name: "Tvak (Touch) ✋",
- sanskritLabel: "Tvak",
- practices: [
- { id: "j5_1", syncKey: "tactile_pratyahara", type: "ext", name: "Tactile Pratyāhāra 🧘", desc: "Observing sensations without pursuing pleasant or resisting unpleasant ones." },
- { id: "j5_2", syncKey: "conscious_touch", type: "ext", name: "Conscious Physical Contact 🤲", desc: "Experiencing physical contact consciously without seeking extra stimulation." },
- { id: "j5_3", syncKey: "sensory_equanimity", type: "ext", name: "Sensory Equanimity ⚖️", desc: "Remaining balanced toward warmth, cold, pressure, texture, and pain." },
- { id: "j5_4", syncKey: "comfort_regulation", type: "ext", name: "Comfort Regulation 🌿", desc: "Tolerating manageable physical discomfort to avoid compulsive comfort-seeking." },
- { id: "j5_5", syncKey: "moderate_tapas", type: "ext", name: "Moderate Tapas 🔥", desc: "Developing proportionate tolerance toward sensory discomfort safely." },
- { id: "j5_6", syncKey: "temperature_discipline", type: "ext", name: "Temperature Discipline ❄️", desc: "Experiencing temperature variations without immediately reacting." },
- { id: "j5_7", syncKey: "tactile_fasting", type: "ext", name: "Tactile Fasting 🌑", desc: "Reducing dependence on luxury textures, conveniences, and tactile stimulation." },
- { id: "j5_8", syncKey: "sensory_stillness", type: "ext", name: "Sensory Stillness 🧘", desc: "Remaining physically still without reacting to arising tactile sensations." }
- ]
- }
- ],
- karmendriyas: [
- {
- name: "Vāk (Speech) 🗣️",
- sanskritLabel: "Vāk",
- practices: [
- { id: "k1_1", syncKey: "mauna", type: "ext", name: "Mauna — Deliberate Silence 🤫", desc: "Observing predetermined silence periods to regulate unnecessary speech." },
- { id: "k1_2", syncKey: "vak_tapas", type: "ext", name: "Vāk Tapas 🔥", desc: "Practicing speech that is Satya (truthful), Priya (pleasant), Hita (beneficial), and Kāla-yukta." },
- { id: "k1_3", syncKey: "pause_speech", type: "ext", name: "Pause Before Speaking ⏸️", desc: "Impulse → Pause → Discernment before speaking." },
- { id: "k1_4", syncKey: "speech_economy", type: "ext", name: "Speech Economy ✂️", desc: "Expressing what is necessary clearly without verbal prolongation." },
- { id: "k1_5", syncKey: "reactive_speech_restraint", type: "ext", name: "Reactive-Speech Restraint 🧘", desc: "Delaying speech when provoked to avoid anger and defensiveness." },
- { id: "k1_6", syncKey: "gossip_restraint", type: "ext", name: "Gossip and Argument Restraint 🚫", desc: "Avoiding gossip, insults, aggression, and pointless arguments." },
- { id: "k1_7", syncKey: "sacred_speech", type: "ext", name: "Sacred Speech 🕉️", desc: "Using speech for Japa, Stotra, prayer, teaching, and encouragement." }
- ]
- },
- {
- name: "Pāṇi (Grasping) 🤲",
- sanskritLabel: "Pāṇi",
- practices: [
- { id: "k2_1", syncKey: "karma_yoga", type: "ext", name: "Karma Yoga 🛠️", desc: "Selfless service, cleaning, helping." },
- { id: "k2_2", syncKey: "conscious_action", type: "ext", name: "Conscious Action 🎯", desc: "Intention → Awareness → Deliberate physical action." },
- { id: "k2_3", syncKey: "kaya_sthairyam_pani", type: "ext", name: "Kaya Sthairyam 🧘", desc: "Keeping hands completely still for set period." },
- { id: "k2_4", syncKey: "fidget_discipline", type: "ext", name: "Fidgeting Discipline ✋", desc: "Reducing tapping, touching, unnecessary movement." },
- { id: "k2_5", syncKey: "digital_hand", type: "ext", name: "Digital-Hand Discipline 📱", desc: "No unconscious scrolling/checking." },
- { id: "k2_6", syncKey: "dana", type: "ext", name: "Dana 🎁", desc: "Training hands to give resources/time." },
- { id: "k2_7", syncKey: "creative_action", type: "ext", name: "Creative Action 🎨", desc: "Creating/writing/building vs consuming." }
- ]
- },
- {
- name: "Pāda (Movement) 👣",
- sanskritLabel: "Pāda",
- practices: [
- { id: "k3_1", syncKey: "walking_meditation", type: "ext", name: "Walking Meditation 🚶", desc: "Awareness of lifting, placing, ground contact." },
- { id: "k3_2", syncKey: "mantra_japa", type: "ext", name: "Mantra Walking 📿", desc: "Synchronizing step with mantra." },
- { id: "k3_3", syncKey: "purposeful_movement", type: "ext", name: "Purposeful Movement 🎯", desc: "Asking 'Why am I moving?' before getting up." },
- { id: "k3_4", syncKey: "kaya_sthairyam_pada", type: "ext", name: "Stillness Practice 🧘", desc: "Remaining physically present despite restlessness." },
- { id: "k3_5", syncKey: "pradakshina", type: "ext", name: "Pradakshina 🛕", desc: "Conscious sacred circumambulation." },
- { id: "k3_6", syncKey: "grounding_practice", type: "ext", name: "Grounding Practice 🌍", desc: "Awareness of soles of feet during standing." }
- ]
- },
- {
- name: "Upastha (Generation) 🔻",
- sanskritLabel: "Upastha",
- practices: [
- { id: "k4_1", syncKey: "brahmacharya", type: "ext", name: "Brahmacharya 🕉️", desc: "Governing sexual energy consciously, not compulsively." },
- { id: "k4_2", syncKey: "stimulus_reg", type: "ext", name: "Stimulus Regulation 🛡️", desc: "Reducing exposure to triggering content." },
- { id: "k4_3", syncKey: "digital_sexual", type: "ext", name: "Digital Sexual Discipline 📱", desc: "Strict boundaries on erotic content/browsing." },
- { id: "k4_4", syncKey: "physical_exercise", type: "ext", name: "Physical Exercise 🏃", desc: "Constructive channeling of physical energy." },
- { id: "k4_5", syncKey: "structured_daily", type: "ext", name: "Structured Daily Activity 📅", desc: "Meaningful engagement to avoid idle compulsion." },
- { id: "k4_6", syncKey: "conscious_celibacy", type: "ext", name: "Conscious Celibacy/Sexuality ⚖️", desc: "Ethical, non-compulsive relationship to energy." }
- ]
- },
- {
- name: "Pāyu (Elimination) 💨",
- sanskritLabel: "Pāyu",
- practices: [
- { id: "k5_1", syncKey: "elimination_routine", type: "ext", name: "Regular Elimination Routine ⏰", desc: "Respecting natural signals without suppression." },
- { id: "k5_2", syncKey: "shaucha", type: "ext", name: "Shaucha 🧼", desc: "Appropriate physical cleanliness without obsession." },
- { id: "k5_3", syncKey: "natural_elimination", type: "ext", name: "Natural Elimination 🌿", desc: "Supporting body without unnecessary interference." },
- { id: "k5_4", syncKey: "body_awareness", type: "ext", name: "Body Awareness 🧘", desc: "Familiarity with elimination signals." },
- { id: "k5_5", syncKey: "diet_lifestyle", type: "ext", name: "Appropriate Diet/Lifestyle 🥗", desc: "Supporting bowel function naturally." },
- { id: "k5_6", syncKey: "non_obsessive_cleansing", type: "ext", name: "Non-Obsessive Cleansing 🧼", desc: "Cleanliness without compulsive ritual." }
- ]
- }
- ],
-
- manas: [
- {
- name: "Visual Representations 👁️",
- sanskritLabel: "Dṛśya",
- practices: [
- { id: "m1_1", syncKey: "antar_trataka", type: "int", name: "Antar-Trāṭaka 🔥", desc: "Reproduce object mentally after external gazing. Hold steadily without modification." },
- { id: "m1_2", syncKey: "sacred_vis", type: "int", name: "Sacred Visualization 🕉️", desc: "Construct, stabilize, refine, and deliberately dissolve a steady mental image." },
- { id: "m1_3", syncKey: "vis_manipulation", type: "int", name: "Visual Manipulation 🔄", desc: "Deliberately alter internal image: color, scale, 3D rotation, or motion." },
- { id: "m1_4", syncKey: "vis_pratyahara", type: "int", name: "Visual Pratyāhāra 🧘", desc: "Command spontaneous mental scenes to fade into total darkness on cue." },
- { id: "m1_5", syncKey: "vis_fasting", type: "int", name: "Visual Fasting 🚫", desc: "Maintain total internal non-imaging; refuse internal daydreams or fantasies." }
- ]
- },
- {
- name: "Auditory & Verbal 👂",
- sanskritLabel: "Śabda",
- practices: [
- { id: "m2_1", syncKey: "manasika_japa", type: "int", name: "Mānasika Japa 📿", desc: "Uninterrupted internal mantra without any tongue or throat movement." },
- { id: "m2_2", syncKey: "deliberate_dialogue", type: "int", name: "Deliberate Inner Dialogue 🗣️", desc: "Intentionally start, generate responses, change speakers, and stop on command." },
- { id: "m2_3", syncKey: "inner_sound_trans", type: "int", name: "Inner-Sound Transformation 🔄", desc: "Modify internally generated sound volume, pitch, speed, or voice." },
- { id: "m2_4", syncKey: "nada_anusandhana", type: "int", name: "Nāda-Anusandhāna 🎵", desc: "Listen receptively to non-verbal internal frequencies or subtle inner sound." },
- { id: "m2_5", syncKey: "verbal_fasting", type: "int", name: "Antar-Mauna 🤫", desc: "Intercept inner chatter; allow verbal impulse to collapse into absolute inner silence." }
- ]
- },
- {
- name: "Other Sensory Representations ✋",
- sanskritLabel: "Anyendriya",
- practices: [
- { id: "m3_1", syncKey: "internal_nyasa", type: "int", name: "Internal Nyāsa 🧍", desc: "Systematically move internal attentional focus through body coordinates." },
- { id: "m3_2", syncKey: "multi_sensory_synth", type: "int", name: "Multi-Sensory Synthesis ✋", desc: "Deliberately generate and instantly cut off phantom sensations (textures, temps)." },
- { id: "m3_3", syncKey: "internal_equanimity", type: "int", name: "Internal Sensory Equanimity ⚖️", desc: "Observe internal cravings or phantom discomforts strictly as neutral vibrational events." },
- { id: "m3_4", syncKey: "sensory_pratyahara", type: "int", name: "Sensory Pratyāhāra 🌑", desc: "When fantasy arises: Recognize → Don't elaborate → Don't pursue → Withdraw." },
- { id: "m3_5", syncKey: "sensory_fasting", type: "int", name: "Sensory Fasting 🚫", desc: "Periodically suspend deliberate internal recreation of tastes or physical gratifications." }
- ]
- },
- {
- name: "Conceptual Representations 💭",
- sanskritLabel: "Avadhāraṇā",
- practices: [
- { id: "m4_1", syncKey: "sakshi_bhava", type: "int", name: "Sākṣī-Bhāva 👁️", desc: "Observe thoughts as they arise without continuing or elaborating on them." },
- { id: "m4_2", syncKey: "cognitive_labelling", type: "int", name: "Viveka Labelling 🏷️", desc: "Instantly classify incoming thoughts (e.g., Inference, Memory, Assumption, Judgment)." },
- { id: "m4_3", syncKey: "eka_tattva", type: "int", name: "Eka-Tattva Abhyāsa 🎯", desc: "Hold a single abstract principle without deviation to train mental architecture." },
- { id: "m4_4", syncKey: "sankalpa_vikalpa", type: "int", name: "Sankalpa-Vikalpa ⚖️", desc: "Step back and observe the movement of indecision itself rather than choosing." },
- { id: "m4_5", syncKey: "deliberate_concept", type: "int", name: "Deliberate Construction 🧩", desc: "Build a logical chain from premise to conclusion, then dissolve it instantly." },
- { id: "m4_6", syncKey: "concept_fasting", type: "int", name: "Conceptual Antar-Mauna ⏸️", desc: "Halt the undercurrent of planning. Rest the intellect in non-conceptual stillness." }
- ]
- }
- ],
-
- arishadvargas: [
-    {
-      name: "Kama (Desire/Lust) 🌪️",
-      sanskritLabel: "Kama",
-      practices: [
-        { id: "a1_1", syncKey: "arish_vairagya", type: "ext", name: "Vairagya 🍂", desc: "Cultivating dispassion and non-attachment." },
-        { id: "a1_2", syncKey: "arish_santosha", type: "ext", name: "Santosha 🪴", desc: "Cultivating contentment with what is present." },
-        { id: "a1_3", syncKey: "arish_dama", type: "ext", name: "Dama 🛡️", desc: "Active sense-restraint." },
-        { id: "a1_4", syncKey: "arish_brahmacharya", type: "ext", name: "Brahmacharya 🕉️", desc: "Wise conservation and direction of sexual energy." },
-        { id: "a1_5", syncKey: "arish_tapas", type: "ext", name: "Tapas 🔥", desc: "Disciplined endurance." },
-        { id: "a1_6", syncKey: "kama_sensory_reset", type: "ext", name: "Sensory Reset 🛑", desc: "Abstain from tempting media/stimulation; take cold showers and practice digital fasting." },
-        { id: "a1_7", syncKey: "kama_vigorous_asana", type: "ext", name: "Vigorous Asana 🧘", desc: "Practice Surya Namaskara/inversions engaging physical energy locks (Bandhas)." },
-        { id: "a1_8", syncKey: "kama_regulated_consumption", type: "ext", name: "Regulated Consumption 🥗", desc: "Eat/consume strictly according to bodily necessity rather than appetite." },
-        { id: "a1_9", syncKey: "kama_urge_postponement", type: "ext", name: "Urge Postponement ⏳", desc: "Enforce a mandatory waiting period for immediate impulses to acquire or consume." }
-      ]
-    },
-    {
-      name: "Krodha (Anger) 🔥",
-      sanskritLabel: "Krodha",
-      practices: [
-        { id: "a2_1", syncKey: "arish_kshama", type: "ext", name: "Kshama 🕊️", desc: "Cultivating forgiving qualities and letting go of resentment." },
-        { id: "a2_2", syncKey: "arish_titiksha", type: "ext", name: "Titiksha 🏔️", desc: "Practicing forbearance and enduring provocations without agitation." },
-        { id: "a2_3", syncKey: "arish_shanti", type: "ext", name: "Shanti 🌊", desc: "Cultivating inner peace." },
-        { id: "a2_4", syncKey: "arish_karuna", type: "ext", name: "Karuna 💖", desc: "Extending compassion to oneself and others." },
-        { id: "a2_5", syncKey: "arish_upeksha", type: "ext", name: "Upeksha ⚖️", desc: "Maintaining equanimity." },
-        { id: "a2_6", syncKey: "arish_ahimsa", type: "ext", name: "Ahimsa 🌸", desc: "Strict adherence to non-harming." },
-        { id: "a2_7", syncKey: "krodha_silence_protocol", type: "ext", name: "Silence Protocol 🤐", desc: "Halt speech immediately and maintain physical silence when emotional triggers surface." },
-        { id: "a2_8", syncKey: "krodha_physical_withdrawal", type: "ext", name: "Physical Withdrawal 🚶", desc: "Leave the immediate environment or take a walk before reacting physically or verbally." },
-        { id: "a2_9", syncKey: "krodha_physiological_cooling", type: "ext", name: "Physiological Cooling 🧊", desc: "Sit down, drink cold water, and execute cooling breathwork (Sitali/Sitkari)." },
-        { id: "a2_10", syncKey: "krodha_non_violent_boundaries", type: "ext", name: "Non-Violent Boundaries 🧘", desc: "Consciously relax facial tension/clenched fists; enforce boundaries against aggressive gestures." }
-      ]
-    },
-    {
-      name: "Lobha (Greed) 🪤",
-      sanskritLabel: "Lobha",
-      practices: [
-        { id: "a3_1", syncKey: "arish_dana", type: "ext", name: "Dana 🎁", desc: "Practicing generosity." },
-        { id: "a3_2", syncKey: "arish_aparigraha", type: "ext", name: "Aparigraha 👐", desc: "Non-grasping and non-hoarding." },
-        { id: "a3_3", syncKey: "arish_tyaga", type: "ext", name: "Tyaga 🍃", desc: "Renunciation of the unnecessary." },
-        { id: "a3_4", syncKey: "lobha_direct_giving", type: "ext", name: "Scheduled Physical Giving 🤝", desc: "Physically hand over money, food, or surplus goods directly to others." },
-        { id: "a3_5", syncKey: "lobha_possession_limits", type: "ext", name: "Possession Limits 📦", desc: "Establish non-negotiable caps on belongings and routinely purge unnecessary items." },
-        { id: "a3_6", syncKey: "lobha_one_in_one_out", type: "ext", name: "One-In / One-Out 🔄", desc: "Acquire a replacement item only when an old one is actively let go." }
-      ]
-    },
-    {
-      name: "Moha (Delusion) 🌫️",
-      sanskritLabel: "Moha",
-      practices: [
-        { id: "a4_1", syncKey: "arish_viveka", type: "ext", name: "Viveka 🗡️", desc: "Applying discrimination between real and unreal." },
-        { id: "a4_2", syncKey: "arish_vichara", type: "ext", name: "Vichara 🔍", desc: "Self-inquiry and investigation." },
-        { id: "a4_3", syncKey: "arish_shravana", type: "ext", name: "Shravana 👂", desc: "Right hearing and learning." },
-        { id: "a4_4", syncKey: "arish_manana", type: "ext", name: "Manana 💭", desc: "Reflective examination of teachings." },
-        { id: "a4_5", syncKey: "arish_smriti", type: "ext", name: "Smriti 🕯️", desc: "Maintaining clear remembrance." },
-        { id: "a4_6", syncKey: "moha_dynamic_movement", type: "ext", name: "Dynamic Movement 🏃", desc: "Shift out of speculative loops via fast-paced walking meditation or concrete physical labor." },
-        { id: "a4_7", syncKey: "moha_autonomic_reset", type: "ext", name: "Autonomic Reset 🧊", desc: "Splash cold water on the face and practice Nadi Shodhana to balance hemispheric activity." },
-        { id: "a4_8", syncKey: "moha_direct_observation", type: "ext", name: "Direct Observation 🔍", desc: "Physically inspect situations and personally verify facts before acting; organize your environment." },
-        { id: "a4_9", syncKey: "moha_information_filtering", type: "ext", name: "Information Filtering 🛡️", desc: "Intentionally avoid environments dominated by rumors, sensationalism, or exaggerated media." }
-      ]
-    },
-    {
-      name: "Mada (Pride/Arrogance) 🦚",
-      sanskritLabel: "Mada",
-      practices: [
-        { id: "a5_1", syncKey: "arish_vinaya", type: "ext", name: "Vinaya 🌱", desc: "Cultivating humility & modesty." },
-        { id: "a5_2", syncKey: "arish_seva", type: "ext", name: "Seva 🧹", desc: "Engaging in selfless service." },
-        { id: "a5_3", syncKey: "arish_kritajnata", type: "ext", name: "Kritajnata 🙏", desc: "Expressing genuine gratitude." },
-        { id: "a5_4", syncKey: "arish_samabhava", type: "ext", name: "Samabhava ⚖️", desc: "Viewing all with equanimity and equal vision." },
-        { id: "a5_5", syncKey: "arish_ishvararpana", type: "ext", name: "Ishvararpana 🪔", desc: "Offering actions and results to the Divine." },
-        { id: "a5_6", syncKey: "mada_full_prostrations", type: "ext", name: "Full Prostrations 🙇", desc: "Practice Sashtanga Pranama to physically lower your center of gravity." },
-        { id: "a5_7", syncKey: "mada_menial_tasks", type: "ext", name: "Manual Menial Tasks 🧹", desc: "Perform ordinary domestic tasks yourself rather than delegating them." },
-        { id: "a5_8", syncKey: "mada_status_reduction", type: "ext", name: "Status Reduction 🤝", desc: "Serve others equally regardless of standing, and receive feedback non-defensively." }
-      ]
-    },
-    {
-      name: "Matsarya (Jealousy/Envy) 🐍",
-      sanskritLabel: "Matsarya",
-      practices: [
-        { id: "a6_1", syncKey: "arish_mudita", type: "ext", name: "Mudita 🌻", desc: "Cultivating appreciative joy for others' success." },
-        { id: "a6_2", syncKey: "arish_maitri", type: "ext", name: "Maitri 🤝", desc: "Fostering goodwill and friendliness." },
-        { id: "a6_3", syncKey: "arish_prasada", type: "ext", name: "Prasada 🪔", desc: "Graciously accepting outcomes without envy." },
-        { id: "a6_4", syncKey: "matsarya_heart_opening", type: "ext", name: "Heart-Opening Asanas 🫁", desc: "Practice postures (Bhujangasana, Ustrasana) to release constriction in the solar plexus." },
-        { id: "a6_5", syncKey: "matsarya_active_celebration", type: "ext", name: "Active Celebration 👏", desc: "Congratulate others directly, present gifts, or physically applaud competitors' achievements." },
-        { id: "a6_6", syncKey: "matsarya_equal_courtesy", type: "ext", name: "Cooperation & Courtesy 🤲", desc: "Actively assist peers in succeeding and grant others the courtesy you desire for yourself." }
-      ]
-    }
-  ],
-
- identification: [
- {
- name: "Sthula Sharira (Gross Body) 🧱",
- sanskritLabel: "Sthūla",
- practices: [
- { id: "id_s1", syncKey: "id_neti_body", type: "int", name: "Neti-Neti Body Inquiry 🧘", desc: "Systematically examine body parts ('Am I this body?') to discern: 'This is known by me; therefore it is not me.'" },
- { id: "id_s2", syncKey: "id_body_scan", type: "int", name: "Body Scanning with Witnessing 🔍", desc: "Move attention head-to-toe, noting sensations as objects known by Awareness." },
- { id: "id_s3", syncKey: "id_physical_stillness", type: "int", name: "Physical Stillness and Somatic Witnessing 🚶", desc: "Sit motionless for 15-30 minutes daily, silently watching sensations without reacting." },
- { id: "id_s4", syncKey: "id_marana_smriti", type: "int", name: "Death Contemplation (Marana-Smriti) 💀", desc: "Reflect on physical impermanence and element dissolution to loosen body-identity." },
- { id: "id_s5", syncKey: "id_appearance_deapp", type: "int", name: "Appearance De-appropriation 🪞", desc: "View the body in a mirror as a temporary instrument, not 'me'." },
- { id: "id_s6", syncKey: "id_health_equanimity", type: "int", name: "Health and Illness Equanimity ⚖️", desc: "Treat health and sickness as transient bodily conditions that do not define Awareness." },
- { id: "id_s7", syncKey: "id_possession_deapp", type: "int", name: "Possession De-appropriation 📦", desc: "Audit belongings, releasing psychological ownership while retaining functional utility." },
- { id: "id_s8", syncKey: "id_body_karma_yoga", type: "int", name: "Body as Instrument (Karma Yoga) 🛠️", desc: "Dedicate physical action to selfless service without identifying as the actor." }
- ]
- },
- {
- name: "Sukshma - Jnanendriyas (Sense Faculties) 👁️",
- sanskritLabel: "Jñānendriya",
- practices: [
- { id: "id_sk_j1", syncKey: "id_perception_wit", type: "int", name: "Perception Witnessing 👂", desc: "Observe sensory streams as incoming data rather than personal identity." },
- { id: "id_sk_j2", syncKey: "id_perceiver_deapp", type: "int", name: "Perceiver De-appropriation 🫴", desc: "Drop 'I am the seer/hearer'; rest as the witness of perception." },
- { id: "id_sk_j3", syncKey: "id_sensory_equan", type: "int", name: "Sensory Equanimity ⚖️", desc: "Maintain neutrality whether senses are sharp, impaired, pleasant, or unpleasant." },
- { id: "id_sk_j4", syncKey: "id_pref_neutral", type: "int", name: "Preference Neutralization 🛑", desc: "Observe sensory likes and dislikes (raga-dvesha) upon contact without adopting them as identity." }
- ]
- },
- {
- name: "Sukshma - Karmendriyas (Action Faculties) 🖐️",
- sanskritLabel: "Karmendriya",
- practices: [
- { id: "id_sk_k1", syncKey: "id_action_wit", type: "int", name: "Action and Speech Witnessing 🗣️", desc: "Observe speech and movement as physiological operations unfolding in awareness." },
- { id: "id_sk_k2", syncKey: "id_kartrtva_tyaga", type: "int", name: "Doership De-appropriation (Kartritva-Tyaga) 🫴", desc: "Release claims of agency ('Action belongs to the instruments')." },
- { id: "id_sk_k3", syncKey: "id_skill_equan", type: "int", name: "Skill Equanimity ⚖️", desc: "Remain unattached to physical eloquence, dexterity, clumsiness, or fatigue." },
- { id: "id_sk_k4", syncKey: "id_organs_inst", type: "int", name: "Organs as Pure Instruments 🛠️", desc: "Employ motor faculties for functional necessity without using performance to bolster ego." }
- ]
- },
- {
- name: "Sukshma - Prana (Vital Force) ⚡",
- sanskritLabel: "Prāṇa",
- practices: [
- { id: "id_sk_p1", syncKey: "id_prana_wit", type: "int", name: "Prana Witnessing 🧘", desc: "Observe vitality and breath rhythms without labeling them 'my energy'." },
- { id: "id_sk_p2", syncKey: "id_pranayama_wit", type: "int", name: "Pranayama with Witnessing 🫁", desc: "Regulate breath while consciously holding the stance of the uninvolved witness." },
- { id: "id_sk_p3", syncKey: "id_energy_equan", type: "int", name: "Energy Fluctuation Equanimity ⚖️", desc: "Maintain baseline neutrality through energy spikes and states of exhaustion." },
- { id: "id_sk_p4", syncKey: "id_prana_ishvararpana", type: "int", name: "Prana as Instrument (Ishvararpana) 🪔", desc: "Direct vital energy into service, offering output to the Divine rather than claiming it." }
- ]
- },
- {
- name: "Sukshma - Buddhi (Intellect and Judgement) 💡",
- sanskritLabel: "Buddhi",
- practices: [
- { id: "id_sk_b1", syncKey: "id_opinion_deapp", type: "int", name: "Opinion De-appropriation 🫴", desc: "Hold mental models and perspectives as practical tools rather than personal truths." },
- { id: "id_sk_b2", syncKey: "id_rightness_equan", type: "int", name: "Rightness Equanimity ⚖️", desc: "Relinquish the compulsive impulse to defend, argue, or be proven right." },
- { id: "id_sk_b3", syncKey: "id_knowledge_deapp", type: "int", name: "Knowledge De-appropriation 📚", desc: "Discard the identity of the 'expert', treating knowledge as shared information." },
- { id: "id_sk_b4", syncKey: "id_conclusion_deapp", type: "int", name: "Conclusion De-appropriation 🔄", desc: "Hold deductions lightly as current understanding subject to change." },
- { id: "id_sk_b5", syncKey: "id_intellect_inst", type: "int", name: "Intellect as Instrument 🛠️", desc: "Apply logic to practical tasks without tying intellectual competence to self-worth." }
- ]
- },
- {
- name: "Sukshma - Ahankara (Ego and Roles) 🎭",
- sanskritLabel: "Ahaṅkāra",
- practices: [
- { id: "id_sk_a1", syncKey: "id_personality_wit", type: "int", name: "Personality Witnessing 👁️", desc: "Watch character traits and defense mechanisms play out without adopting them as the Self." },
- { id: "id_sk_a2", syncKey: "id_ego_wit", type: "int", name: "Ego Witnessing 🧘", desc: "Directly witness sensations of superiority or inferiority without indulging or fighting them." },
- { id: "id_sk_a3", syncKey: "id_functional_self", type: "int", name: "Functional Self vs. Ultimate Self ⚖️", desc: "Utilize the functional ego as an operating system while knowing it is not the ultimate Subject." },
- { id: "id_sk_a4", syncKey: "id_role_wit", type: "int", name: "Role Witnessing 👁️", desc: "Maintain continuous awareness throughout daily tasks (acting in the role of parent/professional)." },
- { id: "id_sk_a5", syncKey: "id_reputation_deapp", type: "int", name: "Reputation De-appropriation 🫴", desc: "Release investment in social standing, public estimation, and image management." },
- { id: "id_sk_a6", syncKey: "id_status_deapp", type: "int", name: "Status De-appropriation 📊", desc: "Recognize titles and ranks as transient social conveniences." },
- { id: "id_sk_a7", syncKey: "id_role_transition", type: "int", name: "Role Transition Practice 🔄", desc: "Consciously drop one identity before stepping into another." },
- { id: "id_sk_a8", syncKey: "id_service_role_deapp", type: "int", name: "Service as Role De-appropriation 🤝", desc: "Undertake humble, invisible tasks detached from prestige or validation." }
- ]
- },
- {
- name: "Sukshma - Citta (Memory and Narrative) 📜",
- sanskritLabel: "Citta",
- practices: [
- { id: "id_sk_c1", syncKey: "id_memory_wit", type: "int", name: "Memory Witnessing 👁️", desc: "Notice past events arising into current awareness as inert mental objects." },
- { id: "id_sk_c2", syncKey: "id_narrative_deapp", type: "int", name: "Narrative De-appropriation 🫴", desc: "Drop psychological attachment to personal life stories (victim, hero, underdog)." },
- { id: "id_sk_c3", syncKey: "id_past_deapp", type: "int", name: "Past De-appropriation 🔄", desc: "Acknowledge history as departed data possessing no authority over the present moment." },
- { id: "id_sk_c4", syncKey: "id_story_wit", type: "int", name: "Story Witnessing 📖", desc: "Recognize internal commentary and myth-making as continuous mental fiction." },
- { id: "id_sk_c5", syncKey: "id_memory_inst", type: "int", name: "Memory as Instrument 🛠️", desc: "Retrieve factual memories strictly for functional utility rather than identity validation." }
- ]
- },
- {
- name: "Karana Sharira (Causal Body) 🌌",
- sanskritLabel: "Kāraṇa",
- practices: [
- { id: "id_k1", syncKey: "id_root_ignorance_wit", type: "int", name: "Root Ignorance Witnessing 👁️", desc: "Observe the primordial feeling of separateness or unexamined unknowing prior to thought." },
- { id: "id_k2", syncKey: "id_latent_vasanas_wit", type: "int", name: "Latent Impression Witnessing (Vasanas) 🌱", desc: "Detect unsprouted causal seeds and subconscious impulses at their root before they crystallize into personal identity." },
- { id: "id_k3", syncKey: "id_doership_seed_deapp", type: "int", name: "Doership Seed De-appropriation (Akartritva) 🫴", desc: "Dissolve the root assumption of being an autonomous agent ('I am not the doer')." },
- { id: "id_k4", syncKey: "id_experiencer_deapp", type: "int", name: "Experiencer De-appropriation (Abhoktritva) 🧘", desc: "Reassign experiences as impersonal movements within consciousness rather than personal possessions." },
- { id: "id_k5", syncKey: "id_spiritual_journey_deapp", type: "int", name: "Spiritual Journey De-appropriation 🛤️", desc: "Release subtle ego identity built around being a seeker or advanced practitioner." },
- { id: "id_k6", syncKey: "id_blankness_void_wit", type: "int", name: "Blankness and Void Witnessing (Susupti) 😴", desc: "Observe deep sleep, darkness, or non-conceptual states without mistaking absence of objects for non-existence." },
- { id: "id_k7", syncKey: "id_bliss_deapp", type: "int", name: "Bliss De-appropriation (Ananda) 🌸", desc: "Enjoy uncaused quietude and peace without claiming the experience as 'my state' or an egoic attainment." },
- { id: "id_k8", syncKey: "id_causal_body_neti_wit", type: "int", name: "Causal Body Witnessing and Neti-Neti 🌌", desc: "Systematically discard even the subtle sense of individual existence ('Not this, not this')." },
- { id: "id_k9", syncKey: "id_abiding_pure_consciousness", type: "int", name: "Abiding as Pure Consciousness (Turiya) ♾️", desc: "Rest as pristine, unconfined non-dual Awareness, remaining completely unbound across all states." }
- ]
- }
- ]
+ jnanendriyas: [],
+ karmendriyas: [],
+ manas: [],
+ arishadvargas: [],
+ identification: []
 };
 
 let currentDate = new Date().toISOString().split('T')[0];
@@ -2310,6 +1863,30 @@ const DOMAIN_COLOR_MAP = {
 function getDomainColorInfo(domainKey) {
   const normKey = (domainKey || '').toLowerCase();
   return DOMAIN_COLOR_MAP[normKey] || { varName: 'var(--accent-gold)', hex: '#fbbf24', glow: 'rgba(251, 191, 36, 0.25)' };
+}
+
+/**
+ * Dual-Gated Sigmoid Model: 100 * G(AR) * G(APE)
+ * Evaluates volume and quality independently across a 50% midpoint gate (k=9, c=0.5).
+ * Both metrics must individually be strong to unlock mastery-level scores.
+ */
+function calculateDualGatedOPE(arRatio, apeRatio) {
+  if (arRatio <= 0 || apeRatio <= 0) return 0;
+
+  const k = 9;   // Sigmoid transition steepness
+  const c = 0.5; // Midpoint threshold (50%)
+
+  const sig = z => 1 / (1 + Math.exp(-k * (z - c)));
+  const s0 = sig(0);
+  const s1 = sig(1);
+
+  // Normalize single component to [0, 1]
+  const G = z => Math.min(1, Math.max(0, (sig(z) - s0) / (s1 - s0)));
+
+  const gAR = G(arRatio);
+  const gAPE = G(apeRatio);
+
+  return Math.min(100, Math.max(0, 100 * gAR * gAPE));
 }
 
 function toggleGroupCollapse(groupKey) {
@@ -2598,7 +2175,8 @@ function promptAddPracticeContextual(viewType) {
     jnan: 'jnanendriyas',
     karm: 'karmendriyas',
     manas: 'manas',
-    arish: 'arishadvargas'
+    arish: 'arishadvargas',
+    identification: 'identification'
   };
   const dKey = domainKeyMap[viewType];
   const categoryList = dataset[dKey];
@@ -2932,7 +2510,6 @@ function renderLinkModalList(syncKey) {
   const activeLinks = getLinkedGroup(syncKey);
   let otherPractices = allFlat.filter(p => p.syncKey !== syncKey);
 
-  // Apply search query filter
   if (linkModalSearchQuery) {
     otherPractices = otherPractices.filter(p => 
       p.name.toLowerCase().includes(linkModalSearchQuery) ||
@@ -3445,10 +3022,9 @@ function renderSubCategoryDropdowns() {
  const arishDropdown = document.getElementById('arish-dropdown');
  const identDropdown = document.getElementById('identification-dropdown');
 
-
  if (jnanDropdown) {
  let jnanHtml = `<option value="All" ${activeFilter.jnan === 'All' ? 'selected' : ''}>All Senses</option>`;
- dataset.jnanendriyas.forEach(g => {
+ (dataset.jnanendriyas || []).forEach(g => {
  jnanHtml += `<option value="${g.name}" ${activeFilter.jnan === g.name ? 'selected' : ''}>${g.sanskritLabel || g.name}</option>`;
  });
  jnanDropdown.innerHTML = jnanHtml;
@@ -3456,7 +3032,7 @@ function renderSubCategoryDropdowns() {
 
  if (karmDropdown) {
  let karmHtml = `<option value="All" ${activeFilter.karm === 'All' ? 'selected' : ''}>All Senses</option>`;
- dataset.karmendriyas.forEach(g => {
+ (dataset.karmendriyas || []).forEach(g => {
  karmHtml += `<option value="${g.name}" ${activeFilter.karm === g.name ? 'selected' : ''}>${g.sanskritLabel || g.name}</option>`;
  });
  karmDropdown.innerHTML = karmHtml;
@@ -3464,7 +3040,7 @@ function renderSubCategoryDropdowns() {
 
  if (manasDropdown) {
  let manasHtml = `<option value="All" ${activeFilter.manas === 'All' ? 'selected' : ''}>All Domains</option>`;
- dataset.manas.forEach(g => {
+ (dataset.manas || []).forEach(g => {
  manasHtml += `<option value="${g.name}" ${activeFilter.manas === g.name ? 'selected' : ''}>${g.sanskritLabel || g.name}</option>`;
  });
  manasDropdown.innerHTML = manasHtml;
@@ -3472,7 +3048,7 @@ function renderSubCategoryDropdowns() {
 
  if (arishDropdown) {
  let arishHtml = `<option value="All" ${activeFilter.arish === 'All' ? 'selected' : ''}>All Antid</option>`;
- dataset.arishadvargas.forEach(g => {
+ (dataset.arishadvargas || []).forEach(g => {
  arishHtml += `<option value="${g.name}" ${activeFilter.arish === g.name ? 'selected' : ''}>${g.sanskritLabel || g.name}</option>`;
  });
  arishDropdown.innerHTML = arishHtml;
@@ -3494,7 +3070,7 @@ function filterCategory(type, name) {
 }
 
 function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilter, completionState = 'all') {
- if (!targetContainer) return;
+ if (!targetContainer || !categoryList) return;
  targetContainer.innerHTML = '';
 
  const domainColorInfo = getDomainColorInfo(domainKey);
@@ -3505,7 +3081,7 @@ function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilte
  let practicesHtml = '';
  let practiceCount = 0;
 
- group.practices.forEach(p => {
+ (group.practices || []).forEach(p => {
  const data = getSyncData(p.syncKey);
  const isDone = data.done;
  
@@ -3622,7 +3198,7 @@ function calculateDomainOPE(domainKey, targetDates) {
 
  let totalPracticesInDomain = 0;
  categoryList.forEach(group => {
- totalPracticesInDomain += group.practices.length;
+ totalPracticesInDomain += (group.practices || []).length;
  });
 
  let dailyOPEs = [];
@@ -3634,7 +3210,7 @@ function calculateDomainOPE(domainKey, targetDates) {
  let effCount = 0;
 
  categoryList.forEach(group => {
- group.practices.forEach(p => {
+ (group.practices || []).forEach(p => {
  const item = logs[date][p.syncKey];
  if (item && item.done) {
  completedCount++;
@@ -3647,10 +3223,10 @@ function calculateDomainOPE(domainKey, targetDates) {
  });
  });
 
- if (completedCount > 0 || effCount > 0) {
- const accomplishmentRate = totalPracticesInDomain > 0 ? (completedCount / totalPracticesInDomain) * 100 : 0;
- const ape = effCount > 0 ? (totalEffSum / effCount) : 0;
- dailyOPEs.push(Math.sqrt(accomplishmentRate * ape));
+ if (completedCount > 0 && effCount > 0) {
+ const arRatio = totalPracticesInDomain > 0 ? (completedCount / totalPracticesInDomain) : 0;
+ const apeRatio = (totalEffSum / effCount) / 100;
+ dailyOPEs.push(calculateDualGatedOPE(arRatio, apeRatio));
  }
  });
 
@@ -3734,7 +3310,7 @@ function calculateDomainAccomplishment(domainKey, targetDates) {
 
  let totalPracticesInDomain = 0;
  categoryList.forEach(group => {
- totalPracticesInDomain += group.practices.length;
+ totalPracticesInDomain += (group.practices || []).length;
  });
 
  if (totalPracticesInDomain === 0 || targetDates.length === 0) return 0;
@@ -3749,7 +3325,7 @@ function calculateDomainAccomplishment(domainKey, targetDates) {
 
  let completedCount = 0;
  categoryList.forEach(group => {
- group.practices.forEach(p => {
+ (group.practices || []).forEach(p => {
  const item = logs[date][p.syncKey];
  if (item && item.done) {
  completedCount++;
@@ -3860,7 +3436,6 @@ function filterLedgerByDomain(domainName) {
   const previousFilter = ledgerDomainFilter;
   ledgerDomainFilter = domainName;
   
-  // 1. Update the table DOM first
   renderPracticeLedger();
 
   const resetBtn = document.getElementById('resetLedgerFilterBtn');
@@ -3874,7 +3449,6 @@ function filterLedgerByDomain(domainName) {
       : `Filtered by: <strong>${domainName}</strong>. Click row to reveal tooltip.`;
   }
 
-  // 2. Wait 50ms for the browser to repaint the new table heights, then scroll
   setTimeout(() => {
     const container = document.querySelector('main.container');
     if (!container) return;
@@ -3882,19 +3456,16 @@ function filterLedgerByDomain(domainName) {
     let targetEl = null;
 
     if (domainName !== 'All') {
-      // Scroll down to the Ledger table when a filter is applied
       targetEl = document.getElementById('comprehensivePracticeLedgerCard');
     } else if (previousFilter !== 'All') {
-      // Scroll back up to the Accomplishment Chart when clearing the filter
       targetEl = document.getElementById('domainAccomplishmentCard');
     }
 
     if (targetEl) {
-      // Bulletproof calculation to get the exact scroll position within the container
       const targetPos = targetEl.getBoundingClientRect().top 
                       + container.scrollTop 
                       - container.getBoundingClientRect().top 
-                      - 20; // 20px visual buffer at the top
+                      - 20;
       
       container.scrollTo({
         top: targetPos,
@@ -3925,16 +3496,41 @@ function renderRollingTrendChart() {
  last30Days.push(`${yr}-${mo}-${dy}`);
  }
 
+ const allDomains = [
+ ...(dataset.jnanendriyas || []),
+ ...(dataset.karmendriyas || []),
+ ...(dataset.manas || []),
+ ...(dataset.arishadvargas || []),
+ ...(dataset.identification || [])
+ ];
+
+ let totalAvailablePractices = 0;
+ allDomains.forEach(group => {
+ totalAvailablePractices += (group.practices || []).length;
+ });
+
  const rawDailyData = last30Days.map(date => {
  if (!logs[date]) return 0;
- let effs = [];
- Object.keys(logs[date]).forEach(key => {
- const item = logs[date][key];
- if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
- effs.push(...item.efficiencies);
+ let completedCount = 0;
+ let dayEffs = [];
+
+ allDomains.forEach(group => {
+ (group.practices || []).forEach(p => {
+ const item = logs[date][p.syncKey];
+ if (item && item.done) {
+ completedCount++;
+ const effList = item.efficiencies || [];
+ if (effList.length > 0) {
+ dayEffs.push(effList.reduce((a, b) => a + b, 0) / effList.length);
+ }
  }
  });
- return effs.length > 0 ? Math.round(effs.reduce((a, b) => a + b, 0) / effs.length) : 0;
+ });
+
+ if (completedCount === 0 || dayEffs.length === 0) return 0;
+ const arRatio = totalAvailablePractices > 0 ? (completedCount / totalAvailablePractices) : 0;
+ const apeRatio = (dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) / 100;
+ return Math.round(calculateDualGatedOPE(arRatio, apeRatio));
  });
 
  const rollingAvgData = rawDailyData.map((val, idx, arr) => {
@@ -3953,7 +3549,7 @@ function renderRollingTrendChart() {
  }
 
  const scrollInner = document.getElementById('trendChartScrollInner');
-if (scrollInner) {
+ if (scrollInner) {
   const scrollParent = scrollInner.parentElement;
   const parentWidth = scrollParent.clientWidth;
   const calculatedWidth = last30Days.length * 28;
@@ -3966,9 +3562,8 @@ if (scrollInner) {
   } else {
     scrollInner.style.width = '100%';
   }
-}
+ }
 
-const goldAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent-gold').trim() || '#fbbf24';
  const ctx = canvas.getContext('2d');
  trendChartInstance = new Chart(ctx, {
  type: 'line',
@@ -3976,7 +3571,7 @@ const goldAccent = getComputedStyle(document.documentElement).getPropertyValue('
  labels: timeLabels,
  datasets: [
  {
-  label: 'Daily APE %',
+  label: 'Daily Dual-Gated OPE %',
   data: rawDailyData,
   borderColor: '#a1a1aa',
   backgroundColor: '#a1a1aa',
@@ -4105,16 +3700,16 @@ function renderHeatmap() {
  container.innerHTML = '';
 
  const allDomains = [
- ...dataset.jnanendriyas,
- ...dataset.karmendriyas,
- ...dataset.manas,
- ...dataset.arishadvargas,
+ ...(dataset.jnanendriyas || []),
+ ...(dataset.karmendriyas || []),
+ ...(dataset.manas || []),
+ ...(dataset.arishadvargas || []),
  ...(dataset.identification || [])
  ];
 
  let totalAvailablePractices = 0;
  allDomains.forEach(group => {
- totalAvailablePractices += group.practices.length;
+ totalAvailablePractices += (group.practices || []).length;
  });
 
  const anchorDateStr = document.getElementById('analyticsSingleDate').value || currentDate;
@@ -4137,7 +3732,7 @@ function renderHeatmap() {
 
  if (logs[date]) {
  allDomains.forEach(group => {
- group.practices.forEach(p => {
+ (group.practices || []).forEach(p => {
  const item = logs[date][p.syncKey];
  if (item && item.done) {
  completedCount++;
@@ -4152,10 +3747,10 @@ function renderHeatmap() {
  }
 
  let dayOpe = 0;
- if (completedCount > 0 || dayEffs.length > 0) {
- const accomplishmentRate = totalAvailablePractices > 0 ? (completedCount / totalAvailablePractices) * 100 : 0;
- const ape = dayEffs.length > 0 ? (dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) : 0;
- dayOpe = Math.round(Math.sqrt(accomplishmentRate * ape));
+ if (completedCount > 0 && dayEffs.length > 0) {
+ const arRatio = totalAvailablePractices > 0 ? (completedCount / totalAvailablePractices) : 0;
+ const apeRatio = (dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) / 100;
+ dayOpe = Math.round(calculateDualGatedOPE(arRatio, apeRatio));
  }
 
  const dayDiv = document.createElement('div');
@@ -4307,7 +3902,7 @@ function openAnalyticsChart(type) {
  const categoryList = type === 'jnan' ? dataset.jnanendriyas : (type === 'karm' ? dataset.karmendriyas : (type === 'manas' ? dataset.manas : (type === 'arish' ? dataset.arishadvargas : dataset.identification)));
  
  if (!categoryList || categoryList.length === 0) {
- alert('Practices for this section are coming soon!');
+ alert('No practices available for this section.');
  return;
  }
 
@@ -4325,7 +3920,7 @@ function openAnalyticsChart(type) {
 
  categoryList.forEach(group => {
  labels.push(group.sanskritLabel || group.name);
- const totalPracticesInGroup = group.practices.length;
+ const totalPracticesInGroup = (group.practices || []).length;
 
  let dailyOPEValues = [];
 
@@ -4335,7 +3930,7 @@ function openAnalyticsChart(type) {
  let totalGroupEfficiency = 0;
  let groupEfficiencyEntriesCount = 0;
 
- group.practices.forEach(p => {
+ (group.practices || []).forEach(p => {
  const item = logs[date][p.syncKey];
  if (item && item.done) {
  completedCount++;
@@ -4348,11 +3943,10 @@ function openAnalyticsChart(type) {
  }
  });
 
- if (completedCount > 0 || groupEfficiencyEntriesCount > 0) {
- const accomplishmentRate = totalPracticesInGroup > 0 ? (completedCount / totalPracticesInGroup) * 100 : 0;
- const ape = groupEfficiencyEntriesCount > 0 ? (totalGroupEfficiency / groupEfficiencyEntriesCount) : 0;
- const dailyOpe = Math.sqrt(accomplishmentRate * ape);
- dailyOPEValues.push(dailyOpe);
+ if (completedCount > 0 && groupEfficiencyEntriesCount > 0) {
+ const arRatio = totalPracticesInGroup > 0 ? (completedCount / totalPracticesInGroup) : 0;
+ const apeRatio = (totalGroupEfficiency / groupEfficiencyEntriesCount) / 100;
+ dailyOPEValues.push(calculateDualGatedOPE(arRatio, apeRatio));
  }
  });
 
@@ -4367,9 +3961,9 @@ function openAnalyticsChart(type) {
  
  document.getElementById('chartDetailsContent').innerHTML = `
  <li><strong>X-Axis (Senses/Domains):</strong> Lists individual groups using Sanskrit English titles. Click any bar to open its detailed practices chart!</li>
- <li><strong>Daily OPE Formula:</strong> Geometric Mean $\\sqrt{\\text{Accomplishment Rate (\\%)} \\times \\text{APE (\\%)}}$.</li>
- <li><strong>Accomplishment Rate:</strong> Completed practices count divided by total practices in group (expressed as a percentage).</li>
- <li><strong>Multi-day OPE:</strong> Simple arithmetic average across all active days in the selected range.</li>
+ <li><strong>Daily G-OPE Formula:</strong> Dual-Gated Sigmoid $100 \\times G(\\text{AR}) \\times G(\\text{APE})$ ($k=9, c=0.5$).</li>
+ <li><strong>Two-Key Standard:</strong> Both volume and execution quality must cross 50% independently to unlock mastery scores.</li>
+ <li><strong>Multi-day G-OPE:</strong> Simple arithmetic average across all active days in the selected range.</li>
  `;
 
  document.getElementById('chartModalOverlay').classList.add('active');
@@ -4389,7 +3983,7 @@ function openAnalyticsChart(type) {
  data: {
  labels: labels,
  datasets: [{
- label: 'Group-wise Overall Practice Efficiency (G-OPE) %',
+ label: 'Group-wise Overall Practice Efficiency (Dual-Gated G-OPE) %',
  data: opeData,
  backgroundColor: chartColor,
  borderRadius: 6,
@@ -4448,7 +4042,7 @@ function openSubAnalyticsChart(type, senseIndex) {
  const labels = [];
  const apeData = [];
 
- senseGroup.practices.forEach(p => {
+ (senseGroup.practices || []).forEach(p => {
  labels.push(p.name);
  
  let dailyPracticeAverages = [];
@@ -4773,7 +4367,7 @@ function renderPracticeLedger() {
 
  const groupList = dataset[key] || [];
  groupList.forEach((group, gIdx) => {
- group.practices.forEach((p, pIdx) => {
+ (group.practices || []).forEach((p, pIdx) => {
  let attendanceCount = 0;
  let efficiencySum = 0;
  let effCount = 0;
