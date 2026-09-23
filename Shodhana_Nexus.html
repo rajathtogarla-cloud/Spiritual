@@ -717,13 +717,6 @@
  line-height: 1.2;
 }
 
- .analytics-buttons-wrapper {
- display: flex;
- gap: 20px;
- width: 100%;
- margin-top: 10px;
- flex-wrap: wrap;
- }
 
  .analytics-section-wrapper {
  display: flex;
@@ -751,8 +744,8 @@
 
  .analytics-btn:hover {
  transform: translateY(-3px);
- border-color: var(--accent-gold);
- box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+ /* border-color: var(--accent-gold);
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); */
  }
 
  .analytics-btn.jnan-btn { color: var(--accent-jnan); }
@@ -1365,6 +1358,48 @@
   border-radius: 6px;
   border-left: 3px solid var(--accent-gold);
 }
+
+.deep-dive-toggle-btn {
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--accent-gold);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  margin-top: -10px;
+  margin-bottom: 25px;
+}
+.deep-dive-toggle-btn:hover {
+  border-color: var(--accent-gold);
+  background: var(--card-sub-bg);
+}
+.deep-dive-panel {
+  display: none;
+  background: var(--card-sub-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: -15px;
+  margin-bottom: 25px;
+  animation: fadeIn 0.2s ease-in-out;
+}
+.deep-dive-panel.open {
+  display: block;
+}
+.deep-dive-toggle-arrow {
+  transition: transform 0.2s ease;
+}
+.deep-dive-panel.open + .deep-dive-toggle-btn .deep-dive-toggle-arrow,
+.deep-dive-toggle-btn.active .deep-dive-toggle-arrow {
+  transform: rotate(180deg);
+}
  </style>
 </head>
 <body onclick="handleBodyClick(event)">
@@ -1604,19 +1639,24 @@
  <h2 class="section-title" style="color: var(--accent-gold);">📊 Data Analytics </h2>
 
  <div class="stats-grid">
- <div class="stat-card">
- <div class="stat-val" id="statCompleted">0</div>
- <div class="stat-lbl">Practices Completed</div>
+   <div class="stat-card">
+     <div class="stat-val" id="statCompleted">0</div>
+     <div class="stat-lbl">Practices Completed</div>
+   </div>
+   <div class="stat-card">
+     <div class="stat-val" id="statEfficiency">0%</div>
+     <div class="stat-lbl">Avg. Practice Efficiency</div>
+   </div>
+   <div class="stat-card">
+     <div class="stat-val" id="statDays">0</div>
+     <div class="stat-lbl">Active Days Recorded</div>
+   </div>
  </div>
- <div class="stat-card">
- <div class="stat-val" id="statEfficiency">0%</div>
- <div class="stat-lbl">Avg. Practice Efficiency</div>
- </div>
- <div class="stat-card">
- <div class="stat-val" id="statDays">0</div>
- <div class="stat-lbl">Active Days Recorded</div>
- </div>
- </div>
+
+ <!-- Single Deep Dive Button -->
+ <button class="analytics-btn" style="margin-bottom: 25px;  color: var(--accent-gold);" onclick="document.getElementById('deepDiveModalOverlay').classList.add('active')">
+   🔬 Open Domain Deep-Dives
+ </button>
 
 <div class="chart-card" style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
  <h2 style="font-size: 1.1rem; color: var(--accent-gold); text-align: center; margin-bottom: 4px;">⚖️ Domain Balance (Dual-Gated D-OPE %)</h2>
@@ -1725,24 +1765,6 @@
  </div>
 </div>
 
- <div class="analytics-buttons-wrapper">
- <div class="analytics-section-wrapper">
- <button class="analytics-btn jnan-btn" onclick="openAnalyticsChart('jnan')">🧠 Jnanendriyas Deep-Dive</button>
- </div>
- <div class="analytics-section-wrapper">
- <button class="analytics-btn karm-btn" onclick="openAnalyticsChart('karm')">🛠️ Karmendriyas Deep-Dive</button>
- </div>
- <div class="analytics-section-wrapper">
- <button class="analytics-btn" style="color: var(--accent-manas);" onclick="openAnalyticsChart('manas')">💭 Manas Deep-Dive</button>
- </div>
- <div class="analytics-section-wrapper">
- <button class="analytics-btn" style="color: var(--accent-arish);" onclick="openAnalyticsChart('arish')">🐦‍🔥 Arishadvargas Deep-Dive</button>
- </div>
- <div class="analytics-section-wrapper">
- <button class="analytics-btn" style="color: var(--accent-ident);" onclick="openAnalyticsChart('identification')">🪞 Identification Deep-Dive</button>
- </div>
- </div>
- </div>
 
  <div id="settings-view" class="view-section">
  <h2 class="section-title" style="color: var(--text-main);">⚙️ Settings</h2>
@@ -1882,6 +1904,22 @@
 
     <div style="text-align: right; margin-top: 10px;">
       <button class="auth-btn" style="width: auto; padding: 6px 18px; margin: 0;" onclick="closeDistPracticesModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="link-modal-overlay" id="deepDiveModalOverlay" onclick="this.classList.remove('active')">
+  <div class="link-modal-card" onclick="event.stopPropagation()" style="max-width: 500px;">
+    <div class="link-modal-header">
+      <span>🔬 Select a Domain</span>
+      <button style="background: transparent; border: none; font-size: 1.4rem; color: var(--text-main); cursor: pointer; line-height: 1;" onclick="document.getElementById('deepDiveModalOverlay').classList.remove('active')">&times;</button>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+      <button class="analytics-btn jnan-btn" onclick="openAnalyticsChart('jnan'); document.getElementById('deepDiveModalOverlay').classList.remove('active')">🧠 Jnanendriyas</button>
+      <button class="analytics-btn karm-btn" onclick="openAnalyticsChart('karm'); document.getElementById('deepDiveModalOverlay').classList.remove('active')">🛠️ Karmendriyas</button>
+      <button class="analytics-btn" style="color: var(--accent-manas);" onclick="openAnalyticsChart('manas'); document.getElementById('deepDiveModalOverlay').classList.remove('active')">💭 Manas</button>
+      <button class="analytics-btn" style="color: var(--accent-arish);" onclick="openAnalyticsChart('arish'); document.getElementById('deepDiveModalOverlay').classList.remove('active')">🐦‍🔥 Arishadvargas</button>
+      <button class="analytics-btn" style="color: var(--accent-ident);" onclick="openAnalyticsChart('identification'); document.getElementById('deepDiveModalOverlay').classList.remove('active')">🪞 Identification</button>
     </div>
   </div>
 </div>
@@ -5499,6 +5537,15 @@ function renderPracticeLedger() {
    `;
    tbody.appendChild(tr);
  });
+}
+
+function toggleDeepDivePanel() {
+  const panel = document.getElementById('deepDivePanel');
+  const btn = document.getElementById('deepDiveToggleBtn');
+  if (!panel || !btn) return;
+
+  const isOpen = panel.classList.toggle('open');
+  btn.classList.toggle('active', isOpen);
 }
 </script>
 </body>
