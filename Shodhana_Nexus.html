@@ -4150,7 +4150,7 @@ function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilte
      <span class="collapse-indicator">▼</span>
      <span>${group.name}</span>
    </div>
-   <span class="count-badge" style="font-size: 0.75rem; font-weight: 700;">${groupDone}/${groupTotal}</span>
+   <span class="count-badge" style="font-size: 0.75rem; font-weight: 700; border-color: ${domainColorInfo.varName}; color: ${domainColorInfo.varName};">${groupDone}/${groupTotal}</span>
  </div>
  <ul class="practice-list">`;
  html += practicesHtml;
