@@ -58,7 +58,7 @@
   padding: 0; 
   font-family: system-ui, -apple-system, sans-serif; 
   -webkit-tap-highlight-color: transparent;
-}
+ }
  
  body { 
  background-color: var(--bg); 
@@ -723,7 +723,6 @@
  line-height: 1.2;
 }
 
-
  .analytics-section-wrapper {
  display: flex;
  flex-direction: column;
@@ -750,8 +749,6 @@
 
  .analytics-btn:hover {
  transform: translateY(-3px);
- /* border-color: var(--accent-gold);
- box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); */
  }
 
  .analytics-btn.jnan-btn { color: var(--accent-jnan); }
@@ -1363,9 +1360,9 @@
   padding: 8px 12px;
   border-radius: 6px;
   border-left: 3px solid var(--accent-gold);
-}
+ }
 
-.deep-dive-toggle-btn {
+ .deep-dive-toggle-btn {
   width: 100%;
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -1381,12 +1378,12 @@
   transition: all 0.2s ease;
   margin-top: -10px;
   margin-bottom: 25px;
-}
-.deep-dive-toggle-btn:hover {
+ }
+ .deep-dive-toggle-btn:hover {
   border-color: var(--accent-gold);
   background: var(--card-sub-bg);
-}
-.deep-dive-panel {
+ }
+ .deep-dive-panel {
   display: none;
   background: var(--card-sub-bg);
   border: 1px solid var(--border);
@@ -1395,17 +1392,17 @@
   margin-top: -15px;
   margin-bottom: 25px;
   animation: fadeIn 0.2s ease-in-out;
-}
-.deep-dive-panel.open {
+ }
+ .deep-dive-panel.open {
   display: block;
-}
-.deep-dive-toggle-arrow {
+ }
+ .deep-dive-toggle-arrow {
   transition: transform 0.2s ease;
-}
-.deep-dive-panel.open + .deep-dive-toggle-btn .deep-dive-toggle-arrow,
-.deep-dive-toggle-btn.active .deep-dive-toggle-arrow {
+ }
+ .deep-dive-panel.open + .deep-dive-toggle-btn .deep-dive-toggle-arrow,
+ .deep-dive-toggle-btn.active .deep-dive-toggle-arrow {
   transform: rotate(180deg);
-}
+ }
  </style>
 </head>
 <body onclick="handleBodyClick(event)">
@@ -1443,6 +1440,7 @@
  <div class="sidebar-footer">
  <div class="nav-item" onclick="exportDataToJson()">📤 Export JSON</div>
  <div class="nav-item" onclick="triggerImportJson()">📥 Import JSON</div>
+ <div class="nav-item" style="color: var(--accent-karm);" onclick="handleLogout()">💔 Logout</div>
  <input type="file" id="importJsonFileInput" accept=".json" style="display: none;" onchange="handleImportJsonFile(event)">
  </div>
  </aside>
@@ -1455,7 +1453,13 @@
   <div style="display: flex; align-items: center; gap: 8px;">
     <button class="date-nav-btn" id="globalUndoBtn" onclick="undo()" title="Undo" disabled>↶</button>
     <button class="date-nav-btn" id="globalRedoBtn" onclick="redo()" title="Redo" disabled>↷</button>
-    <button onclick="handleLogout()" style="background: transparent; border: none; cursor: pointer; font-size: 1.4rem;" title="Logout">💔</button>
+    <button id="manualSaveBtn" onclick="manualSaveToCloud()" title="No unsaved changes" disabled style="background: transparent; border: none; cursor: not-allowed; display: inline-flex; align-items: center; justify-content: center; line-height: 1; padding: 4px; opacity: 0.35; transition: opacity 0.25s ease;" aria-label="Save to Cloud">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+        <path d="M12 12v9"></path>
+        <path d="m16 16-4-4-4 4"></path>
+      </svg>
+    </button>
   </div>
  </header>
 
@@ -1616,7 +1620,7 @@
 
  <div id="analytics-view" class="view-section">
  <div class="analytics-controls">
- <select id="analyticsMode" onchange="updateAnalytics()">
+ <select id="analyticsMode" onchange="window.updateAnalyticsDisplay()">
  <option value="current">Date Only</option>
  <option value="range">Date Range</option>
  <option value="all">All-Time</option>
@@ -1625,19 +1629,19 @@
  <span id="singleDateInput" style="display: inline-block;">
  <div class="date-picker-wrapper">
  <span class="formatted-date-display" id="analyticsSingleDateDisplay"></span>
- <input type="date" class="hidden-date-input" id="analyticsSingleDate" onchange="updateAnalyticsDisplay()">
+ <input type="date" class="hidden-date-input" id="analyticsSingleDate" onchange="window.updateAnalyticsDisplay()">
  </div>
  </span>
 
  <span id="rangeInputs" style="display: none;">
  <div class="date-picker-wrapper">
  <span class="formatted-date-display" id="startDateDisplay"></span>
- <input type="date" class="hidden-date-input" id="startDate" onchange="updateAnalyticsDisplay()">
+ <input type="date" class="hidden-date-input" id="startDate" onchange="window.updateAnalyticsDisplay()">
  </div>
  to 
  <div class="date-picker-wrapper">
  <span class="formatted-date-display" id="endDateDisplay"></span>
- <input type="date" class="hidden-date-input" id="endDate" onchange="updateAnalyticsDisplay()">
+ <input type="date" class="hidden-date-input" id="endDate" onchange="window.updateAnalyticsDisplay()">
  </div>
  </span>
  </div>
@@ -1659,8 +1663,7 @@
    </div>
  </div>
 
- <!-- Single Deep Dive Button -->
- <button class="analytics-btn" style="margin-bottom: 25px;  color: var(--accent-gold);" onclick="document.getElementById('deepDiveModalOverlay').classList.add('active')">
+ <button class="analytics-btn" style="margin-bottom: 25px; color: var(--accent-gold);" onclick="document.getElementById('deepDiveModalOverlay').classList.add('active')">
    🔬 Open Domain Deep-Dives
  </button>
 
@@ -1742,7 +1745,7 @@
  Hover or click over any practice name to view its details and trend line chart
  </p>
 
- <div style="display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px; margin-bottom: 15px;">
+ <div style="display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px;">
    <span style="font-size: 0.85rem; opacity: 0.7;">🔍</span>
    <input type="search" id="ledgerSearchInput" placeholder="Search ledger by practice name..." style="background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.85rem; width: 100%;" oninput="handleLedgerSearch(this.value)">
  </div>
@@ -1770,7 +1773,6 @@
  </table>
  </div>
 </div>
-
 
  <div id="settings-view" class="view-section">
  <h2 class="section-title" style="color: var(--text-main);">⚙️ Settings</h2>
@@ -1967,18 +1969,20 @@
    if (user) {
      authWrapper.classList.add("hidden");
      appWrapper.classList.remove("hidden");
+     
      await checkAndMigrateLegacyLogs(user.uid);
      startStructureListener(user.uid);
-     switchMonthListener(currentDate.slice(0, 7));
+     await loadAllUserLogsFromFirestore(user.uid);
+     window.switchMonthListener(window.currentDate.slice(0, 7));
    } else {
      authWrapper.classList.remove("hidden");
      appWrapper.classList.add("hidden");
-     logs = {};
-     linkGraph = {};
+     if (window.setLogs) window.setLogs({});
+     if (window.setLinkGraph) window.setLinkGraph({});
      if (unsubscribeStructure) { unsubscribeStructure(); unsubscribeStructure = null; }
      if (unsubscribeCurrentMonth) { unsubscribeCurrentMonth(); unsubscribeCurrentMonth = null; }
      currentListeningMonth = null;
-     renderUI();
+     if (window.renderUI) window.renderUI();
    }
  });
 
@@ -2002,7 +2006,6 @@
    }
  };
 
- // Migration: moves legacy monolithic userLogs/{uid} documents into monthlyLogs/YYYY-MM buckets
  async function checkAndMigrateLegacyLogs(uid) {
    try {
      const legacyRef = doc(db, "userLogs", uid);
@@ -2013,8 +2016,8 @@
      if (data.dataset || data.linkGraph) {
        const structRef = doc(db, "userLogs", uid, "config", "structure");
        await setDoc(structRef, {
-         dataset: data.dataset || dataset,
-         linkGraph: data.linkGraph || linkGraph,
+         dataset: data.dataset || window.dataset,
+         linkGraph: data.linkGraph || window.linkGraph,
          updatedAt: new Date().toISOString()
        }, { merge: true });
      }
@@ -2032,7 +2035,6 @@
          await setDoc(mRef, days, { merge: true });
        }
 
-       // Clear logs key from legacy document to conclude migration
        await setDoc(legacyRef, { logsMigrated: true, migratedAt: new Date().toISOString() });
      }
    } catch (err) {
@@ -2040,16 +2042,41 @@
    }
  }
 
+ async function loadAllUserLogsFromFirestore(uid) {
+   try {
+     isRemoteSyncing = true;
+     const monthlyColRef = collection(db, "userLogs", uid, "monthlyLogs");
+     const snap = await getDocs(monthlyColRef);
+
+     const freshLogs = {};
+     snap.forEach((docSnap) => {
+       const monthData = docSnap.data() || {};
+       Object.entries(monthData).forEach(([dateStr, dayData]) => {
+         freshLogs[dateStr] = dayData;
+       });
+     });
+
+     if (window.setLogs) window.setLogs(freshLogs);
+     if (window.saveLogsToLocal) window.saveLogsToLocal();
+     if (window.renderUI) window.renderUI();
+     if (window.updateAnalyticsDisplay) window.updateAnalyticsDisplay();
+     isRemoteSyncing = false;
+   } catch (err) {
+     console.error("Error loading all months from Firestore:", err);
+     isRemoteSyncing = false;
+   }
+ }
+ 
  function startStructureListener(uid) {
    const structRef = doc(db, "userLogs", uid, "config", "structure");
    unsubscribeStructure = onSnapshot(structRef, (snap) => {
      if (snap.exists()) {
        const data = snap.data();
-       if (data.dataset) dataset = data.dataset;
-       if (data.linkGraph) linkGraph = data.linkGraph;
-       saveLogsToLocal();
-       renderUI();
-       updateAnalytics();
+       if (data.dataset && window.setDataset) window.setDataset(data.dataset);
+       if (data.linkGraph && window.setLinkGraph) window.setLinkGraph(data.linkGraph);
+       if (window.saveLogsToLocal) window.saveLogsToLocal();
+       if (window.renderUI) window.renderUI();
+       if (window.updateAnalyticsDisplay) window.updateAnalyticsDisplay();
      }
    }, (err) => console.error("Structure listener error:", err));
  }
@@ -2069,12 +2096,12 @@
      if (snap.exists()) {
        const monthDays = snap.data() || {};
        Object.entries(monthDays).forEach(([dStr, dData]) => {
-         logs[dStr] = dData;
+         if (window.logs) window.logs[dStr] = dData;
        });
      }
-     saveLogsToLocal();
-     renderUI();
-     updateAnalytics();
+     if (window.saveLogsToLocal) window.saveLogsToLocal();
+     if (window.renderUI) window.renderUI();
+     if (window.updateAnalyticsDisplay) window.updateAnalyticsDisplay();
      isRemoteSyncing = false;
    }, (err) => {
      console.error("Month listener error:", err);
@@ -2094,51 +2121,125 @@
        if (snap.exists()) {
          const mData = snap.data() || {};
          Object.entries(mData).forEach(([dStr, dData]) => {
-           logs[dStr] = dData;
+           if (window.logs) window.logs[dStr] = dData;
          });
        }
      } catch (err) {
        console.error(`Error loading month ${mKey}:`, err);
      }
    }
-   saveLogsToLocal();
- };
-
- window.saveLogsToFirestore = async function(dateToSave = currentDate) {
-   if (isRemoteSyncing || !auth.currentUser) return;
-   saveLogsToLocal();
-
-   const uid = auth.currentUser.uid;
-   const monthKey = dateToSave.slice(0, 7);
-   const monthRef = doc(db, "userLogs", uid, "monthlyLogs", monthKey);
-
-   try {
-     const dayPayload = logs[dateToSave] || {};
-     await setDoc(monthRef, { [dateToSave]: dayPayload }, { merge: true });
-   } catch (error) {
-     console.error("Error writing daily logs to Firestore:", error);
-   }
+   if (window.saveLogsToLocal) window.saveLogsToLocal();
  };
 
  window.saveStructureToFirestore = async function() {
    if (!auth.currentUser) return;
-   saveLogsToLocal();
+   if (window.saveLogsToLocal) window.saveLogsToLocal();
 
    const uid = auth.currentUser.uid;
    const structRef = doc(db, "userLogs", uid, "config", "structure");
    try {
      await setDoc(structRef, {
-       dataset: dataset,
-       linkGraph: linkGraph,
+       dataset: window.dataset,
+       linkGraph: window.linkGraph,
        updatedAt: new Date().toISOString()
      }, { merge: true });
    } catch (error) {
      console.error("Error saving structure config to Firestore:", error);
    }
  };
+
+ window.manualSaveToCloud = async function() {
+   const saveBtn = document.getElementById("manualSaveBtn");
+   if (!auth.currentUser) {
+     alert("Please sign in first to save your data.");
+     return;
+   }
+
+   const defaultSvg = `
+     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+       <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+       <path d="M12 12v9"></path>
+       <path d="m16 16-4-4-4 4"></path>
+     </svg>
+   `;
+
+   saveBtn.disabled = true;
+   saveBtn.style.opacity = "0.6";
+
+   try {
+     let activeLogs = window.logs;
+     if (!activeLogs || Object.keys(activeLogs).length === 0) {
+       const cached = localStorage.getItem('indriya_nigraha_v2_logs');
+       if (cached) activeLogs = JSON.parse(cached);
+     }
+
+     if (window.saveLogsToLocal) window.saveLogsToLocal();
+     await window.saveStructureToFirestore();
+
+     const uid = auth.currentUser.uid;
+     const monthBuckets = {};
+
+     Object.entries(activeLogs || {}).forEach(([dStr, dData]) => {
+       const mKey = dStr.slice(0, 7);
+       if (!monthBuckets[mKey]) monthBuckets[mKey] = {};
+       monthBuckets[mKey][dStr] = dData;
+     });
+
+     for (const [mKey, bucketData] of Object.entries(monthBuckets)) {
+       const mRef = doc(db, "userLogs", uid, "monthlyLogs", mKey);
+       await setDoc(mRef, bucketData);
+     }
+
+     saveBtn.innerHTML = `
+       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+         <polyline points="20 6 9 17 4 12"></polyline>
+       </svg>
+     `;
+     saveBtn.style.opacity = "1";
+
+     setTimeout(() => {
+       saveBtn.innerHTML = defaultSvg;
+       if (typeof window.markChangesClean === 'function') {
+         window.markChangesClean();
+       }
+     }, 1500);
+
+   } catch (error) {
+     console.error("Cloud save failed:", error);
+     alert("Cloud save failed: " + error.message);
+     saveBtn.innerHTML = defaultSvg;
+     if (typeof window.markChangesDirty === 'function') {
+       window.markChangesDirty();
+     }
+   }
+ };
 </script>
 
 <script>
+let hasUnsavedChanges = false;
+
+window.markChangesDirty = function() {
+  hasUnsavedChanges = true;
+  const saveBtn = document.getElementById("manualSaveBtn");
+  if (saveBtn) {
+    saveBtn.disabled = false;
+    saveBtn.style.opacity = "1";
+    saveBtn.style.cursor = "pointer";
+    saveBtn.title = "Unsaved changes detected. Click to save to Cloud.";
+  }
+};
+
+window.markChangesClean = function() {
+  hasUnsavedChanges = false;
+  const saveBtn = document.getElementById("manualSaveBtn");
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = "0.35";
+    saveBtn.style.cursor = "not-allowed";
+    saveBtn.title = "All changes saved to Cloud";
+  }
+};
+
 let dataset = {
  jnanendriyas: [],
  karmendriyas: [],
@@ -2146,11 +2247,29 @@ let dataset = {
  arishadvargas: [],
  identification: []
 };
+window.dataset = dataset;
+window.setDataset = function(d) {
+  dataset = d;
+  window.dataset = d;
+};
 
 let currentDate = new Date().toISOString().split('T')[0];
-let currentTheme = 'dark';
+window.currentDate = currentDate;
+
 let logs = {}; 
+window.logs = logs;
+window.setLogs = function(l) {
+  logs = l;
+  window.logs = l;
+};
+
 let linkGraph = {};
+window.linkGraph = linkGraph;
+window.setLinkGraph = function(lg) {
+  linkGraph = lg;
+  window.linkGraph = lg;
+};
+
 let activeFilter = { jnan: 'All', karm: 'All', arish: 'All', manas: 'All', identification: 'All' };
 let completionFilter = { home: 'all', jnan: 'all', karm: 'all', arish: 'all', manas: 'all', identification: 'all' };
 let collapsedGroups = {};
@@ -2196,35 +2315,36 @@ const DOMAIN_COLOR_MAP = {
   'identification': { varName: 'var(--accent-ident)', hex: '#f472b6', glow: 'rgba(244, 114, 182, 0.25)', emoji: '🪞' }
 };
 
-const GROUP_EMOJI_MAP = {
-  'Chakṣu': '👁️',
-  'Śrotra': '👂',
-  'Ghrāṇa': '👃',
-  'Rasa': '👅',
-  'Tvak': '✋',
-  'Vāk': '🗣️',
-  'Pāṇi': '🤲',
-  'Pāda': '🦶',
-  'Upastha': '🌱',
-  'Pāyu': '🍂',
-  'Chitta Vrittis': '🌊',
-  'Manas Inwardness': '🧘',
-  'Kama': '🔥',
-  'Krodha': '⚡',
-  'Lobha': '🪙',
-  'Moha': '🌫️',
-  'Mada': '👑',
-  'Matsarya': '🐍',
-  'Ego Layers': '🎭'
-};
-
 function getDomainColorInfo(domainKey) {
   const normKey = (domainKey || '').toLowerCase();
   return DOMAIN_COLOR_MAP[normKey] || { varName: 'var(--accent-gold)', hex: '#fbbf24', glow: 'rgba(251, 191, 36, 0.25)', emoji: '📁' };
 }
 
 function getGroupEmoji(groupName) {
-  return GROUP_EMOJI_MAP[groupName] || '🔹';
+  const clean = (groupName || '').toLowerCase();
+  if (clean.includes('chakshu') || clean.includes('sight')) return '👁️';
+  if (clean.includes('shrotra') || clean.includes('hearing')) return '👂';
+  if (clean.includes('ghrana') || clean.includes('smell')) return '👃';
+  if (clean.includes('rasa') || clean.includes('taste')) return '👅';
+  if (clean.includes('tvak') || clean.includes('touch')) return '✋';
+  if (clean.includes('vak') || clean.includes('speech')) return '🗣️';
+  if (clean.includes('pani') || clean.includes('grasping')) return '🤲';
+  if (clean.includes('pada') || clean.includes('movement')) return '👣';
+  if (clean.includes('upastha') || clean.includes('generation')) return '🔻';
+  if (clean.includes('payu') || clean.includes('elimination')) return '💨';
+  if (clean.includes('sthula')) return '🧱';
+  if (clean.includes('prana')) return '⚡';
+  if (clean.includes('buddhi')) return '💡';
+  if (clean.includes('ahankara')) return '🎭';
+  if (clean.includes('citta')) return '📜';
+  if (clean.includes('karana')) return '🌌';
+  if (clean.includes('kama')) return '🌪️';
+  if (clean.includes('krodha')) return '🔥';
+  if (clean.includes('lobha')) return '🪤';
+  if (clean.includes('moha')) return '🌫️';
+  if (clean.includes('mada')) return '🦚';
+  if (clean.includes('matsarya')) return '🐍';
+  return '🔹';
 }
 
 function calculateDualGatedOPE(arRatio, apeRatio) {
@@ -2235,7 +2355,8 @@ function calculateDualGatedOPE(arRatio, apeRatio) {
   const s0 = sig(0);
   const s1 = sig(1);
   const G = z => Math.min(1, Math.max(0, (sig(z) - s0) / (s1 - s0)));
-  return Math.min(100, Math.max(0, 100 * G(arRatio) * G(apeRatio)));
+  const rawOpe = Math.min(100, Math.max(0, 100 * G(arRatio) * G(apeRatio)));
+  return Math.round(rawOpe * 100) / 100;
 }
 
 function toggleGroupCollapse(groupKey) {
@@ -2252,6 +2373,7 @@ function pushState() {
   if (undoStack.length > 50) undoStack.shift();
   redoStack = [];
   updateHistoryButtons();
+  window.markChangesDirty();
 }
 
 function undo() {
@@ -2262,15 +2384,16 @@ function undo() {
   });
   const prevState = undoStack.pop();
   logs = prevState.logs;
+  window.logs = logs;
   dataset = prevState.dataset;
+  window.dataset = dataset;
   
   saveLogsToLocal();
-  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
-  if (typeof window.saveStructureToFirestore === 'function') window.saveStructureToFirestore();
   updateHistoryButtons();
   renderUI();
-  updateAnalytics();
+  updateAnalyticsDisplay();
   handleSearch(searchQuery);
+  window.markChangesDirty();
 }
 
 function redo() {
@@ -2281,15 +2404,16 @@ function redo() {
   });
   const nextState = redoStack.pop();
   logs = nextState.logs;
+  window.logs = logs;
   dataset = nextState.dataset;
+  window.dataset = dataset;
   
   saveLogsToLocal();
-  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
-  if (typeof window.saveStructureToFirestore === 'function') window.saveStructureToFirestore();
   updateHistoryButtons();
   renderUI();
-  updateAnalytics();
+  updateAnalyticsDisplay();
   handleSearch(searchQuery);
+  window.markChangesDirty();
 }
 
 function updateHistoryButtons() {
@@ -2352,7 +2476,6 @@ function resetDomainExpandedGroups(domainKey, domainTitle) {
     });
 
     saveLogsToLocal();
-    if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
     renderUI();
     handleSearch(searchQuery);
   }
@@ -2719,10 +2842,8 @@ function promptAddNewGroup(domainKey) {
   });
 
   saveLogsToLocal();
-  if (typeof window.saveStructureToFirestore === 'function') window.saveStructureToFirestore();
-  
   renderUI();
-  updateAnalytics();
+  updateAnalyticsDisplay();
   renderModifyItemInterface();
 }
 
@@ -2740,10 +2861,8 @@ function promptRenameGroup(domainKey, groupIndex) {
   group.sanskritLabel = newSanskrit ? newSanskrit.trim() : newName.trim();
 
   saveLogsToLocal();
-  if (typeof window.saveStructureToFirestore === 'function') window.saveStructureToFirestore();
-  
   renderUI();
-  updateAnalytics();
+  updateAnalyticsDisplay();
   renderModifyItemInterface();
 }
 
@@ -2766,11 +2885,8 @@ function deleteGroup(domainKey, groupIndex) {
   dataset[domainKey].splice(groupIndex, 1);
 
   saveLogsToLocal();
-  if (typeof window.saveStructureToFirestore === 'function') window.saveStructureToFirestore();
-  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
-  
   renderUI();
-  updateAnalytics();
+  updateAnalyticsDisplay();
   renderModifyItemInterface();
 }
 
@@ -2795,9 +2911,8 @@ function promptAddNewPracticeToCurrentGroup() {
   });
 
   saveLogsToLocal();
-  if (typeof window.saveStructureToFirestore === 'function') window.saveStructureToFirestore();
   renderUI();
-  updateAnalytics();
+  updateAnalyticsDisplay();
   renderModifyItemInterface();
 }
 
@@ -2828,9 +2943,8 @@ function savePracticeDirectEdit(syncKey, btnEl) {
   });
 
   saveLogsToLocal();
-  if (typeof window.saveStructureToFirestore === 'function') window.saveStructureToFirestore();
   renderUI();
-  updateAnalytics();
+  updateAnalyticsDisplay();
   handleSearch(searchQuery);
 
   if (btnEl) {
@@ -3021,10 +3135,8 @@ function saveBulkJson() {
     }
 
     saveLogsToLocal();
-    if (typeof window.saveStructureToFirestore === 'function') window.saveStructureToFirestore();
-    
     renderUI();
-    updateAnalytics();
+    updateAnalyticsDisplay();
     renderModifyItemInterface();
     closeBulkJsonModal();
   } catch (err) {
@@ -3034,13 +3146,56 @@ function saveBulkJson() {
 
 function exportDataToJson() {
   closeSidebar();
+
+  const validSyncKeys = new Set();
+  DOMAIN_DEFINITIONS.forEach(domain => {
+    const groups = dataset[domain.key] || [];
+    groups.forEach(group => {
+      (group.practices || []).forEach(p => {
+        if (p.syncKey) {
+          validSyncKeys.add(p.syncKey);
+        }
+      });
+    });
+  });
+
+  const filteredLogs = {};
+  Object.entries(logs).forEach(([dateStr, dayLog]) => {
+    if (dayLog && typeof dayLog === 'object') {
+      const filteredDay = {};
+      let hasValidEntries = false;
+
+      Object.entries(dayLog).forEach(([key, logData]) => {
+        if (validSyncKeys.has(key)) {
+          filteredDay[key] = logData;
+          hasValidEntries = true;
+        }
+      });
+
+      if (hasValidEntries) {
+        filteredLogs[dateStr] = filteredDay;
+      }
+    }
+  });
+
+  const filteredLinkGraph = {};
+  Object.entries(linkGraph).forEach(([key, linkedKeys]) => {
+    if (validSyncKeys.has(key)) {
+      const validLinks = Array.isArray(linkedKeys)
+        ? linkedKeys.filter(k => validSyncKeys.has(k))
+        : [];
+      filteredLinkGraph[key] = validLinks;
+    }
+  });
+
   const data = {
     version: "2.1",
     exportDate: new Date().toISOString(),
     dataset: dataset,
-    logs: logs,
-    linkGraph: linkGraph
+    logs: filteredLogs,
+    linkGraph: filteredLinkGraph
   };
+
   const jsonStr = JSON.stringify(data, null, 2);
   const blob = new Blob([jsonStr], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -3078,26 +3233,27 @@ function handleImportJsonFile(event) {
 
       pushState();
 
-      if (parsed.dataset) dataset = parsed.dataset;
-      if (parsed.logs) logs = parsed.logs;
-      if (parsed.linkGraph) linkGraph = parsed.linkGraph;
+      if (parsed.dataset) {
+        dataset = parsed.dataset;
+        window.dataset = dataset;
+      }
+      if (parsed.logs) {
+        logs = parsed.logs;
+        window.logs = logs;
+      }
+      if (parsed.linkGraph) {
+        linkGraph = parsed.linkGraph;
+        window.linkGraph = linkGraph;
+      }
 
       saveLogsToLocal();
-      if (typeof window.saveStructureToFirestore === 'function') await window.saveStructureToFirestore();
 
-      // Batch save imported month logs
-      if (typeof window.saveLogsToFirestore === 'function' && parsed.logs) {
-        const uniqueDates = Object.keys(parsed.logs);
-        for (const uDate of uniqueDates) {
-          await window.saveLogsToFirestore(uDate);
-        }
-      }
-      
       renderUI();
-      updateAnalytics();
+      updateAnalyticsDisplay();
       handleSearch(searchQuery);
+      window.markChangesDirty();
 
-      alert("Data successfully imported!");
+      alert("Data successfully imported locally! Click 'Save to Cloud' in the top header if you wish to push to Firestore.");
     } catch (err) {
       alert("Error importing JSON: " + err.message);
     }
@@ -3124,7 +3280,6 @@ window.onload = () => {
 
  loadLogsLocal();
  updateHistoryButtons();
- 
  renderUI();
  
  history.replaceState({ view: 'hub-view' }, '', '#hub-view'); 
@@ -3252,16 +3407,30 @@ async function updateAnalyticsDisplay() {
  if (endVal) document.getElementById('endDateDisplay').textContent = formatDateDDMMYY(endVal);
 
  const dates = getSelectedAnalyticsDates();
- if (typeof window.fetchLogsForDates === 'function' && dates.length > 0) {
-   await window.fetchLogsForDates(dates);
+
+ const anchorDateStr = singleVal || currentDate;
+ const [ay, am, ad] = anchorDateStr.split('-').map(Number);
+ const anchorDate = new Date(ay, am - 1, ad);
+ const lookback30Days = [];
+ for (let i = 29; i >= 0; i--) {
+   const d = new Date(anchorDate);
+   d.setDate(d.getDate() - i);
+   lookback30Days.push(d.toISOString().split('T')[0]);
  }
 
- updateAnalytics();
+ const combinedDates = Array.from(new Set([...dates, ...lookback30Days]));
+ if (typeof window.fetchLogsForDates === 'function' && combinedDates.length > 0) {
+   await window.fetchLogsForDates(combinedDates);
+ }
+
+ await updateAnalytics();
 }
+window.updateAnalyticsDisplay = updateAnalyticsDisplay;
 
 function setDateFromInput(val) {
  if (val) {
  currentDate = val;
+ window.currentDate = currentDate;
  updateGlobalDateInputs(currentDate);
  if (typeof window.switchMonthListener === 'function') {
    window.switchMonthListener(currentDate.slice(0, 7));
@@ -3601,8 +3770,6 @@ function toggleLinkPair(sourceKey, targetKey) {
   }
 
   saveLogsToLocal();
-  if (typeof window.saveStructureToFirestore === 'function') window.saveStructureToFirestore();
-  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
   renderUI();
   renderLinkModalList(sourceKey);
   handleSearch(searchQuery);
@@ -3729,11 +3896,8 @@ function deletePractice(syncKey) {
  });
 
  saveLogsToLocal();
- if (typeof window.saveStructureToFirestore === 'function') window.saveStructureToFirestore();
- if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
- 
  renderUI();
- updateAnalytics();
+ updateAnalyticsDisplay();
  handleSearch(searchQuery);
 }
 
@@ -3924,6 +4088,7 @@ function shiftDate(offset) {
  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
  const day = String(dateObj.getDate()).padStart(2, '0');
  currentDate = `${year}-${month}-${day}`;
+ window.currentDate = currentDate;
  updateGlobalDateInputs(currentDate);
  if (typeof window.switchMonthListener === 'function') {
    window.switchMonthListener(currentDate.slice(0, 7));
@@ -3952,11 +4117,20 @@ function toggleCompletionFilter(type) {
 
 function loadLogsLocal() {
  const data = localStorage.getItem('indriya_nigraha_v2_logs');
- if (data) logs = JSON.parse(data);
+ if (data) {
+   logs = JSON.parse(data);
+   window.logs = logs;
+ }
  const lg = localStorage.getItem('indriya_nigraha_link_graph');
- if (lg) linkGraph = JSON.parse(lg);
+ if (lg) {
+   linkGraph = JSON.parse(lg);
+   window.linkGraph = linkGraph;
+ }
  const ds = localStorage.getItem('indriya_nigraha_custom_dataset');
- if (ds) dataset = JSON.parse(ds);
+ if (ds) {
+   dataset = JSON.parse(ds);
+   window.dataset = dataset;
+ }
 }
 
 function saveLogsToLocal() {
@@ -4012,7 +4186,7 @@ function toggleDone(syncKey) {
     });
   }
   
-  if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+  saveLogsToLocal();
   renderUI();
   handleSearch(searchQuery);
   triggerPulse(group);
@@ -4034,7 +4208,7 @@ function addEfficiency(syncKey) {
  d.done = true;
  d.efficiencies.push(eff);
  });
- if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ saveLogsToLocal();
  renderUI();
  handleSearch(searchQuery);
  triggerPulse(group);
@@ -4056,7 +4230,7 @@ function removeEfficiency(syncKey, index) {
  }
  });
  
- if (typeof window.saveLogsToFirestore === 'function') window.saveLogsToFirestore();
+ saveLogsToLocal();
  renderUI();
  handleSearch(searchQuery);
  triggerPulse(group);
@@ -4184,6 +4358,7 @@ function renderUI() {
 
  updateDynamicCounts();
 }
+window.renderUI = renderUI;
 
 function getSelectedAnalyticsDates() {
  const mode = document.getElementById('analyticsMode').value;
@@ -4214,41 +4389,43 @@ function calculateDomainOPE(domainKey, targetDates) {
 
  let totalPracticesInDomain = 0;
  categoryList.forEach(group => {
- totalPracticesInDomain += (group.practices || []).length;
+   totalPracticesInDomain += (group.practices || []).length;
  });
+
+ if (totalPracticesInDomain === 0 || !targetDates || targetDates.length === 0) return 0;
 
  let dailyOPEs = [];
 
  targetDates.forEach(date => {
- if (!logs[date]) return;
- let completedCount = 0;
- let totalEffSum = 0;
- let effCount = 0;
+   if (!logs[date]) return;
+   let completedCount = 0;
+   let totalEffSum = 0;
+   let effCount = 0;
 
- categoryList.forEach(group => {
- (group.practices || []).forEach(p => {
- const item = logs[date][p.syncKey];
- if (item && item.done) {
- completedCount++;
- const effs = item.efficiencies || [];
- if (effs.length > 0) {
- totalEffSum += effs.reduce((a, b) => a + b, 0) / effs.length;
- effCount++;
- }
- }
- });
- });
+   categoryList.forEach(group => {
+     (group.practices || []).forEach(p => {
+       const item = logs[date][p.syncKey];
+       if (item && item.done) {
+         completedCount++;
+         const effs = item.efficiencies || [];
+         if (effs.length > 0) {
+           totalEffSum += effs.reduce((a, b) => a + b, 0) / effs.length;
+           effCount++;
+         }
+       }
+     });
+   });
 
- if (completedCount > 0 && effCount > 0) {
- const arRatio = totalPracticesInDomain > 0 ? (completedCount / totalPracticesInDomain) : 0;
- const apeRatio = (totalEffSum / effCount) / 100;
- dailyOPEs.push(calculateDualGatedOPE(arRatio, apeRatio));
- }
+   if (completedCount > 0 && effCount > 0) {
+     const arRatio = completedCount / totalPracticesInDomain;
+     const apeRatio = (totalEffSum / effCount) / 100;
+     dailyOPEs.push(calculateDualGatedOPE(arRatio, apeRatio));
+   }
  });
 
  return dailyOPEs.length > 0
- ? Math.round((dailyOPEs.reduce((a, b) => a + b, 0) / dailyOPEs.length) * 10) / 10
- : 0;
+   ? Math.round((dailyOPEs.reduce((a, b) => a + b, 0) / dailyOPEs.length) * 100) / 100
+   : 0;
 }
 
 function renderDomainBalanceChart() {
@@ -4353,7 +4530,7 @@ function calculateDomainAccomplishment(domainKey, targetDates) {
  });
 
  return dailyRatios.length > 0
- ? Math.round((dailyRatios.reduce((a, b) => a + b, 0) / dailyRatios.length) * 10) / 10
+ ? Math.round((dailyRatios.reduce((a, b) => a + b, 0) / dailyRatios.length) * 100) / 100
  : 0;
 }
 
@@ -4504,64 +4681,64 @@ function renderRollingTrendChart() {
 
  const last30Days = [];
  for (let i = 29; i >= 0; i--) {
- const d = new Date(anchorDate);
- d.setDate(d.getDate() - i);
- const yr = d.getFullYear();
- const mo = String(d.getMonth() + 1).padStart(2, '0');
- const dy = String(d.getDate()).padStart(2, '0');
- last30Days.push(`${yr}-${mo}-${dy}`);
+   const d = new Date(anchorDate);
+   d.setDate(d.getDate() - i);
+   const yr = d.getFullYear();
+   const mo = String(d.getMonth() + 1).padStart(2, '0');
+   const dy = String(d.getDate()).padStart(2, '0');
+   last30Days.push(`${yr}-${mo}-${dy}`);
  }
 
  const allDomains = [
- ...(dataset.jnanendriyas || []),
- ...(dataset.karmendriyas || []),
- ...(dataset.manas || []),
- ...(dataset.arishadvargas || []),
- ...(dataset.identification || [])
+   ...(dataset.jnanendriyas || []),
+   ...(dataset.karmendriyas || []),
+   ...(dataset.manas || []),
+   ...(dataset.arishadvargas || []),
+   ...(dataset.identification || [])
  ];
 
  let totalAvailablePractices = 0;
  allDomains.forEach(group => {
- totalAvailablePractices += (group.practices || []).length;
+   totalAvailablePractices += (group.practices || []).length;
  });
 
  const rawDailyData = last30Days.map(date => {
- if (!logs[date]) return 0;
- let completedCount = 0;
- let dayEffs = [];
+   if (!logs[date]) return 0;
+   let completedCount = 0;
+   let dayEffs = [];
 
- allDomains.forEach(group => {
- (group.practices || []).forEach(p => {
- const item = logs[date][p.syncKey];
- if (item && item.done) {
- completedCount++;
- const effList = item.efficiencies || [];
- if (effList.length > 0) {
- dayEffs.push(effList.reduce((a, b) => a + b, 0) / effList.length);
- }
- }
- });
- });
+   allDomains.forEach(group => {
+     (group.practices || []).forEach(p => {
+       const item = logs[date][p.syncKey];
+       if (item && item.done) {
+         completedCount++;
+         const effList = item.efficiencies || [];
+         if (effList.length > 0) {
+           dayEffs.push(effList.reduce((a, b) => a + b, 0) / effList.length);
+         }
+       }
+     });
+   });
 
- if (completedCount === 0 || dayEffs.length === 0) return 0;
- const arRatio = totalAvailablePractices > 0 ? (completedCount / totalAvailablePractices) : 0;
- const apeRatio = (dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) / 100;
- return Math.round(calculateDualGatedOPE(arRatio, apeRatio));
+   if (completedCount === 0 || dayEffs.length === 0) return 0;
+   const arRatio = totalAvailablePractices > 0 ? (completedCount / totalAvailablePractices) : 0;
+   const apeRatio = (dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) / 100;
+   return calculateDualGatedOPE(arRatio, apeRatio);
  });
 
  const rollingAvgData = rawDailyData.map((val, idx, arr) => {
- const windowStart = Math.max(0, idx - 6);
- const windowSlice = arr.slice(windowStart, idx + 1);
- const activeValues = windowSlice.filter(v => v > 0);
- if (activeValues.length === 0) return 0;
- const sum = activeValues.reduce((a, b) => a + b, 0);
- return Math.round(sum / activeValues.length);
+   const windowStart = Math.max(0, idx - 6);
+   const windowSlice = arr.slice(windowStart, idx + 1);
+   const activeValues = windowSlice.filter(v => v > 0);
+   if (activeValues.length === 0) return 0;
+   const sum = activeValues.reduce((a, b) => a + b, 0);
+   return Math.round((sum / activeValues.length) * 100) / 100;
  });
 
  const timeLabels = last30Days.map(d => formatDateDDMMYY(d));
 
  if (trendChartInstance) {
- trendChartInstance.destroy();
+   trendChartInstance.destroy();
  }
 
  const scrollInner = document.getElementById('trendChartScrollInner');
@@ -4765,24 +4942,9 @@ function renderQualityDistributionChart() {
  });
 }
 
-function renderHeatmap() {
+async function renderHeatmap() {
  const container = document.getElementById('heatmapContainer');
  if (!container) return;
-
- container.innerHTML = '';
-
- const allDomains = [
- ...(dataset.jnanendriyas || []),
- ...(dataset.karmendriyas || []),
- ...(dataset.manas || []),
- ...(dataset.arishadvargas || []),
- ...(dataset.identification || [])
- ];
-
- let totalAvailablePractices = 0;
- allDomains.forEach(group => {
- totalAvailablePractices += (group.practices || []).length;
- });
 
  const anchorDateStr = document.getElementById('analyticsSingleDate').value || currentDate;
  const [ay, am, ad] = anchorDateStr.split('-').map(Number);
@@ -4790,57 +4952,82 @@ function renderHeatmap() {
 
  const last30Days = [];
  for (let i = 29; i >= 0; i--) {
- const d = new Date(anchorDate);
- d.setDate(d.getDate() - i);
- const yr = d.getFullYear();
- const mo = String(d.getMonth() + 1).padStart(2, '0');
- const dy = String(d.getDate()).padStart(2, '0');
- last30Days.push(`${yr}-${mo}-${dy}`);
+   const d = new Date(anchorDate);
+   d.setDate(d.getDate() - i);
+   const yr = d.getFullYear();
+   const mo = String(d.getMonth() + 1).padStart(2, '0');
+   const dy = String(d.getDate()).padStart(2, '0');
+   last30Days.push(`${yr}-${mo}-${dy}`);
  }
+
+ if (typeof window.fetchLogsForDates === 'function') {
+   const missingDates = last30Days.filter(d => !logs[d]);
+   if (missingDates.length > 0) {
+     await window.fetchLogsForDates(missingDates);
+   }
+ }
+
+ container.innerHTML = '';
+
+ const allDomains = [
+   ...(dataset.jnanendriyas || []),
+   ...(dataset.karmendriyas || []),
+   ...(dataset.manas || []),
+   ...(dataset.arishadvargas || []),
+   ...(dataset.identification || [])
+ ];
+
+ let totalAvailablePractices = 0;
+ allDomains.forEach(group => {
+   totalAvailablePractices += (group.practices || []).length;
+ });
 
  last30Days.forEach(date => {
- let completedCount = 0;
- let dayEffs = [];
+   let completedCount = 0;
+   let dayEffs = [];
 
- if (logs[date]) {
- allDomains.forEach(group => {
- (group.practices || []).forEach(p => {
- const item = logs[date][p.syncKey];
- if (item && item.done) {
- completedCount++;
- const effList = item.efficiencies || [];
- if (effList.length > 0) {
- dayEffs.push(effList.reduce((a, b) => a + b, 0) / effList.length);
- }
- }
- });
- });
- }
+   if (logs[date]) {
+     allDomains.forEach(group => {
+       (group.practices || []).forEach(p => {
+         const item = logs[date][p.syncKey];
+         if (item && item.done) {
+           completedCount++;
+           const effList = item.efficiencies || [];
+           if (effList.length > 0) {
+             dayEffs.push(effList.reduce((a, b) => a + b, 0) / effList.length);
+           }
+         }
+       });
+     });
+   }
 
- let dayOpe = 0;
- if (completedCount > 0 && dayEffs.length > 0) {
- const arRatio = totalAvailablePractices > 0 ? (completedCount / totalAvailablePractices) : 0;
- const apeRatio = (dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) / 100;
- dayOpe = Math.round(calculateDualGatedOPE(arRatio, apeRatio));
- }
+   let dayOpe = 0;
+   let avgEff = 0;
+   if (completedCount > 0 && dayEffs.length > 0) {
+     avgEff = Math.round((dayEffs.reduce((a, b) => a + b, 0) / dayEffs.length) * 100) / 100;
+     const arRatio = totalAvailablePractices > 0 ? (completedCount / totalAvailablePractices) : 0;
+     const apeRatio = avgEff / 100;
+     dayOpe = calculateDualGatedOPE(arRatio, apeRatio);
+   }
 
- const dayDiv = document.createElement('div');
- dayDiv.classList.add('heatmap-day');
+   const dayDiv = document.createElement('div');
+   dayDiv.classList.add('heatmap-day');
 
- if (dayOpe > 0) {
- const opacity = 0.25 + (dayOpe / 100) * 0.75;
- dayDiv.style.backgroundColor = `rgba(16, 185, 129, ${opacity})`;
- dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: ${dayOpe}% OPE`);
- } else {
- dayDiv.style.backgroundColor = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
- dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: No practices logged`);
- }
+   if (completedCount > 0) {
+     const displayOpe = dayOpe > 0 && dayOpe < 0.01 ? '<0.01' : dayOpe.toFixed(2);
+     const opacity = Math.max(0.35, Math.min(1.0, 0.25 + (Math.max(dayOpe, (completedCount / Math.max(totalAvailablePractices, 1)) * 100) / 100) * 0.75));
+     dayDiv.style.backgroundColor = `rgba(16, 185, 129, ${opacity})`;
+     dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: ${completedCount} done, ${displayOpe}% OPE (Avg Eff: ${avgEff}%)`);
+   } else {
+     dayDiv.style.backgroundColor = currentTheme === 'dark' ? '#27272a' : '#e2e8f0';
+     dayDiv.setAttribute('data-info', `${formatDateDDMMYY(date)}: No practices logged`);
+   }
 
- container.appendChild(dayDiv);
+   container.appendChild(dayDiv);
  });
 }
 
-function updateAnalytics() {
+async function updateAnalytics() {
  const mode = document.getElementById('analyticsMode').value;
  const singleDateSpan = document.getElementById('singleDateInput');
  const rangeSpan = document.getElementById('rangeInputs');
@@ -4890,9 +5077,10 @@ function updateAnalytics() {
  renderDomainAccomplishmentChart();
  renderRollingTrendChart();
  renderQualityDistributionChart();
- renderHeatmap();
+ await renderHeatmap();
  renderPracticeLedger();
 }
+window.updateAnalytics = updateAnalytics;
 
 function updateSlicerUI() {
  const startDate = document.getElementById('startDate').value;
@@ -4944,7 +5132,7 @@ async function applySlicer(slicerType) {
  document.getElementById('endDate').value = formatIso(endDateObj);
  }
 
- await updateAnalyticsDisplay();
+ updateAnalyticsDisplay();
  updateSlicerUI();
 
  if (currentChartContext.type) {
@@ -5260,7 +5448,7 @@ function openPracticeLineChart(type, senseIndex, practiceIndex) {
  if (!logs[date]) return 0;
  const item = logs[date][practice.syncKey];
  if (item && item.done && item.efficiencies && item.efficiencies.length > 0) {
- return Math.round(item.efficiencies.reduce((a, b) => a + b, 0) / item.efficiencies.length);
+ return Math.round((item.efficiencies.reduce((a, b) => a + b, 0) / item.efficiencies.length) * 100) / 100;
  }
  return 0;
  });
@@ -5462,7 +5650,7 @@ function renderPracticeLedger() {
        });
 
        if (attendanceCount > 0) activePracticesScoped++;
-       const avgEfficiency = effCount > 0 ? Math.round(efficiencySum / effCount) : 0;
+       const avgEfficiency = effCount > 0 ? Math.round((efficiencySum / effCount) * 100) / 100 : 0;
 
        if (!ledgerSearchQuery || p.name.toLowerCase().includes(ledgerSearchQuery)) {
          practiceEntries.push({
