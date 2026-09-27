@@ -1084,6 +1084,26 @@
  pointer-events: auto;
  }
 
+ /* Modify Item Save Button States */
+.mod-save-btn {
+  transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.mod-save-btn:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important; /* Prevents any hover or click overlay */
+}
+
+/* Ensure no background overlay appears on hover or click when disabled or saved */
+.mod-save-btn:disabled:hover,
+.mod-save-btn:disabled:active,
+.mod-save-btn.is-saved:hover,
+.mod-save-btn.is-saved:active {
+  background: var(--card-sub-bg) !important;
+  box-shadow: none !important;
+}
+
  .tooltip-action-chip {
  background: var(--card-sub-bg);
  color: var(--accent-gold);
@@ -1101,7 +1121,7 @@
  }
 
  .tooltip-action-chip:hover {
- background: var(--accent-gold);
+ background: #e4e4e4;
  color: #000000;
  }
 
@@ -2368,7 +2388,8 @@ function toggleGroupCollapse(groupKey) {
 function pushState() {
   undoStack.push({
     logs: JSON.parse(JSON.stringify(logs)),
-    dataset: JSON.parse(JSON.stringify(dataset))
+    dataset: JSON.parse(JSON.stringify(dataset)),
+    linkGraph: JSON.parse(JSON.stringify(linkGraph))
   });
   if (undoStack.length > 50) undoStack.shift();
   redoStack = [];
@@ -2380,13 +2401,16 @@ function undo() {
   if (undoStack.length === 0) return;
   redoStack.push({
     logs: JSON.parse(JSON.stringify(logs)),
-    dataset: JSON.parse(JSON.stringify(dataset))
+    dataset: JSON.parse(JSON.stringify(dataset)),
+    linkGraph: JSON.parse(JSON.stringify(linkGraph))
   });
   const prevState = undoStack.pop();
   logs = prevState.logs;
   window.logs = logs;
   dataset = prevState.dataset;
   window.dataset = dataset;
+  linkGraph = prevState.linkGraph || {};
+  window.linkGraph = linkGraph;
   
   saveLogsToLocal();
   updateHistoryButtons();
@@ -2400,13 +2424,16 @@ function redo() {
   if (redoStack.length === 0) return;
   undoStack.push({
     logs: JSON.parse(JSON.stringify(logs)),
-    dataset: JSON.parse(JSON.stringify(dataset))
+    dataset: JSON.parse(JSON.stringify(dataset)),
+    linkGraph: JSON.parse(JSON.stringify(linkGraph))
   });
   const nextState = redoStack.pop();
   logs = nextState.logs;
   window.logs = logs;
   dataset = nextState.dataset;
   window.dataset = dataset;
+  linkGraph = nextState.linkGraph || {};
+  window.linkGraph = linkGraph;
   
   saveLogsToLocal();
   updateHistoryButtons();
@@ -2664,18 +2691,28 @@ function renderModifyItemInterface() {
         card.style.borderColor = dInfo.varName;
         card.style.background = dInfo.glow;
 
+        const safeName = (p.name || '').replace(/"/g, '&quot;');
+        const safeDesc = p.desc || '';
+
         card.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <span style="font-size: 0.75rem; color: ${dInfo.varName}; font-weight: bold;">
               ${p.domainName} • ${p.groupName}
             </span>
             <div style="display: flex; gap: 6px;">
-              <button class="tooltip-action-chip" style="border-color: ${dInfo.varName}; color: ${dInfo.varName};" onclick="savePracticeDirectEdit('${p.syncKey}', this)">Save</button>
+              <button id="save-btn-${p.syncKey}" class="tooltip-action-chip mod-save-btn" 
+                style="border-color: ${dInfo.varName}; color: ${dInfo.varName};" 
+                disabled 
+                onclick="savePracticeDirectEdit('${p.syncKey}', this, '${dInfo.varName}')">Save</button>
               <button class="tooltip-action-chip" style="border-color: var(--accent-karm); color: var(--accent-karm);" onclick="deletePractice('${p.syncKey}'); renderModifyItemInterface();">Delete</button>
             </div>
           </div>
-          <input type="text" class="auth-input" style="margin-bottom: 6px; padding: 6px 10px; font-weight: 600; border-color: ${dInfo.varName};" value="${p.name.replace(/"/g, '&quot;')}" placeholder="Practice Name" data-mod-name="${p.syncKey}">
-          <textarea class="auth-input" style="margin-bottom: 0; padding: 6px 10px; font-size: 0.8rem; resize: vertical; min-height: 45px; border-color: ${dInfo.varName};" placeholder="Practice Description" data-mod-desc="${p.syncKey}">${p.desc || ''}</textarea>
+          <input type="text" class="auth-input" style="margin-bottom: 6px; padding: 6px 10px; font-weight: 600; border-color: ${dInfo.varName};" 
+            value="${safeName}" data-initial="${safeName}" placeholder="Practice Name" 
+            data-mod-name="${p.syncKey}" oninput="handleModifyInputChange('${p.syncKey}', '${dInfo.varName}')">
+          <textarea class="auth-input" style="margin-bottom: 0; padding: 6px 10px; font-size: 0.8rem; resize: vertical; min-height: 45px; border-color: ${dInfo.varName};" 
+            placeholder="Practice Description" data-initial="${safeDesc.replace(/"/g, '&quot;')}" 
+            data-mod-desc="${p.syncKey}" oninput="handleModifyInputChange('${p.syncKey}', '${dInfo.varName}')">${safeDesc}</textarea>
         `;
         container.appendChild(card);
       });
@@ -2792,18 +2829,28 @@ function renderModifyItemInterface() {
       card.style.borderColor = domainDef.colorKey;
       card.style.background = domainDef.glow;
 
+      const safeName = (p.name || '').replace(/"/g, '&quot;');
+      const safeDesc = p.desc || '';
+
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <span style="font-size: 0.75rem; color: ${domainDef.colorKey}; font-weight: bold; display: flex; align-items: center; gap: 6px;">
             <span>${p.syncKey}</span>
           </span>
           <div style="display: flex; gap: 6px;">
-            <button class="tooltip-action-chip" style="border-color: ${domainDef.colorKey}; color: ${domainDef.colorKey};" onclick="savePracticeDirectEdit('${p.syncKey}', this)">Save</button>
+            <button id="save-btn-${p.syncKey}" class="tooltip-action-chip mod-save-btn" 
+              style="border-color: ${domainDef.colorKey}; color: ${domainDef.colorKey};" 
+              disabled 
+              onclick="savePracticeDirectEdit('${p.syncKey}', this, '${domainDef.colorKey}')">Save</button>
             <button class="tooltip-action-chip" style="border-color: var(--accent-karm); color: var(--accent-karm);" onclick="deletePractice('${p.syncKey}'); renderModifyItemInterface();">Delete</button>
           </div>
         </div>
-        <input type="text" class="auth-input" style="margin-bottom: 6px; padding: 6px 10px; font-weight: 600; border-color: ${domainDef.colorKey};" value="${p.name.replace(/"/g, '&quot;')}" placeholder="Practice Name" data-mod-name="${p.syncKey}">
-        <textarea class="auth-input" style="margin-bottom: 0; padding: 6px 10px; font-size: 0.8rem; resize: vertical; min-height: 45px; border-color: ${domainDef.colorKey};" placeholder="Practice Description" data-mod-desc="${p.syncKey}">${p.desc || ''}</textarea>
+        <input type="text" class="auth-input" style="margin-bottom: 6px; padding: 6px 10px; font-weight: 600; border-color: ${domainDef.colorKey};" 
+          value="${safeName}" data-initial="${safeName}" placeholder="Practice Name" 
+          data-mod-name="${p.syncKey}" oninput="handleModifyInputChange('${p.syncKey}', '${domainDef.colorKey}')">
+        <textarea class="auth-input" style="margin-bottom: 0; padding: 6px 10px; font-size: 0.8rem; resize: vertical; min-height: 45px; border-color: ${domainDef.colorKey};" 
+          placeholder="Practice Description" data-initial="${safeDesc.replace(/"/g, '&quot;')}" 
+          data-mod-desc="${p.syncKey}" oninput="handleModifyInputChange('${p.syncKey}', '${domainDef.colorKey}')">${safeDesc}</textarea>
       `;
       container.appendChild(card);
     });
@@ -2916,7 +2963,35 @@ function promptAddNewPracticeToCurrentGroup() {
   renderModifyItemInterface();
 }
 
-function savePracticeDirectEdit(syncKey, btnEl) {
+function handleModifyInputChange(syncKey, domainColor) {
+  const nameInput = document.querySelector(`[data-mod-name="${syncKey}"]`);
+  const descInput = document.querySelector(`[data-mod-desc="${syncKey}"]`);
+  const saveBtn = document.getElementById(`save-btn-${syncKey}`);
+  if (!nameInput || !descInput || !saveBtn) return;
+
+  const currentName = nameInput.value.trim();
+  const currentDesc = descInput.value.trim();
+  const initialName = (nameInput.getAttribute('data-initial') || '').trim();
+  const initialDesc = (descInput.getAttribute('data-initial') || '').trim();
+
+  const isChanged = (currentName !== initialName) || (currentDesc !== initialDesc);
+
+  if (isChanged && currentName.length > 0) {
+    saveBtn.disabled = false;
+    saveBtn.innerText = "Save";
+    saveBtn.classList.remove('is-saved');
+    saveBtn.style.borderColor = domainColor || "var(--accent-gold)";
+    saveBtn.style.color = domainColor || "var(--accent-gold)";
+  } else {
+    saveBtn.disabled = true;
+    saveBtn.innerText = "Save";
+    saveBtn.classList.remove('is-saved');
+    saveBtn.style.borderColor = domainColor || "var(--border)";
+    saveBtn.style.color = domainColor || "var(--text-sub)";
+  }
+}
+
+function savePracticeDirectEdit(syncKey, btnEl, domainColor) {
   const nameInput = document.querySelector(`[data-mod-name="${syncKey}"]`);
   const descInput = document.querySelector(`[data-mod-desc="${syncKey}"]`);
   if (!nameInput || !descInput) return;
@@ -2947,16 +3022,17 @@ function savePracticeDirectEdit(syncKey, btnEl) {
   updateAnalyticsDisplay();
   handleSearch(searchQuery);
 
+  // Update base reference attributes to match newly saved content
+  nameInput.setAttribute('data-initial', newName);
+  descInput.setAttribute('data-initial', newDesc);
+
+  // Display '✓ Saved', dim button, and disable it until next edit
   if (btnEl) {
-    const origText = btnEl.innerText;
     btnEl.innerText = "✓ Saved";
+    btnEl.classList.add('is-saved');
     btnEl.style.borderColor = "var(--success)";
     btnEl.style.color = "var(--success)";
-    setTimeout(() => {
-      btnEl.innerText = origText;
-      btnEl.style.borderColor = "";
-      btnEl.style.color = "";
-    }, 1500);
+    btnEl.disabled = true; // Stays dimmed and disabled until inputs detect further changes
   }
 }
 
@@ -3049,7 +3125,25 @@ function saveBulkJson() {
       throw new Error("Bulk data must be a valid JSON object { ... }.");
     }
 
-    pushState();
+    // Helper to purge keys from linkGraph and logs across all dates
+    const purgePractices = (keysToPurge) => {
+      keysToPurge.forEach(syncKey => {
+        // 1. Remove from linkGraph
+        const currentGroup = getLinkedGroup(syncKey);
+        const updatedGroup = currentGroup.filter(k => k !== syncKey);
+        if (updatedGroup.length > 0) {
+          updatedGroup.forEach(k => linkGraph[k] = [...updatedGroup]);
+        }
+        delete linkGraph[syncKey];
+
+        // 2. Remove from logs across all recorded dates (local memory)
+        Object.keys(logs).forEach(date => {
+          if (logs[date] && logs[date][syncKey]) {
+            delete logs[date][syncKey];
+          }
+        });
+      });
+    };
 
     if (bulkTargetScope.type === 'domain') {
       let groupsArray = null;
@@ -3094,6 +3188,23 @@ function saveBulkJson() {
         };
       });
 
+      // Capture pre-edit snapshot for Undo
+      pushState();
+
+      // Find all old syncKeys in this domain vs incoming syncKeys
+      const oldKeys = [];
+      (dataset[bulkTargetScope.domainKey] || []).forEach(g => {
+        (g.practices || []).forEach(p => oldKeys.push(p.syncKey));
+      });
+
+      const newKeys = new Set();
+      validatedGroups.forEach(g => {
+        g.practices.forEach(p => newKeys.add(p.syncKey));
+      });
+
+      const omittedKeys = oldKeys.filter(k => !newKeys.has(k));
+      purgePractices(omittedKeys);
+
       dataset[bulkTargetScope.domainKey] = validatedGroups;
 
     } else if (bulkTargetScope.type === 'group') {
@@ -3125,6 +3236,16 @@ function saveBulkJson() {
           desc: (p.desc || "").trim()
         };
       });
+
+      // Capture pre-edit snapshot for Undo
+      pushState();
+
+      // Find omitted keys within this specific group
+      const oldGroupKeys = (group.practices || []).map(p => p.syncKey);
+      const newGroupKeys = new Set(validatedPractices.map(p => p.syncKey));
+      const omittedKeys = oldGroupKeys.filter(k => !newGroupKeys.has(k));
+
+      purgePractices(omittedKeys);
 
       group.name = updatedName;
       group.sanskritLabel = updatedSanskrit;
