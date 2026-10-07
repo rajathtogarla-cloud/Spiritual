@@ -105,7 +105,7 @@
  .container { 
  grid-area: content;
  overflow-y: auto;
- padding: 20px 20px 150px 20px;
+ padding: 0px 20px 150px 20px;
  max-width: 1000px; 
  margin: 0 auto; 
  width: 100%;
@@ -291,6 +291,7 @@
  align-items: center;
  flex-wrap: wrap;
  gap: 15px;
+ margin-top: 20px;
  margin-bottom: 20px;
  }
 
@@ -358,6 +359,7 @@
  padding: 8px 14px;
  gap: 10px;
  max-width: 580px;
+ margin-top: 30px;
  margin: 20px auto 0 auto;
  }
 
@@ -427,48 +429,67 @@
  }
 
  .indriya-card {
- background: var(--card-bg);
- border-radius: 12px;
- margin-bottom: 20px;
- border: 1px solid var(--border);
- overflow: hidden;
+   background: var(--card-bg);
+   border-radius: 12px;
+   margin-bottom: 20px;
+   border: 1px solid var(--border);
+   scroll-margin-top: 0px;
+ }
+
+ .indriya-card.collapsed {
+   overflow: hidden;
  }
 
  .indriya-header {
- padding: 12px 20px;
- background: var(--card-sub-bg);
- font-weight: bold;
- font-size: 1.1rem;
- display: flex;
- justify-content: space-between;
- align-items: center;
- border-bottom: 1px solid var(--border);
- cursor: pointer;
- user-select: none;
+   padding: 12px 20px;
+   background: var(--card-sub-bg);
+   font-weight: bold;
+   font-size: 1.1rem;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   border-bottom: 1px solid var(--border);
+   cursor: pointer;
+   user-select: none;
+   -webkit-user-select: none;
+   touch-action: manipulation;
+   transform: translateZ(0);
+   border-top-left-radius: 11px;
+   border-top-right-radius: 11px;
+ }
+
+ /* Sticky only while open */
+ .indriya-card:not(.collapsed) .indriya-header {
+   position: sticky;
+   top: 0;
+   z-index: 20;
+ }
+
+ /* Static and rounded pill when collapsed */
+ .indriya-card.collapsed .indriya-header {
+   position: static;
+   border-bottom: none;
+   border-radius: 11px;
  }
 
  .indriya-header-title {
- display: flex;
- align-items: center;
- gap: 8px;
+   display: flex;
+   align-items: center;
+   gap: 8px;
  }
 
  .collapse-indicator {
- display: inline-block;
- font-size: 0.8rem;
- transition: transform 0.2s ease;
+   display: inline-block;
+   font-size: 0.8rem;
+   transition: transform 0.2s ease;
  }
 
  .indriya-card.collapsed .collapse-indicator {
- transform: rotate(-90deg);
+   transform: rotate(-90deg);
  }
 
  .indriya-card.collapsed .practice-list {
- display: none;
- }
-
- .indriya-card.collapsed .indriya-header {
- border-bottom: none;
+   display: none;
  }
  
  .practice-list { list-style: none; }
@@ -2379,10 +2400,34 @@ function calculateDualGatedOPE(arRatio, apeRatio) {
   return Math.round(rawOpe * 100) / 100;
 }
 
-function toggleGroupCollapse(groupKey) {
+function toggleGroupCollapse(groupKey, headerElement, event) {
+  if (event) {
+    event.preventDefault();
+  }
+
   collapsedGroups[groupKey] = !collapsedGroups[groupKey];
-  renderUI();
-  handleSearch(searchQuery);
+  const isNowCollapsed = Boolean(collapsedGroups[groupKey]);
+
+  const card = headerElement ? headerElement.closest('.indriya-card') : null;
+
+  if (card) {
+    card.classList.toggle('collapsed', isNowCollapsed);
+
+    if (isNowCollapsed) {
+      const container = document.querySelector('main.container');
+      if (container) {
+        const cardRect = card.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+
+        if (cardRect.top <= containerRect.top + 2) {
+          card.scrollIntoView({ block: 'start', behavior: 'auto' });
+        }
+      }
+    }
+  } else {
+    renderUI();
+    handleSearch(searchQuery);
+  }
 }
 
 function pushState() {
@@ -4069,7 +4114,7 @@ function handleSearch(query) {
  const domainColorInfo = getDomainColorInfo(group.domainKey);
 
  let html = `
- <div class="indriya-header" onclick="toggleGroupCollapse('${groupKey}')">
+ <div class="indriya-header" onpointerdown="if(event.button === 0) toggleGroupCollapse('${groupKey}', this, event)">
    <div class="indriya-header-title">
      <span class="collapse-indicator">▼</span>
      <span>${group.categoryType} — ${group.name}</span>
@@ -4446,7 +4491,7 @@ function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilte
  card.className = `indriya-card ${isCollapsed ? 'collapsed' : ''}`;
  
  let html = `
- <div class="indriya-header" onclick="toggleGroupCollapse('${groupKey}')">
+ <div class="indriya-header" onpointerdown="if(event.button === 0) toggleGroupCollapse('${groupKey}', this, event)">
    <div class="indriya-header-title">
      <span class="collapse-indicator">▼</span>
      <span>${group.name}</span>
