@@ -2405,23 +2405,26 @@ function toggleGroupCollapse(groupKey, headerElement, event) {
     event.preventDefault();
   }
 
+  // 1. Toggle state directly
   collapsedGroups[groupKey] = !collapsedGroups[groupKey];
   const isNowCollapsed = Boolean(collapsedGroups[groupKey]);
 
   const card = headerElement ? headerElement.closest('.indriya-card') : null;
 
   if (card) {
+    // 2. Instantly toggle class so the list hides and arrow turns to ►
     card.classList.toggle('collapsed', isNowCollapsed);
 
+    // 3. When collapsed, instantly scroll the container so this collapsed card is the first item at the top
     if (isNowCollapsed) {
       const container = document.querySelector('main.container');
       if (container) {
-        const cardRect = card.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-
-        if (cardRect.top <= containerRect.top + 2) {
-          card.scrollIntoView({ block: 'start', behavior: 'auto' });
-        }
+        // Calculate the card's exact position inside the scroll container
+        const cardTopOffset = card.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+        container.scrollTo({
+          top: Math.max(0, cardTopOffset),
+          behavior: 'auto'
+        });
       }
     }
   } else {
