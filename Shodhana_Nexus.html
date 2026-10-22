@@ -291,7 +291,7 @@
  align-items: center;
  flex-wrap: wrap;
  gap: 15px;
- margin-top: 20px;
+ margin-top: 0px;
  margin-bottom: 20px;
  }
 
@@ -359,7 +359,7 @@
  padding: 8px 14px;
  gap: 10px;
  max-width: 580px;
- margin-top: 30px;
+ margin-top: 0px;
  margin: 20px auto 0 auto;
  }
 
@@ -403,8 +403,15 @@
  .hub-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 8px; }
  .hub-desc { color: var(--text-sub); font-size: 0.9rem; }
 
- .view-section { display: none; }
- .view-section.active { display: block; }
+ /* Standardize top spacing across all views */
+.view-section { 
+  display: none; 
+  padding-top: 25px; /* Adjust to 20px, 25px, or 30px to taste */
+}
+
+.view-section.active { 
+  display: block; 
+}
 
  .section-title-wrapper {
  display: flex;
@@ -1444,6 +1451,222 @@
  .deep-dive-toggle-btn.active .deep-dive-toggle-arrow {
   transform: rotate(180deg);
  }
+
+ /* Shake animation when auto-save encounters an error */
+@keyframes saveBtnShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+.save-btn-shake {
+  animation: saveBtnShake 0.4s ease-in-out;
+}
+
+/* Floating toast for non-blocking notifications */
+.sync-toast {
+  position: fixed;
+  bottom: 85px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--accent-karm);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  z-index: 10005;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.sync-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* --- Efficiency Input Overlay Modal (Domain-Aware) --- */
+.eff-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-overlay);
+  backdrop-filter: blur(5px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10006;
+  padding: 16px;
+}
+
+.eff-modal-overlay.active {
+  display: flex;
+}
+
+.eff-modal-card {
+  --eff-color: var(--accent-gold);
+  --eff-glow: rgba(251, 191, 36, 0.25);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--eff-color);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 360px;
+  padding: 24px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  outline: none;
+  transition: border-top-color 0.25s ease;
+}
+
+.eff-modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--eff-color);
+  margin-bottom: 4px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.25s ease;
+}
+
+.eff-modal-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.eff-display-box {
+  width: 120px;
+  height: 60px;
+  background: var(--input-bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--eff-color);
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.eff-display-box:focus {
+  border-color: var(--eff-color);
+  box-shadow: 0 0 14px var(--eff-glow);
+}
+
+.eff-display-box::-webkit-outer-spin-button,
+.eff-display-box::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.eff-display-box[type=number] {
+  -moz-appearance: textfield;
+}
+
+.eff-steppers-row {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.eff-stepper-group {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card-sub-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px 6px;
+}
+
+.eff-stepper-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-size: 1.3rem;
+  font-weight: bold;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s ease, color 0.15s ease;
+  user-select: none;
+}
+
+.eff-stepper-btn:hover {
+  background: var(--nav-btn-bg);
+  color: var(--eff-color);
+}
+
+.eff-stepper-btn:active {
+  transform: scale(0.92);
+}
+
+.eff-stepper-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  user-select: none;
+}
+
+.eff-actions-row {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+}
+
+.eff-btn-cancel {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--card-sub-bg);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.eff-btn-cancel:hover {
+  border-color: var(--text-main);
+  color: var(--text-main);
+}
+
+.eff-btn-confirm {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--eff-color);
+  border: none;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.eff-btn-confirm:hover {
+  opacity: 0.9;
+  filter: brightness(1.05);
+}
  </style>
 </head>
 <body onclick="handleBodyClick(event)">
@@ -1973,6 +2196,59 @@
   </div>
 </div>
 
+<!-- Recovery Prompt Modal (appears when tab was killed with unsaved changes) -->
+<div class="link-modal-overlay" id="recoveryModalOverlay" style="z-index: 10005;">
+  <div class="link-modal-card" onclick="event.stopPropagation()" style="max-width: 480px; text-align: center;">
+    <div style="font-size: 2.2rem; margin-bottom: 8px;">⚠️</div>
+    <h2 style="font-size: 1.25rem; color: var(--accent-gold); margin-bottom: 8px;">Unsaved Changes Detected</h2>
+    <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin-bottom: 20px;">
+      The tab was closed or refreshed while changes were pending. Would you like to save your unsaved edits to the cloud, or discard them and pull the latest cloud version?
+    </p>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <button class="auth-btn" style="margin: 0; background: var(--success); color: #ffffff;" onclick="window.resolveRecoveryAction('save')">
+        ☁️ Save Unsaved Changes to Cloud
+      </button>
+      <button class="slicer-btn" style="padding: 10px; border-color: var(--accent-karm); color: var(--accent-karm);" onclick="window.resolveRecoveryAction('discard')">
+        ✕ Discard &amp; Fetch from Cloud
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Efficiency Input Overlay Modal -->
+<div class="eff-modal-overlay" id="efficiencyModalOverlay" onclick="closeEfficiencyModal(false)">
+  <div class="eff-modal-card" id="efficiencyModalCard" tabindex="-1" onclick="event.stopPropagation()">
+    <div class="eff-modal-title" id="effModalTitle">Practice Efficiency</div>
+    <div class="eff-modal-subtitle">Rate objective alignment (0–100%)</div>
+
+    <!-- Default 50 value, not focused by default -->
+    <input type="number" id="effInputVal" class="eff-display-box" min="0" max="100" value="50" oninput="clampEfficiencyValue(this)" />
+
+    <!-- Controls: - 10 + on the left, - 5 + on the right -->
+    <div class="eff-steppers-row">
+      <!-- Left: - 10 + -->
+      <div class="eff-stepper-group">
+        <button type="button" class="eff-stepper-btn" onclick="stepEfficiencyVal(-10)">−</button>
+        <span class="eff-stepper-label">10</span>
+        <button type="button" class="eff-stepper-btn" onclick="stepEfficiencyVal(10)">+</button>
+      </div>
+
+      <!-- Right: - 5 + -->
+      <div class="eff-stepper-group">
+        <button type="button" class="eff-stepper-btn" onclick="stepEfficiencyVal(-5)">−</button>
+        <span class="eff-stepper-label">5</span>
+        <button type="button" class="eff-stepper-btn" onclick="stepEfficiencyVal(5)">+</button>
+      </div>
+    </div>
+
+    <!-- Confirm & Cancel Buttons -->
+    <div class="eff-actions-row">
+      <button type="button" class="eff-btn-cancel" onclick="closeEfficiencyModal(false)">Cancel</button>
+      <button type="button" class="eff-btn-confirm" onclick="closeEfficiencyModal(true)">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
@@ -2013,8 +2289,19 @@
      
      await checkAndMigrateLegacyLogs(user.uid);
      startStructureListener(user.uid);
-     await loadAllUserLogsFromFirestore(user.uid);
-     window.switchMonthListener(window.currentDate.slice(0, 7));
+
+     // Check if the tab was killed while changes were pending
+     const needsRecovery = localStorage.getItem('nexus_pending_recovery') === 'true';
+
+     if (needsRecovery) {
+       // Pause remote overwrite and ask what to do
+       const modal = document.getElementById('recoveryModalOverlay');
+       if (modal) modal.classList.add('active');
+     } else {
+       // Clean boot: Safe to pull from Firestore
+       await loadAllUserLogsFromFirestore(user.uid);
+       window.switchMonthListener(window.currentDate.slice(0, 7));
+     }
    } else {
      authWrapper.classList.remove("hidden");
      appWrapper.classList.add("hidden");
@@ -2133,7 +2420,7 @@
    const monthRef = doc(db, "userLogs", uid, "monthlyLogs", monthKey);
 
    unsubscribeCurrentMonth = onSnapshot(monthRef, (snap) => {
-     // Don't overwrite if local changes are pending or this is a local echo write
+     // Do not overwrite local memory if unsaved changes exist or if this snapshot is a local echo
      if (window.hasUnsavedChanges || snap.metadata.hasPendingWrites) return;
 
      isRemoteSyncing = true;
@@ -2155,7 +2442,6 @@
 
  window.fetchLogsForDates = async function(targetDates) {
    if (!auth.currentUser || !targetDates || targetDates.length === 0) return;
-   // Skip remote fetch if user has uncommitted local edits
    if (window.hasUnsavedChanges) return;
 
    const uid = auth.currentUser.uid;
@@ -2168,7 +2454,6 @@
        if (snap.exists()) {
          const mData = snap.data() || {};
          Object.entries(mData).forEach(([dStr, dData]) => {
-           // Only hydrate dates not already present in local memory
            if (window.logs && !window.logs[dStr]) {
              window.logs[dStr] = dData;
            }
@@ -2198,20 +2483,28 @@
    }
  };
 
+ const defaultCloudSvg = `
+   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+     <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+     <path d="M12 12v9"></path>
+     <path d="m16 16-4-4-4 4"></path>
+   </svg>
+ `;
+
+ const failedCloudSvg = `
+   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+     <line x1="12" y1="9" x2="12" y2="13"></line>
+     <line x1="12" y1="17" x2="12.01" y2="17"></line>
+   </svg>
+ `;
+
  window.manualSaveToCloud = async function() {
    const saveBtn = document.getElementById("manualSaveBtn");
    if (!auth.currentUser) {
      alert("Please sign in first to save your data.");
      return;
    }
-
-   const defaultSvg = `
-     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
-       <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
-       <path d="M12 12v9"></path>
-       <path d="m16 16-4-4-4 4"></path>
-     </svg>
-   `;
 
    saveBtn.disabled = true;
    saveBtn.style.opacity = "0.6";
@@ -2234,7 +2527,7 @@
        monthBuckets[mKey][dStr] = dData;
      });
 
-     // 1. Save monthly practice logs FIRST with { merge: true }
+     // 1. Save logs first with { merge: true }
      for (const [mKey, bucketData] of Object.entries(monthBuckets)) {
        const mRef = doc(db, "userLogs", uid, "monthlyLogs", mKey);
        await setDoc(mRef, bucketData, { merge: true });
@@ -2243,7 +2536,7 @@
      // 2. Save structure configuration
      await window.saveStructureToFirestore();
 
-     // 3. Mark state clean immediately so listeners do not revert
+     // 3. Mark clean
      if (typeof window.markChangesClean === 'function') {
        window.markChangesClean();
      }
@@ -2256,16 +2549,99 @@
      saveBtn.style.opacity = "1";
 
      setTimeout(() => {
-       saveBtn.innerHTML = defaultSvg;
+       saveBtn.innerHTML = defaultCloudSvg;
+       saveBtn.style.opacity = "0.35";
      }, 1500);
 
    } catch (error) {
      console.error("Cloud save failed:", error);
-     alert("Cloud save failed: " + error.message);
-     saveBtn.innerHTML = defaultSvg;
+     saveBtn.innerHTML = failedCloudSvg;
      if (typeof window.markChangesDirty === 'function') {
        window.markChangesDirty();
      }
+     window.triggerAutoSaveErrorVisual("Cloud save failed: " + error.message);
+   }
+ };
+
+ let practiceAutoSaveTimer = null;
+
+ window.queuePracticeAutoSave = function() {
+   window.markChangesDirty();
+   if (typeof window.saveLogsToLocal === 'function') {
+     window.saveLogsToLocal();
+   }
+
+   clearTimeout(practiceAutoSaveTimer);
+   practiceAutoSaveTimer = setTimeout(async () => {
+     const saveBtn = document.getElementById("manualSaveBtn");
+
+     if (!auth.currentUser) {
+       window.triggerAutoSaveErrorVisual("Not logged in. Changes saved locally.");
+       return;
+     }
+
+     try {
+       const uid = auth.currentUser.uid;
+       const currentMonthKey = window.currentDate.slice(0, 7);
+       
+       const monthLogs = {};
+       Object.entries(window.logs || {}).forEach(([dStr, dData]) => {
+         if (dStr.startsWith(currentMonthKey)) {
+           monthLogs[dStr] = dData;
+         }
+       });
+
+       const mRef = doc(db, "userLogs", uid, "monthlyLogs", currentMonthKey);
+       await setDoc(mRef, monthLogs, { merge: true });
+
+       if (saveBtn) {
+         saveBtn.innerHTML = defaultCloudSvg;
+       }
+       if (typeof window.markChangesClean === 'function') {
+         window.markChangesClean();
+       }
+     } catch (err) {
+       console.error("Auto-save failed:", err);
+       window.triggerAutoSaveErrorVisual("Cloud auto-save failed: " + (err.message || "Network offline"));
+     }
+   }, 1500);
+ };
+
+ window.triggerAutoSaveErrorVisual = function(reasonText) {
+   const saveBtn = document.getElementById("manualSaveBtn");
+   if (saveBtn) {
+     saveBtn.disabled = false;
+     saveBtn.style.opacity = "1";
+     saveBtn.style.cursor = "pointer";
+     saveBtn.innerHTML = failedCloudSvg;
+     saveBtn.title = `⚠️ ${reasonText}. Click to retry manual sync.`;
+     
+     saveBtn.classList.remove("save-btn-shake");
+     void saveBtn.offsetWidth;
+     saveBtn.classList.add("save-btn-shake");
+   }
+
+   window.showToastNotification(`⚠️ Cloud sync failed. Changes saved locally. Click red icon to retry.`, 4000);
+ };
+
+ window.resolveRecoveryAction = async function(action) {
+   const modal = document.getElementById('recoveryModalOverlay');
+   if (modal) modal.classList.remove('active');
+
+   const user = auth.currentUser;
+   if (!user) return;
+
+   if (action === 'save') {
+     await window.manualSaveToCloud();
+     localStorage.removeItem('nexus_pending_recovery');
+     window.switchMonthListener(window.currentDate.slice(0, 7));
+   } else if (action === 'discard') {
+     localStorage.removeItem('nexus_pending_recovery');
+     if (typeof window.markChangesClean === 'function') {
+       window.markChangesClean();
+     }
+     await loadAllUserLogsFromFirestore(user.uid);
+     window.switchMonthListener(window.currentDate.slice(0, 7));
    }
  };
 </script>
@@ -2277,6 +2653,8 @@ window.hasUnsavedChanges = false;
 window.markChangesDirty = function() {
   hasUnsavedChanges = true;
   window.hasUnsavedChanges = true;
+  localStorage.setItem('nexus_pending_recovery', 'true');
+
   const saveBtn = document.getElementById("manualSaveBtn");
   if (saveBtn) {
     saveBtn.disabled = false;
@@ -2289,6 +2667,8 @@ window.markChangesDirty = function() {
 window.markChangesClean = function() {
   hasUnsavedChanges = false;
   window.hasUnsavedChanges = false;
+  localStorage.removeItem('nexus_pending_recovery');
+
   const saveBtn = document.getElementById("manualSaveBtn");
   if (saveBtn) {
     saveBtn.disabled = true;
@@ -2296,6 +2676,24 @@ window.markChangesClean = function() {
     saveBtn.style.cursor = "not-allowed";
     saveBtn.title = "All changes saved to Cloud";
   }
+};
+
+window.showToastNotification = function(message, duration = 3500) {
+  let toast = document.getElementById("syncToastNotice");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "syncToastNotice";
+    toast.className = "sync-toast";
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+  toast.classList.add("visible");
+
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.classList.remove("visible");
+  }, duration);
 };
 
 // Alert confirmation dialog before leaving/reloading the tab if save is active
@@ -4345,33 +4743,150 @@ function getSyncData(syncKey) {
  return logs[currentDate][syncKey];
 }
 
+/* --- Domain-Colored Efficiency Overlay Handlers --- */
+let activeEfficiencyCallback = null;
+let activeEfficiencyCancel = null;
+
+function getDomainMetaBySyncKey(syncKey) {
+  const allFlat = getAllPracticesFlat();
+  const found = allFlat.find(p => p.syncKey === syncKey);
+  if (found) {
+    const colorInfo = getDomainColorInfo(found.domainKey);
+    return {
+      domainName: found.domain,
+      domainKey: found.domainKey,
+      practiceName: found.name,
+      ...colorInfo
+    };
+  }
+  return {
+    domainName: 'Practice',
+    domainKey: 'jnanendriyas',
+    practiceName: 'Practice Efficiency',
+    varName: 'var(--accent-gold)',
+    glow: 'rgba(251, 191, 36, 0.25)',
+    emoji: '🎯'
+  };
+}
+
+function openEfficiencyModal(syncKey, subtitlePrefix, onConfirm, onCancel) {
+  const modal = document.getElementById('efficiencyModalOverlay');
+  const modalCard = document.getElementById('efficiencyModalCard');
+  const input = document.getElementById('effInputVal');
+  const titleEl = document.getElementById('effModalTitle');
+  const subtitleEl = document.querySelector('.eff-modal-subtitle');
+  const confirmBtn = document.querySelector('.eff-btn-confirm');
+
+  const meta = getDomainMetaBySyncKey(syncKey);
+
+  // Apply domain color and glow variables to the modal
+  if (modalCard) {
+    modalCard.style.setProperty('--eff-color', meta.varName);
+    modalCard.style.setProperty('--eff-glow', meta.glow);
+  }
+
+  // Adjust text contrast on confirm button for darker domain tones (karm/arish)
+  if (confirmBtn) {
+    const isDarkerAccent = meta.domainKey === 'karmendriyas' || meta.domainKey === 'arishadvargas';
+    confirmBtn.style.color = isDarkerAccent ? '#ffffff' : '#000000';
+  }
+
+  if (titleEl) {
+    titleEl.innerHTML = `<span>${meta.emoji}</span> <span>${meta.practiceName}</span>`;
+  }
+
+  if (subtitleEl) {
+    subtitleEl.textContent = `${meta.domainName} • ${subtitlePrefix || 'Rate alignment (0–100%)'}`;
+  }
+  
+  // Set default figure to 50
+  input.value = 50;
+
+  activeEfficiencyCallback = onConfirm;
+  activeEfficiencyCancel = onCancel;
+
+  modal.classList.add('active');
+
+  // Keep cursor inactive by default
+  input.blur();
+  if (modalCard) {
+    modalCard.focus();
+  }
+}
+
+function stepEfficiencyVal(delta) {
+  const input = document.getElementById('effInputVal');
+  let current = parseInt(input.value, 10);
+  if (isNaN(current)) current = 50;
+  let next = Math.max(0, Math.min(100, current + delta));
+  input.value = next;
+  input.blur();
+}
+
+function clampEfficiencyValue(inputEl) {
+  let val = parseInt(inputEl.value, 10);
+  if (isNaN(val)) return;
+  if (val > 100) inputEl.value = 100;
+  if (val < 0) inputEl.value = 0;
+}
+
+function closeEfficiencyModal(confirmed) {
+  const modal = document.getElementById('efficiencyModalOverlay');
+  modal.classList.remove('active');
+
+  if (confirmed && typeof activeEfficiencyCallback === 'function') {
+    const input = document.getElementById('effInputVal');
+    let val = parseInt(input.value, 10);
+    if (isNaN(val)) val = 50;
+    val = Math.max(0, Math.min(100, val));
+    activeEfficiencyCallback(val);
+  } else if (!confirmed && typeof activeEfficiencyCancel === 'function') {
+    activeEfficiencyCancel();
+  }
+
+  activeEfficiencyCallback = null;
+  activeEfficiencyCancel = null;
+}
+
+// Enter & Escape shortcuts
+document.addEventListener('keydown', (e) => {
+  const modal = document.getElementById('efficiencyModalOverlay');
+  if (modal && modal.classList.contains('active')) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      closeEfficiencyModal(true);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      closeEfficiencyModal(false);
+    }
+  }
+});
+
 function toggleDone(syncKey) {
   const group = getLinkedGroup(syncKey);
   const item = getSyncData(syncKey);
   const isCurrentlyDone = item.done;
   
   if (!isCurrentlyDone) {
-    const input = prompt("Enter Execution/Practice efficiency (0-100%):", "");
-    
-    if (input === null || input.trim() === "") {
-      renderUI(); 
-      return;
-    }
-
-    const eff = parseInt(input.trim(), 10);
-    
-    if (!isNaN(eff) && eff >= 0 && eff <= 100) {
+    openEfficiencyModal(syncKey, "Rate objective alignment (0–100%)", (eff) => {
       pushState();
       group.forEach(k => {
         const d = getSyncData(k);
         d.done = true;
         d.efficiencies = [eff];
       });
-    } else {
-      alert("Please enter a valid number between 0 and 100 to complete this practice.");
-      renderUI(); 
-      return;
-    }
+      saveLogsToLocal();
+      renderUI();
+      handleSearch(searchQuery);
+      triggerPulse(group);
+
+      if (typeof window.queuePracticeAutoSave === 'function') {
+        window.queuePracticeAutoSave();
+      }
+    }, () => {
+      renderUI();
+      handleSearch(searchQuery);
+    });
   } else {
     pushState();
     group.forEach(k => {
@@ -4379,56 +4894,64 @@ function toggleDone(syncKey) {
       d.done = false;
       d.efficiencies = [];
     });
+    saveLogsToLocal();
+    renderUI();
+    handleSearch(searchQuery);
+    triggerPulse(group);
+
+    if (typeof window.queuePracticeAutoSave === 'function') {
+      window.queuePracticeAutoSave();
+    }
   }
+}
+
+function addEfficiency(syncKey) {
+  const group = getLinkedGroup(syncKey);
+  const item = getSyncData(syncKey);
+  if (!item.done) {
+    alert("Please check the practice first before adding efficiency percentages.");
+    return;
+  }
+  
+  openEfficiencyModal(syncKey, "Add session efficiency (0–100%)", (eff) => {
+    pushState();
+    group.forEach(k => {
+      const d = getSyncData(k);
+      d.done = true;
+      d.efficiencies.push(eff);
+    });
+    saveLogsToLocal();
+    renderUI();
+    handleSearch(searchQuery);
+    triggerPulse(group);
+
+    if (typeof window.queuePracticeAutoSave === 'function') {
+      window.queuePracticeAutoSave();
+    }
+  });
+}
+
+function removeEfficiency(syncKey, index) {
+  pushState();
+  const group = getLinkedGroup(syncKey);
+  group.forEach(k => {
+    const d = getSyncData(k);
+    if (d && d.efficiencies.length > index) {
+      d.efficiencies.splice(index, 1);
+      if (d.efficiencies.length === 0) {
+        d.done = false;
+      }
+    }
+  });
   
   saveLogsToLocal();
   renderUI();
   handleSearch(searchQuery);
   triggerPulse(group);
-}
 
-function addEfficiency(syncKey) {
- const group = getLinkedGroup(syncKey);
- const item = getSyncData(syncKey);
- if (!item.done) {
- alert("Please check the practice first before adding efficiency percentages.");
- return;
- }
- const input = prompt("Enter additional session efficiency (0-100%):", "");
- const eff = parseInt(input, 10);
- if (!isNaN(eff) && eff >= 0 && eff <= 100) {
- pushState();
- group.forEach(k => {
- const d = getSyncData(k);
- d.done = true;
- d.efficiencies.push(eff);
- });
- saveLogsToLocal();
- renderUI();
- handleSearch(searchQuery);
- triggerPulse(group);
- } else if (input !== null) {
- alert("Please enter a number between 0 and 100.");
- }
-}
-
-function removeEfficiency(syncKey, index) {
- pushState();
- const group = getLinkedGroup(syncKey);
- group.forEach(k => {
- const d = getSyncData(k);
- if (d && d.efficiencies.length > index) {
- d.efficiencies.splice(index, 1);
- if (d.efficiencies.length === 0) {
- d.done = false;
- }
- }
- });
- 
- saveLogsToLocal();
- renderUI();
- handleSearch(searchQuery);
- triggerPulse(group);
+  if (typeof window.queuePracticeAutoSave === 'function') {
+    window.queuePracticeAutoSave();
+  }
 }
 
 function filterCategory(type, name) {
