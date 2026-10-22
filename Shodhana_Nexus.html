@@ -2133,6 +2133,9 @@
    const monthRef = doc(db, "userLogs", uid, "monthlyLogs", monthKey);
 
    unsubscribeCurrentMonth = onSnapshot(monthRef, (snap) => {
+     // Don't overwrite if local changes are pending or this is a local echo write
+     if (window.hasUnsavedChanges || snap.metadata.hasPendingWrites) return;
+
      isRemoteSyncing = true;
      if (snap.exists()) {
        const monthDays = snap.data() || {};
@@ -2152,6 +2155,9 @@
 
  window.fetchLogsForDates = async function(targetDates) {
    if (!auth.currentUser || !targetDates || targetDates.length === 0) return;
+   // Skip remote fetch if user has uncommitted local edits
+   if (window.hasUnsavedChanges) return;
+
    const uid = auth.currentUser.uid;
    const requiredMonths = new Set(targetDates.map(d => d.slice(0, 7)));
 
@@ -2162,7 +2168,10 @@
        if (snap.exists()) {
          const mData = snap.data() || {};
          Object.entries(mData).forEach(([dStr, dData]) => {
-           if (window.logs) window.logs[dStr] = dData;
+           // Only hydrate dates not already present in local memory
+           if (window.logs && !window.logs[dStr]) {
+             window.logs[dStr] = dData;
+           }
          });
        }
      } catch (err) {
@@ -2215,7 +2224,6 @@
      }
 
      if (window.saveLogsToLocal) window.saveLogsToLocal();
-     await window.saveStructureToFirestore();
 
      const uid = auth.currentUser.uid;
      const monthBuckets = {};
@@ -2226,9 +2234,18 @@
        monthBuckets[mKey][dStr] = dData;
      });
 
+     // 1. Save monthly practice logs FIRST with { merge: true }
      for (const [mKey, bucketData] of Object.entries(monthBuckets)) {
        const mRef = doc(db, "userLogs", uid, "monthlyLogs", mKey);
-       await setDoc(mRef, bucketData);
+       await setDoc(mRef, bucketData, { merge: true });
+     }
+
+     // 2. Save structure configuration
+     await window.saveStructureToFirestore();
+
+     // 3. Mark state clean immediately so listeners do not revert
+     if (typeof window.markChangesClean === 'function') {
+       window.markChangesClean();
      }
 
      saveBtn.innerHTML = `
@@ -2240,9 +2257,6 @@
 
      setTimeout(() => {
        saveBtn.innerHTML = defaultSvg;
-       if (typeof window.markChangesClean === 'function') {
-         window.markChangesClean();
-       }
      }, 1500);
 
    } catch (error) {
@@ -2258,9 +2272,11 @@
 
 <script>
 let hasUnsavedChanges = false;
+window.hasUnsavedChanges = false;
 
 window.markChangesDirty = function() {
   hasUnsavedChanges = true;
+  window.hasUnsavedChanges = true;
   const saveBtn = document.getElementById("manualSaveBtn");
   if (saveBtn) {
     saveBtn.disabled = false;
@@ -2272,6 +2288,7 @@ window.markChangesDirty = function() {
 
 window.markChangesClean = function() {
   hasUnsavedChanges = false;
+  window.hasUnsavedChanges = false;
   const saveBtn = document.getElementById("manualSaveBtn");
   if (saveBtn) {
     saveBtn.disabled = true;
@@ -2280,6 +2297,15 @@ window.markChangesClean = function() {
     saveBtn.title = "All changes saved to Cloud";
   }
 };
+
+// Alert confirmation dialog before leaving/reloading the tab if save is active
+window.addEventListener('beforeunload', (event) => {
+  const saveBtn = document.getElementById('manualSaveBtn');
+  if (hasUnsavedChanges || (saveBtn && !saveBtn.disabled)) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});
 
 let dataset = {
  jnanendriyas: [],
