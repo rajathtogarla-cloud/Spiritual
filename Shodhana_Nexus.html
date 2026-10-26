@@ -1667,6 +1667,52 @@
   opacity: 0.9;
   filter: brightness(1.05);
 }
+
+/* Link Direction Toggle Segmented Control */
+.link-dir-toggle-container {
+  display: flex;
+  background: var(--card-sub-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.link-dir-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-sub);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.link-dir-btn:hover {
+  color: var(--text-main);
+}
+
+.link-dir-btn.active {
+  background: var(--card-bg);
+  color: var(--accent-gold);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.link-practice-desc {
+  font-size: 0.76rem;
+  color: var(--text-sub);
+  margin-top: 4px;
+  line-height: 1.35;
+  opacity: 0.85;
+}
  </style>
 </head>
 <body onclick="handleBodyClick(event)">
@@ -2100,16 +2146,29 @@
       <span id="modalTargetTitle">🔗 Connect Practices</span>
       <button class="add-duration-btn" onclick="closeLinkModal()">&times;</button>
     </div>
+
+    <!-- Direction Toggle -->
+    <div class="link-dir-toggle-container">
+      <button type="button" id="linkDirToBtn" class="link-dir-btn active" onclick="setLinkModalDirection('to')">
+        ➔ Link to (Outgoing)
+      </button>
+      <button type="button" id="linkDirFromBtn" class="link-dir-btn" onclick="setLinkModalDirection('from')">
+        ⬅ Link from (Incoming)
+      </button>
+    </div>
+
+    <!-- Direction Description Helper -->
+    <p id="linkModalDirDesc" style="font-size: 0.8rem; color: var(--text-sub); margin-top: -6px; line-height: 1.4;">
+      <!-- Populated dynamically -->
+    </p>
     
     <div style="display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px;">
       <span style="font-size: 0.9rem; opacity: 0.7;">🔍</span>
       <input type="search" id="linkModalSearchInput" placeholder="Search practices by name, group, or domain..." style="background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.85rem; width: 100%;" oninput="handleLinkModalSearch(this.value)">
     </div>
 
-    <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: -6px;">
-      Select practices to synchronize with this one. Actions and historical entries will be retrospectively merged.
-    </p>
     <div class="target-list" id="modalTargetList"></div>
+
     <div style="text-align: right; margin-top: 10px;">
       <button class="auth-btn" style="width: auto; padding: 6px 18px; margin: 0;" onclick="closeLinkModal()">Done</button>
     </div>
@@ -3601,12 +3660,13 @@ function saveBulkJson() {
     const purgePractices = (keysToPurge) => {
       keysToPurge.forEach(syncKey => {
         // 1. Remove from linkGraph
-        const currentGroup = getLinkedGroup(syncKey);
-        const updatedGroup = currentGroup.filter(k => k !== syncKey);
-        if (updatedGroup.length > 0) {
-          updatedGroup.forEach(k => linkGraph[k] = [...updatedGroup]);
-        }
         delete linkGraph[syncKey];
+        Object.keys(linkGraph).forEach(k => {
+          if (Array.isArray(linkGraph[k])) {
+            linkGraph[k] = linkGraph[k].filter(target => target !== syncKey);
+            if (linkGraph[k].length === 0) delete linkGraph[k];
+          }
+        });
 
         // 2. Remove from logs across all recorded dates (local memory)
         Object.keys(logs).forEach(date => {
@@ -4309,70 +4369,108 @@ function getAllPracticesFlat() {
  return list;
 }
 
-function getLinkedGroup(syncKey) {
- return linkGraph[syncKey] || [syncKey];
+let linkModalDirection = 'to'; // 'to' = Outgoing, 'from' = Incoming
+let currentLinkingSyncKey = null;
+let linkModalSearchQuery = '';
+
+// Calculate outgoing ('to') and incoming ('from') link counts
+function getPracticeLinkCounts(syncKey) {
+  const toLinks = (linkGraph[syncKey] || []).filter(k => k && k !== syncKey);
+  const toCount = toLinks.length;
+  
+  let fromCount = 0;
+  Object.entries(linkGraph).forEach(([srcKey, targets]) => {
+    if (srcKey !== syncKey && Array.isArray(targets) && targets.includes(syncKey)) {
+      fromCount++;
+    }
+  });
+
+  return { toCount, fromCount, total: toCount + fromCount };
 }
 
-function triggerPulse(groupKeys) {
- groupKeys.forEach(k => {
- const elements = document.querySelectorAll(`[data-sync-key="${k}"]`);
- elements.forEach(el => {
- el.classList.add('sync-highlight');
- setTimeout(() => el.classList.remove('sync-highlight'), 600);
- });
- });
+// Compute all downstream targets reachable from sourceKey (one-way BFS traversal)
+function getOutgoingTargets(sourceKey) {
+  const targets = new Set();
+  const queue = [sourceKey];
+  while (queue.length > 0) {
+    const curr = queue.shift();
+    const directTargets = (linkGraph[curr] || []).filter(k => k && k !== curr);
+    for (const t of directTargets) {
+      if (!targets.has(t) && t !== sourceKey) {
+        targets.add(t);
+        queue.push(t);
+      }
+    }
+  }
+  return Array.from(targets);
 }
 
-function syncRetrospectiveDataForGroup(groupKeys) {
- Object.keys(logs).forEach(date => {
- let isAnyDone = false;
- let combinedEfficiencies = [];
-
- groupKeys.forEach(key => {
- const entry = logs[date][key];
- if (entry) {
- if (entry.done) isAnyDone = true;
- if (entry.efficiencies && entry.efficiencies.length > 0) {
- entry.efficiencies.forEach(score => combinedEfficiencies.push(score));
- }
- }
- });
-
- let mergedEfficiencies = [...new Set(combinedEfficiencies)];
-
- groupKeys.forEach(key => {
- if (!logs[date][key]) logs[date][key] = { done: false, efficiencies: [] };
- logs[date][key].done = isAnyDone;
- logs[date][key].efficiencies = [...mergedEfficiencies];
- });
- });
+function triggerPulse(keys) {
+  keys.forEach(k => {
+    const elements = document.querySelectorAll(`[data-sync-key="${k}"]`);
+    elements.forEach(el => {
+      el.classList.add('sync-highlight');
+      setTimeout(() => el.classList.remove('sync-highlight'), 600);
+    });
+  });
 }
 
-function toggleLinkPair(sourceKey, targetKey) {
-  let groupA = getLinkedGroup(sourceKey);
-  let groupB = getLinkedGroup(targetKey);
-
-  if (groupA.includes(targetKey)) {
-    const newGroup = groupA.filter(k => k !== targetKey);
-    newGroup.forEach(k => linkGraph[k] = [...newGroup]);
-    linkGraph[targetKey] = [targetKey];
+// Toggle a directed, one-way link
+function toggleDirectedLink(sourceKey, targetKey) {
+  pushState();
+  if (!linkGraph[sourceKey]) {
+    linkGraph[sourceKey] = [];
+  }
+  
+  const existingIdx = linkGraph[sourceKey].indexOf(targetKey);
+  if (existingIdx >= 0) {
+    linkGraph[sourceKey].splice(existingIdx, 1);
+    if (linkGraph[sourceKey].length === 0) {
+      delete linkGraph[sourceKey];
+    }
   } else {
-    const merged = Array.from(new Set([...groupA, ...groupB]));
-    merged.forEach(k => linkGraph[k] = [...merged]);
-    syncRetrospectiveDataForGroup(merged);
+    linkGraph[sourceKey].push(targetKey);
+    
+    // Retrospectively sync current date's entry one-way from source to target
+    if (logs[currentDate] && logs[currentDate][sourceKey]) {
+      const srcLog = logs[currentDate][sourceKey];
+      if (srcLog.done) {
+        if (!logs[currentDate][targetKey]) {
+          logs[currentDate][targetKey] = { done: false, efficiencies: [] };
+        }
+        logs[currentDate][targetKey].done = true;
+        logs[currentDate][targetKey].efficiencies = [...(srcLog.efficiencies || [])];
+      }
+    }
   }
 
   saveLogsToLocal();
   renderUI();
-  renderLinkModalList(sourceKey);
+  if (currentLinkingSyncKey) {
+    renderLinkModalList(currentLinkingSyncKey);
+  }
   handleSearch(searchQuery);
 }
 
-let linkModalSearchQuery = '';
-let currentLinkingSyncKey = null;
+function setLinkModalDirection(dir) {
+  linkModalDirection = dir;
+  const toBtn = document.getElementById('linkDirToBtn');
+  const fromBtn = document.getElementById('linkDirFromBtn');
+  const descEl = document.getElementById('linkModalDirDesc');
 
-function handleLinkModalSearch(query) {
-  linkModalSearchQuery = query.trim().toLowerCase();
+  if (toBtn) toBtn.classList.toggle('active', dir === 'to');
+  if (fromBtn) fromBtn.classList.toggle('active', dir === 'from');
+
+  const allFlat = getAllPracticesFlat();
+  const current = allFlat.find(p => p.syncKey === currentLinkingSyncKey);
+  const name = current ? current.name : 'this practice';
+
+  if (descEl) {
+    descEl.innerHTML = dir === 'to'
+      ? `<strong>➔ Link to (Outgoing):</strong> Ticking or scoring <em>${name}</em> will auto-populate the selected practices below.`
+      : `<strong>⬅ Link from (Incoming):</strong> Ticking or scoring any selected practice below will auto-populate <em>${name}</em>.`;
+  }
+
   if (currentLinkingSyncKey) {
     renderLinkModalList(currentLinkingSyncKey);
   }
@@ -4385,14 +4483,22 @@ function openLinkModal(syncKey) {
 
   currentLinkingSyncKey = syncKey;
   linkModalSearchQuery = '';
+  linkModalDirection = 'to';
   
   const searchInput = document.getElementById("linkModalSearchInput");
   if (searchInput) searchInput.value = '';
 
   pushModalHistoryState();
   document.getElementById("modalTargetTitle").innerText = `🔗 Connect: ${current.name}`;
-  renderLinkModalList(syncKey);
+  setLinkModalDirection('to');
   document.getElementById("linkModalOverlay").classList.add("active");
+}
+
+function handleLinkModalSearch(query) {
+  linkModalSearchQuery = query.trim().toLowerCase();
+  if (currentLinkingSyncKey) {
+    renderLinkModalList(currentLinkingSyncKey);
+  }
 }
 
 function renderLinkModalList(syncKey) {
@@ -4401,7 +4507,7 @@ function renderLinkModalList(syncKey) {
   if (!list) return;
   list.innerHTML = "";
 
-  const activeLinks = getLinkedGroup(syncKey);
+  const outgoingTargets = (linkGraph[syncKey] || []).filter(k => k !== syncKey);
   let otherPractices = allFlat.filter(p => p.syncKey !== syncKey);
 
   if (linkModalSearchQuery) {
@@ -4419,32 +4525,45 @@ function renderLinkModalList(syncKey) {
   }
 
   otherPractices.sort((a, b) => {
-    const aLinked = activeLinks.includes(a.syncKey);
-    const bLinked = activeLinks.includes(b.syncKey);
+    const aLinked = linkModalDirection === 'to' 
+      ? outgoingTargets.includes(a.syncKey) 
+      : ((linkGraph[a.syncKey] || []).includes(syncKey));
+    const bLinked = linkModalDirection === 'to' 
+      ? outgoingTargets.includes(b.syncKey) 
+      : ((linkGraph[b.syncKey] || []).includes(syncKey));
+    
     if (aLinked && !bLinked) return -1;
     if (!aLinked && bLinked) return 1;
     return a.name.localeCompare(b.name);
   });
 
   otherPractices.forEach(p => {
-    const isLinked = activeLinks.includes(p.syncKey);
-    const dColor = getDomainColorInfo(p.domainKey);
+    const isLinked = linkModalDirection === 'to'
+      ? outgoingTargets.includes(p.syncKey)
+      : ((linkGraph[p.syncKey] || []).includes(syncKey));
 
+    const dColor = getDomainColorInfo(p.domainKey);
     const item = document.createElement("label");
     item.className = "target-item";
+    item.style.alignItems = "flex-start";
+
     if (isLinked) {
       item.style.borderColor = dColor.varName;
       item.style.background = dColor.glow;
     }
 
+    const onToggle = linkModalDirection === 'to'
+      ? `toggleDirectedLink('${syncKey}', '${p.syncKey}')`
+      : `toggleDirectedLink('${p.syncKey}', '${syncKey}')`;
+
     item.innerHTML = `
-      <input type="checkbox" ${isLinked ? "checked" : ""} onchange="toggleLinkPair('${syncKey}', '${p.syncKey}')">
+      <input type="checkbox" ${isLinked ? "checked" : ""} onchange="${onToggle}" style="margin-top: 3px;">
       <div style="display: flex; flex-direction: column; flex: 1;">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
           <span style="font-weight: 600; color: ${isLinked ? dColor.varName : 'inherit'};">${p.name}</span>
-          ${isLinked ? `<span style="font-size: 0.72rem; font-weight: bold; color: ${dColor.varName}; background: var(--card-sub-bg); padding: 1px 6px; border-radius: 4px; border: 1px solid ${dColor.varName};">Linked</span>` : ''}
         </div>
         <span style="font-size: 0.75rem; color: var(--text-sub);">${p.domain} • ${p.groupName}</span>
+        ${p.desc ? `<div class="link-practice-desc">${p.desc}</div>` : ''}
       </div>
     `;
     list.appendChild(item);
@@ -4452,9 +4571,9 @@ function renderLinkModalList(syncKey) {
 }
 
 function closeLinkModal(event) {
- if (!event || event.target === document.getElementById('linkModalOverlay') || event.type === 'click') {
- document.getElementById("linkModalOverlay").classList.remove("active");
- }
+  if (!event || event.target === document.getElementById('linkModalOverlay') || event.type === 'click') {
+    document.getElementById("linkModalOverlay").classList.remove("active");
+  }
 }
 
 function deletePractice(syncKey) {
@@ -4467,12 +4586,13 @@ function deletePractice(syncKey) {
  }
 
  pushState();
- const currentGroup = getLinkedGroup(syncKey);
- const updatedGroup = currentGroup.filter(k => k !== syncKey);
- if (updatedGroup.length > 0) {
- updatedGroup.forEach(k => linkGraph[k] = [...updatedGroup]);
- }
  delete linkGraph[syncKey];
+ Object.keys(linkGraph).forEach(k => {
+   if (Array.isArray(linkGraph[k])) {
+     linkGraph[k] = linkGraph[k].filter(target => target !== syncKey);
+     if (linkGraph[k].length === 0) delete linkGraph[k];
+   }
+ });
 
  DOMAIN_DEFINITIONS.forEach(d => {
  if (dataset[d.key]) {
@@ -4556,9 +4676,12 @@ function handleSearch(query) {
  const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
  const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
 
- const linked = getLinkedGroup(p.syncKey);
- const connCount = linked.length - 1;
- const isLinked = connCount > 0;
+ const { toCount, fromCount, total } = getPracticeLinkCounts(p.syncKey);
+ const isLinked = total > 0;
+ const linkBadgeLabel = isLinked ? `${toCount} | ${fromCount}` : '🔗';
+ const linkBadgeTitle = isLinked
+   ? `Link to: ${toCount} | Link from: ${fromCount}`
+   : 'Connect to other practices';
 
  html += `
  <li class="practice-item" data-sync-key="${p.syncKey}" style="--item-domain-color: ${domainColorInfo.varName}; --item-glow-color: ${domainColorInfo.glow};">
@@ -4571,10 +4694,9 @@ function handleSearch(query) {
  </div>
  </label>
  <div class="action-group">
- <span class="link-badge ${isLinked ? 'is-linked' : ''}" onclick="openLinkModal('${p.syncKey}')" title="${isLinked ? `Connected to ${connCount} other practice(s)` : 'Connect to other practices'}">
- 🔗${isLinked ? ` ${connCount}` : ''}
+ <span class="link-badge ${isLinked ? 'is-linked' : ''}" onclick="openLinkModal('${p.syncKey}')" title="${linkBadgeTitle}">
+   ${linkBadgeLabel}
  </span>
- <span class="delete-btn" onclick="deletePractice('${p.syncKey}')" title="Delete Practice">🗑️</span>
  </div>
  </div>
  
@@ -4863,14 +4985,15 @@ document.addEventListener('keydown', (e) => {
 });
 
 function toggleDone(syncKey) {
-  const group = getLinkedGroup(syncKey);
+  const downstreamTargets = getOutgoingTargets(syncKey);
+  const affectedKeys = [syncKey, ...downstreamTargets];
   const item = getSyncData(syncKey);
   const isCurrentlyDone = item.done;
   
   if (!isCurrentlyDone) {
     openEfficiencyModal(syncKey, "Rate objective alignment (0–100%)", (eff) => {
       pushState();
-      group.forEach(k => {
+      affectedKeys.forEach(k => {
         const d = getSyncData(k);
         d.done = true;
         d.efficiencies = [eff];
@@ -4878,7 +5001,7 @@ function toggleDone(syncKey) {
       saveLogsToLocal();
       renderUI();
       handleSearch(searchQuery);
-      triggerPulse(group);
+      triggerPulse(affectedKeys);
 
       if (typeof window.queuePracticeAutoSave === 'function') {
         window.queuePracticeAutoSave();
@@ -4889,7 +5012,7 @@ function toggleDone(syncKey) {
     });
   } else {
     pushState();
-    group.forEach(k => {
+    affectedKeys.forEach(k => {
       const d = getSyncData(k);
       d.done = false;
       d.efficiencies = [];
@@ -4897,7 +5020,7 @@ function toggleDone(syncKey) {
     saveLogsToLocal();
     renderUI();
     handleSearch(searchQuery);
-    triggerPulse(group);
+    triggerPulse(affectedKeys);
 
     if (typeof window.queuePracticeAutoSave === 'function') {
       window.queuePracticeAutoSave();
@@ -4906,7 +5029,8 @@ function toggleDone(syncKey) {
 }
 
 function addEfficiency(syncKey) {
-  const group = getLinkedGroup(syncKey);
+  const downstreamTargets = getOutgoingTargets(syncKey);
+  const affectedKeys = [syncKey, ...downstreamTargets];
   const item = getSyncData(syncKey);
   if (!item.done) {
     alert("Please check the practice first before adding efficiency percentages.");
@@ -4915,7 +5039,7 @@ function addEfficiency(syncKey) {
   
   openEfficiencyModal(syncKey, "Add session efficiency (0–100%)", (eff) => {
     pushState();
-    group.forEach(k => {
+    affectedKeys.forEach(k => {
       const d = getSyncData(k);
       d.done = true;
       d.efficiencies.push(eff);
@@ -4923,7 +5047,7 @@ function addEfficiency(syncKey) {
     saveLogsToLocal();
     renderUI();
     handleSearch(searchQuery);
-    triggerPulse(group);
+    triggerPulse(affectedKeys);
 
     if (typeof window.queuePracticeAutoSave === 'function') {
       window.queuePracticeAutoSave();
@@ -4933,10 +5057,11 @@ function addEfficiency(syncKey) {
 
 function removeEfficiency(syncKey, index) {
   pushState();
-  const group = getLinkedGroup(syncKey);
-  group.forEach(k => {
+  const downstreamTargets = getOutgoingTargets(syncKey);
+  const affectedKeys = [syncKey, ...downstreamTargets];
+  affectedKeys.forEach(k => {
     const d = getSyncData(k);
-    if (d && d.efficiencies.length > index) {
+    if (d && d.efficiencies && d.efficiencies.length > index) {
       d.efficiencies.splice(index, 1);
       if (d.efficiencies.length === 0) {
         d.done = false;
@@ -4947,7 +5072,7 @@ function removeEfficiency(syncKey, index) {
   saveLogsToLocal();
   renderUI();
   handleSearch(searchQuery);
-  triggerPulse(group);
+  triggerPulse(affectedKeys);
 
   if (typeof window.queuePracticeAutoSave === 'function') {
     window.queuePracticeAutoSave();
@@ -4991,9 +5116,12 @@ function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilte
  const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
  const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
 
- const linked = getLinkedGroup(p.syncKey);
- const connCount = linked.length - 1;
- const isLinked = connCount > 0;
+ const { toCount, fromCount, total } = getPracticeLinkCounts(p.syncKey);
+ const isLinked = total > 0;
+ const linkBadgeLabel = isLinked ? `${toCount} | ${fromCount}` : '🔗';
+ const linkBadgeTitle = isLinked
+   ? `Link to: ${toCount} | Link from: ${fromCount}`
+   : 'Connect to other practices';
 
  practicesHtml += `
  <li class="practice-item" data-sync-key="${p.syncKey}" style="--item-domain-color: ${domainColorInfo.varName}; --item-glow-color: ${domainColorInfo.glow};">
@@ -5006,10 +5134,9 @@ function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilte
  </div>
  </label>
  <div class="action-group">
- <span class="link-badge ${isLinked ? 'is-linked' : ''}" onclick="openLinkModal('${p.syncKey}')" title="${isLinked ? `Connected to ${connCount} other practice(s)` : 'Connect to other practices'}">
- 🔗${isLinked ? ` ${connCount}` : ''}
+ <span class="link-badge ${isLinked ? 'is-linked' : ''}" onclick="openLinkModal('${p.syncKey}')" title="${linkBadgeTitle}">
+   ${linkBadgeLabel}
  </span>
- <span class="delete-btn" onclick="deletePractice('${p.syncKey}')" title="Delete Practice">🗑️</span>
  </div>
  </div>
  
