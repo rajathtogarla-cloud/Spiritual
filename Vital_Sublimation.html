@@ -1,0 +1,3602 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Containment Protocol & Vital Sublimation Tracker</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              cyan: '#06b6d4',
+              teal: '#14b8a6',
+              emerald: '#10b981',
+              amber: '#f59e0b',
+              purple: '#8b5cf6',
+              rose: '#f43f5e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Smooth Scrollbar */
+    ::-webkit-scrollbar {
+      height: 8px;
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.35);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(6, 182, 212, 0.7);
+    }
+
+    /* Dark Mode Glassmorphism with Slate Undertones */
+    .dark .glass-card {
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.65);
+    }
+    .dark .glass-interactive {
+      background: rgba(30, 41, 59, 0.65);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .dark .glass-interactive:hover {
+      background: rgba(30, 41, 59, 0.95);
+      border-color: rgba(6, 182, 212, 0.5);
+    }
+
+    /* Light Mode Frosted Aesthetic */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.07), 0 3px 8px -1px rgba(0, 0, 0, 0.04);
+    }
+    .glass-interactive {
+      background: rgba(248, 250, 252, 0.9);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+    }
+    .glass-interactive:hover {
+      background: #ffffff;
+      border-color: rgba(6, 182, 212, 0.6);
+    }
+
+    /* Radial Gradients */
+    .cyber-radial-bg {
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 90% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+    }
+    .light-radial-bg {
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(6, 182, 212, 0.08) 0%, transparent 35%),
+        radial-gradient(circle at 90% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.06) 0%, transparent 45%);
+    }
+
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+
+    #confettiCanvas {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999; /* Ensures confetti renders above the backdrop blur */
+    }
+
+    /* Modal Target Shimmer & Celebration */
+    @keyframes modalHighCelebration {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 rgba(6, 182, 212, 0); }
+      50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(6, 182, 212, 0.5), inset 0 0 15px rgba(20, 184, 166, 0.3); border-color: rgba(6, 182, 212, 0.9); }
+      100% { transform: scale(1); box-shadow: 0 0 0 rgba(6, 182, 212, 0); }
+    }
+    .modal-celebrate-high {
+      animation: modalHighCelebration 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* Modal Target Subtle Pulse */
+    @keyframes modalFlatPulse {
+      0% { transform: scale(0.98); opacity: 0.85; }
+      50% { transform: scale(1.01); opacity: 1; border-color: rgba(16, 185, 129, 0.6); }
+      100% { transform: scale(1); }
+    }
+    .modal-pulse-flat {
+      animation: modalFlatPulse 0.22s ease-out forwards;
+    }
+  </style>
+</head>
+
+<body class="bg-white dark:bg-black text-slate-900 dark:text-slate-100 min-h-screen font-sans antialiased transition-colors duration-300 pb-24 md:pb-12 light-radial-bg dark:cyber-radial-bg">
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- ========================================================================= -->
+  <!-- TOP APP HEADER WITH INTEGRATED DRAWER LAUNCHER                           -->
+  <!-- ========================================================================= -->
+  <header class="sticky top-0 z-40 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
+      
+      <!-- Brand & Protocol Tag -->
+      <div class="flex items-center space-x-3 min-w-0">
+        <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-emerald-400 p-0.5 shadow-md shadow-cyan-500/20 flex-shrink-0">
+          <div class="w-full h-full bg-white dark:bg-slate-950 rounded-[14px] flex items-center justify-center transition-colors">
+            <svg class="w-6 h-6 text-cyan-600 dark:text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center space-x-2">
+            <h1 class="text-base sm:text-xl font-black tracking-tight bg-gradient-to-r from-cyan-600 via-teal-500 to-indigo-600 dark:from-cyan-400 dark:via-teal-300 dark:to-indigo-300 bg-clip-text text-transparent truncate">
+              VITAL SUBLIMATION
+            </h1>
+            <span id="headerProtocolTag" class="text-xs uppercase font-mono px-2.5 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950/90 border border-cyan-300 dark:border-cyan-500/30 text-cyan-700 dark:text-cyan-400 font-bold whitespace-nowrap shadow-sm">
+              10D Protocol
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate hidden sm:block">
+            Containment & Calibration Governance Engine
+          </p>
+        </div>
+      </div>
+
+      <!-- Center Cycle Navigator -->
+      <div class="flex items-center bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1 shadow-inner">
+        <!-- MAIN INTERFACE SIMULATION BADGE (VISIBLE OUTSIDE SIDEBAR) -->
+        <div id="headerSimActiveBadge" onclick="toggleSidebarDrawer()" title="Simulation mode active. Click to inspect." class="hidden cursor-pointer items-center space-x-2 px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/40 text-purple-700 dark:text-purple-300 font-mono text-xs font-bold shadow-sm transition hover:bg-purple-500/25">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+          </span>
+          <span id="headerSimActiveText">Simulated: 05/11/2026</span>
+        </div>
+        <button onclick="prevCycle()" title="Previous Cycle" id="btnPrevCycle" class="p-2 sm:px-3 rounded-xl hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all disabled:opacity-30 disabled:pointer-events-none">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+
+        <div class="px-3 sm:px-4 text-center min-w-[120px] sm:min-w-[150px]">
+          <div class="flex items-center justify-center space-x-2">
+            <span id="cycleSelectorLabel" class="text-sm sm:text-base font-black font-mono text-slate-800 dark:text-white">Cycle #1</span>
+            <span id="cycleSelectorStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          </div>
+          <span id="cycleSelectorSublabel" class="text-xs font-mono text-slate-400 block truncate">Active Cycle</span>
+        </div>
+
+        <button onclick="nextCycle()" title="Next Cycle" id="btnNextCycle" class="p-2 sm:px-3 rounded-xl hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all disabled:opacity-30 disabled:pointer-events-none">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+      <!-- Right Controls: Undo/Redo, New Cycle & Sidebar Trigger -->
+      <div class="flex items-center space-x-2 sm:space-x-2.5">
+        
+        <!-- Undo / Redo -->
+        <div class="hidden sm:flex items-center bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-0.5">
+          <button id="btnUndo" onclick="triggerUndo()" title="Undo (Ctrl+Z)" disabled class="p-1.5 px-2.5 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none transition flex items-center space-x-1">
+            <span class="text-base font-bold leading-none select-none">↶</span>
+            <span class="text-xs font-mono font-bold">Undo</span>
+          </button>
+          <button id="btnRedo" onclick="triggerRedo()" title="Redo (Ctrl+Y)" disabled class="p-1.5 px-2.5 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none transition flex items-center space-x-1">
+            <span class="text-base font-bold leading-none select-none">↷</span>
+            <span class="text-xs font-mono font-bold">Redo</span>
+          </button>
+        </div>
+
+        <!-- New Cycle Button -->
+        <button id="btnHeaderNewCycle" onclick="handleNewCycleButtonClick()" class="flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 via-teal-500 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-bold transition shadow-md shadow-cyan-500/25 active:scale-95 whitespace-nowrap">
+          <span id="btnHeaderNewCycleIcon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+            </svg>
+          </span>
+          <span id="btnHeaderNewCycleText" class="hidden sm:inline">New Cycle</span>
+        </button>
+
+        <!-- Sidebar Drawer Toggle Button (Hamburger) -->
+        <button onclick="toggleSidebarDrawer()" title="Open Controls & Tools Sidebar" class="p-2 sm:px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-cyan-500 transition-all flex items-center space-x-2 shadow-sm active:scale-95">
+          <svg class="w-5 h-5 text-cyan-600 dark:text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16m-7 6h7"/>
+          </svg>
+          <span class="text-xs font-mono font-bold hidden lg:inline">Menu</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- DESKTOP TAB NAVIGATION -->
+    <div class="hidden md:block border-t border-slate-200 dark:border-slate-800/60 bg-slate-100/70 dark:bg-slate-900/40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex space-x-2 py-2" aria-label="Tabs">
+          <button onclick="switchTab('dashboard')" id="nav-desktop-dashboard" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono transition-all flex items-center space-x-2 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
+            <span>⚡</span>
+            <span>Active Dashboard</span>
+          </button>
+          <button onclick="switchTab('timeline')" id="nav-desktop-timeline" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono transition-all flex items-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200">
+            <span>📅</span>
+            <span id="desktopTabTimelineTitle">10-Day Timeline</span>
+          </button>
+          <button onclick="switchTab('calibration')" id="nav-desktop-calibration" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono transition-all flex items-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200">
+            <span>🎯</span>
+            <span>Calibration & Timer</span>
+          </button>
+          <button onclick="switchTab('history')" id="nav-desktop-history" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono transition-all flex items-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200">
+            <span>📜</span>
+            <span>Cycle Archives</span>
+          </button>
+          <button onclick="switchTab('hub')" id="nav-desktop-hub" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono transition-all flex items-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200">
+            <span>⚙️</span>
+            <span>Parameters & Hub</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- SLIDE-OVER SIDEBAR DRAWER (THEME, SIMULATION, JSON EXPORT & AUTH)         -->
+  <!-- ========================================================================= -->
+  <div id="sidebarBackdrop" onclick="toggleSidebarDrawer()" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden transition-opacity duration-300"></div>
+
+  <aside id="sidebarDrawer" class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm sm:max-w-md bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl p-6 overflow-y-auto transform translate-x-full transition-transform duration-300 flex flex-col justify-between">
+    
+    <div class="space-y-6">
+      <!-- Drawer Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-xl">🎛️</span>
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Protocol Control Hub</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-mono">Tools, Auth & Time Simulations</p>
+          </div>
+        </div>
+        <button onclick="toggleSidebarDrawer()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- FIRESTORE AUTHENTICATION SECTION -->
+      <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Cloud Sync & Auth</span>
+          <span id="authStatusPill" class="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+            Local Mode
+          </span>
+        </div>
+
+        <div id="authUserInfo" class="hidden text-xs font-mono p-2.5 rounded-xl bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20">
+          Logged in as: <strong id="authUserEmail">user@firestore.io</strong>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Login Button -->
+          <button id="btnAuthLogin" onclick="handleLogin()" class="flex-1 py-2.5 px-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-mono font-bold text-xs transition flex items-center justify-center space-x-1.5 shadow-md shadow-cyan-600/20">
+            <span>🔑</span>
+            <span>Login to Firestore</span>
+          </button>
+          
+          <!-- Logout Button (Staged with ⏻) -->
+          <button id="btnAuthLogout" onclick="handleLogout()" class="hidden py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-mono font-bold text-xs transition flex items-center justify-center space-x-1 shadow-md shadow-rose-600/20" title="Logout">
+            <span class="text-sm font-black">⏻</span>
+            <span>Logout</span>
+          </button>
+        </div>
+        <p class="text-[11px] font-mono text-slate-500 dark:text-slate-400 leading-tight">
+          Ready for Firestore authentication. When configured, cycle events and backups sync to your cloud store.
+        </p>
+      </div>
+
+      <!-- THEME SWITCHER -->
+      <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between">
+        <div>
+          <span class="text-xs font-mono font-bold text-slate-700 dark:text-slate-200 block">Interface Theme</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 font-mono" id="themeStatusText">Dark Mode Active</span>
+        </div>
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-mono text-xs font-bold hover:border-cyan-500 transition-all flex items-center space-x-2 shadow-sm">
+          <span id="themeBtnIcon">☀️</span>
+          <span id="themeBtnLabel">Toggle Theme</span>
+        </button>
+      </div>
+
+      <!-- JSON EXPORT BUTTON -->
+      <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 space-y-2">
+        <div class="flex items-center space-x-2">
+          <span class="text-base">📦</span>
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-800 dark:text-cyan-300">Data Portability</span>
+        </div>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          Export your cycle histories, dates, durations, failure debriefs, and baseline configs as clean structured JSON.
+        </p>
+        <button onclick="exportDataAsJSON()" class="w-full py-2.5 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-mono font-bold text-xs transition shadow-md shadow-cyan-600/20 flex items-center justify-center space-x-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>Export All Data (JSON)</span>
+        </button>
+      </div>
+
+      <!-- TIME MACHINE & SIMULATION CONTROLS (MOVED INSIDE SIDEBAR) -->
+      <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-3.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="relative flex h-2.5 w-2.5">
+              <span id="simStatusPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span id="simStatusDot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
+            </span>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              Inspection Date
+            </span>
+          </div>
+          <span id="simulationTag" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400">
+            Live Real Date
+          </span>
+        </div>
+
+        <div class="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+          <div>
+            <span class="text-[11px] font-mono text-slate-400 block">Current Inspection:</span>
+            <span id="inspectionDatePill" class="text-sm font-bold font-mono text-cyan-600 dark:text-cyan-400">
+              05/11/2026
+            </span>
+          </div>
+          <button onclick="openSimulationDatePicker()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-cyan-500/20 border border-slate-200 dark:border-slate-700 text-sm transition" title="Pick Date">
+            📆 Select
+          </button>
+        </div>
+
+        <input type="date" id="simulatedDateInput" onchange="handleSimulatedDateChange(this.value)" class="hidden">
+
+        <!-- Scrub Fast Forward Buttons -->
+        <div class="space-y-2">
+          <span class="text-xs font-mono text-slate-500 dark:text-slate-400 block">Fast-Forward Timeline:</span>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="stepSimulatedDays(1)" class="py-2 px-2.5 rounded-xl text-xs font-mono font-bold bg-white dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition">
+              +1 Day
+            </button>
+            <button id="scrubCalibBtn" onclick="jumpToCalibrationDay()" class="py-2 px-2.5 rounded-xl text-xs font-mono font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition">
+              🎯 Calib Day
+            </button>
+            <button onclick="jumpToOvertimeDay(3)" class="py-2 px-2.5 rounded-xl text-xs font-mono font-bold bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30 hover:bg-purple-500/25 transition">
+              ⏳ Overtime (+3d)
+            </button>
+            <button onclick="resetToRealDate()" class="py-2 px-2.5 rounded-xl text-xs font-mono font-bold bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/25 transition">
+              ↺ Real Today
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-500 flex justify-between">
+          <span>Real Calendar:</span>
+          <span id="realCalendarStaticText" class="font-bold text-slate-700 dark:text-slate-300">05/11/2026</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="pt-4 border-t border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-400 text-center">
+      Vital Sublimation • Version 10.4
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN APPLICATION VIEWPORT                                                 -->
+  <!-- ========================================================================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+
+    <!-- Premature Breach Warning Banner -->
+    <div id="prematureLockoutDashboardBanner" class="glass-card mb-6 rounded-2xl p-5 border border-rose-500/50 bg-rose-500/10 text-rose-700 dark:text-rose-300 text-sm hidden space-y-2 shadow-lg">
+      <div class="flex items-center justify-between font-mono font-bold">
+        <span class="flex items-center space-x-2 text-base">
+          <span>🔒</span>
+          <span>PREMATURE BREACH LOCKOUT ACTIVE</span>
+        </span>
+        <span id="lockoutBadgeDaysRemaining" class="px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-xs">
+          Cooldown Active
+        </span>
+      </div>
+      <p id="lockoutDashboardMessage" class="leading-relaxed">
+        A premature breach was logged for this cycle. <strong>New cycle creation is locked</strong> until the original predefined calibration date (<span id="lockoutTargetCalibDateText" class="font-bold font-mono">--/--/----</span>) has fully elapsed.
+      </p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: ACTIVE DASHBOARD                                                   -->
+    <!-- ========================================================================= -->
+    <section id="tab-content-dashboard" class="tab-pane space-y-6 block">
+      
+      <!-- HERO STATUS BANNER -->
+      <div id="heroCard" class="relative rounded-3xl p-6 sm:p-9 glass-card overflow-hidden transition-all duration-500">
+        <div id="heroAura" class="absolute -top-32 -right-32 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none transition-all duration-700"></div>
+
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <div class="lg:col-span-8 space-y-6">
+            <div class="flex flex-wrap items-center gap-2.5">
+              <span id="badgeCurrentPhase" class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border border-cyan-400 dark:border-cyan-500/40">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse"></span>
+                <span id="badgeCurrentPhaseText">ACTIVE CONTAINMENT</span>
+              </span>
+              <span id="badgeCycleNumber" class="text-xs sm:text-sm font-mono font-bold px-3 py-1.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
+                Cycle #1
+              </span>
+              <span id="labelDateRange" class="text-xs sm:text-sm font-mono text-slate-500 dark:text-slate-400 font-semibold">
+                31/10/2026 → 11/11/2026
+              </span>
+            </div>
+
+            <!-- Big Status Headline -->
+            <div>
+              <h2 id="heroHeadline" class="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                Containment: Day 4 of 10 Sealed
+              </h2>
+              <p id="heroSubtext" class="text-sm sm:text-lg text-slate-600 dark:text-slate-300 mt-2 font-normal max-w-2xl leading-relaxed">
+                Physical boundaries sealed. Anchor day (Day 0) is excluded from containment count.
+              </p>
+            </div>
+
+            <!-- DUAL-SEGMENT PROGRESS BAR -->
+            <div class="space-y-2.5 max-w-xl">
+              <div class="flex justify-between items-center text-xs sm:text-sm font-mono">
+                <span class="text-slate-600 dark:text-slate-400" id="progressRatio">
+                  Progress: 4 / 10 Days
+                </span>
+                <span id="progressPercent" class="text-emerald-600 dark:text-emerald-400 font-bold">40% Baseline</span>
+              </div>
+              
+              <div class="w-full h-4 sm:h-5 bg-slate-200 dark:bg-slate-800/90 rounded-full p-0.5 border border-slate-300 dark:border-slate-700/60 overflow-hidden shadow-inner flex">
+                <div id="linearProgressIndicator" class="h-full rounded-l-full bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-400 transition-all duration-700" style="width: 40%;"></div>
+                <div id="linearOvertimeIndicator" class="h-full rounded-r-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-700" style="width: 0%;"></div>
+              </div>
+              <div id="overtimeBarLabel" class="text-xs sm:text-sm font-mono text-purple-600 dark:text-purple-400 font-semibold hidden">
+                Overtime Containment Active: +0 Days Accumulated
+              </div>
+            </div>
+
+            <!-- Key Metric Mini-Tiles -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-2">
+              <div class="glass-interactive rounded-2xl p-4 border relative group cursor-pointer" onclick="openAnchorEditorModal()" title="Click to change Anchor Date">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs uppercase font-mono text-slate-500 dark:text-slate-400 block font-bold">Anchor (Day 0)</span>
+                  <span class="text-xs text-cyan-500 group-hover:underline">Edit ✎</span>
+                </div>
+                <span id="dashLastSessionDate" class="text-sm sm:text-base font-bold font-mono text-slate-800 dark:text-slate-200 mt-1 block">31/10/2026</span>
+              </div>
+
+              <div class="glass-interactive rounded-2xl p-4 border">
+                <span id="dashCalibTileLabel" class="text-xs uppercase font-mono text-slate-500 dark:text-slate-400 block font-bold">Calibration (Day 11)</span>
+                <span id="dashCalibrationDate" class="text-sm sm:text-base font-bold font-mono text-amber-600 dark:text-amber-300 mt-1 block">11/11/2026</span>
+              </div>
+
+              <div class="glass-interactive rounded-2xl p-4 border">
+                <span class="text-xs uppercase font-mono text-slate-500 dark:text-slate-400 block font-bold">To Calibration</span>
+                <span id="dashRemainingDays" class="text-sm sm:text-base font-bold font-mono text-cyan-600 dark:text-cyan-300 mt-1 block">7 Days</span>
+              </div>
+
+              <!-- Total Sealed Days Box with Nested Overtime Box -->
+              <div class="glass-interactive rounded-2xl p-4 border flex flex-col justify-between">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs uppercase font-mono text-slate-500 dark:text-slate-400 block font-bold">Total Sealed</span>
+                  <span id="dashOvertimeBoxCount" class="text-xs font-mono font-bold px-2 py-0.5 rounded-lg bg-purple-500/20 border border-purple-500/40 text-purple-700 dark:text-purple-300 shadow-sm">
+                    +0d OT
+                  </span>
+                </div>
+                <div class="flex items-baseline justify-between mt-1">
+                  <span id="dashTotalSealedBreakdown" class="text-lg sm:text-xl font-black font-mono text-emerald-600 dark:text-emerald-400">0d</span>
+                  <span id="dashBaselineBreakdownText" class="text-xs font-mono text-slate-400 font-semibold">0d Base</span>
+                </div>
+                <div id="dashOvertimeSubtext" class="text-xs font-mono text-purple-600 dark:text-purple-400 truncate mt-0.5">
+                  Normal Containment
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RADIAL COUNTDOWN & OVERTIME GAUGE -->
+          <div class="lg:col-span-4 flex flex-col items-center justify-center border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-slate-800/80 pt-6 lg:pt-0 lg:pl-6">
+            <div class="relative w-52 h-52 sm:w-60 sm:h-60 flex items-center justify-center">
+              
+              <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="48" stroke="currentColor" stroke-width="7" class="text-slate-200 dark:text-slate-800" fill="transparent" />
+                <circle id="gaugeCircle" cx="60" cy="60" r="48" stroke="url(#gaugeGrad)" stroke-width="7" stroke-linecap="round" fill="transparent" stroke-dasharray="301.59" stroke-dashoffset="180" class="transition-all duration-700 ease-out" />
+                <circle id="gaugeOvertimeCircle" cx="60" cy="60" r="55" stroke="#8b5cf6" stroke-width="4" stroke-linecap="round" fill="transparent" stroke-dasharray="345.57" stroke-dashoffset="345.57" class="transition-all duration-700 ease-out opacity-0" />
+                
+                <defs>
+                  <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#06b6d4" />
+                    <stop offset="60%" stop-color="#10b981" />
+                    <stop offset="100%" stop-color="#f59e0b" />
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              <!-- Gauge Inner Text -->
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-3">
+                <span id="gaugeTopLabel" class="text-xs font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400 font-bold">Calibration In</span>
+                <div id="gaugeMainNumber" class="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight text-slate-900 dark:text-white my-1">
+                  07<span class="text-sm text-cyan-500 font-bold ml-0.5">d</span>
+                </div>
+                <span id="gaugeSubLabel" class="text-xs sm:text-sm font-mono font-bold text-emerald-600 dark:text-emerald-400">168h 00m</span>
+              </div>
+
+            </div>
+
+            <div class="mt-4 text-center">
+              <button onclick="switchTab('calibration')" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 transition flex items-center space-x-2">
+                <span>Open Calibration Console</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PROTOCOL PRINCIPLES -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        
+        <div class="glass-card rounded-2xl p-6 border flex flex-col justify-between space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono uppercase font-bold text-slate-500 dark:text-slate-400">Interval Gap Rule</span>
+            <span class="text-2xl">⚓</span>
+          </div>
+          <div>
+            <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Anchor Date Excluded • Post-Baseline Calibration</h4>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+              Anchor session is Day 0. Containment spans Day 1 through completion of the baseline interval. Calibration falls strictly on the day immediately following baseline.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-mono font-bold text-cyan-600 dark:text-cyan-400">
+            Baseline: 10 Days
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border flex flex-col justify-between space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono uppercase font-bold text-slate-500 dark:text-slate-400">Gate Integrity</span>
+            <span class="text-2xl">🛡️</span>
+          </div>
+          <div>
+            <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Pre-Date Lockout</h4>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+              Until scheduled calibration day arrives, calibration cannot be logged as successful or skipped. Logging prior to this date is strictly a premature breach.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-mono font-bold text-emerald-600 dark:text-emerald-400">
+            Rule: Somatic Focus Only
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border flex flex-col justify-between space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono uppercase font-bold text-slate-500 dark:text-slate-400">Overtime Governance</span>
+            <span class="text-2xl">🎯</span>
+          </div>
+          <div>
+            <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Calibrated Overtime Activation</h4>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+              Overtime never accrues automatically. It activates once the user formally triggers Skip (Sublime).
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-mono font-bold text-amber-600 dark:text-amber-400">
+            Status: Locked (Pre-Calibration)
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: TIMELINE BREAKDOWN                                                 -->
+    <!-- ========================================================================= -->
+    <section id="tab-content-timeline" class="tab-pane space-y-6 hidden">
+      
+      <div class="glass-card rounded-3xl p-6 sm:p-8 border">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
+          <div>
+            <div class="flex items-center space-x-2.5">
+              <span class="text-2xl">📅</span>
+              <h3 id="timelineHeaderTitle" class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                10-Day Containment Breakdown
+              </h3>
+            </div>
+            <p id="timelineHeaderSubtext" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+              Anchor (Day 0) is excluded. 10 containment days (Days 1–10). Day 11 is Calibration Gate. Overtime seals strictly upon Skip (Sublime) approval.
+            </p>
+          </div>
+
+          <!-- Sequential Review Trigger Button -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openSequentialSealReview()" class="px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 font-mono text-xs font-bold transition flex items-center space-x-1.5 shadow-sm active:scale-95">
+              <span>✨</span>
+              <span>Review Past Days (High vs Normal)</span>
+            </button>
+          </div>
+
+          <!-- Timeline Legend -->
+          <div class="flex flex-wrap items-center gap-2.5 text-xs font-mono text-slate-600 dark:text-slate-400">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Sealed Days
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Calibration Gate
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/30 font-bold">
+              <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Sealed Overtime
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 font-bold">
+              <span class="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-ping"></span> Inspection
+            </span>
+          </div>
+        </div>
+
+        <div id="timelineGridContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pt-6">
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: CALIBRATION & EXECUTION CONSOLE                                    -->
+    <!-- ========================================================================= -->
+    <section id="tab-content-calibration" class="tab-pane space-y-6 hidden">
+      
+      <!-- Premature Breach Isolation Banner -->
+      <div id="calibPrematureBreachIsolationBanner" class="glass-card rounded-3xl p-6 sm:p-8 border border-rose-500/50 bg-rose-500/10 text-rose-800 dark:text-rose-200 space-y-4 hidden shadow-xl">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-600 dark:text-rose-400 text-2xl font-bold">
+            🔒
+          </div>
+          <div>
+            <h3 class="text-base sm:text-xl font-black tracking-tight font-mono">
+              PREMATURE CALIBRATION BREACH LOGGED
+            </h3>
+            <p class="text-xs sm:text-sm text-rose-600 dark:text-rose-300 font-mono">
+              Operational Gate & Session Timer Terminated
+            </p>
+          </div>
+        </div>
+
+        <div class="p-4 sm:p-5 rounded-2xl bg-white/80 dark:bg-slate-900/90 border border-rose-500/30 text-xs sm:text-sm text-slate-700 dark:text-slate-300 space-y-2.5">
+          <p>
+            This cycle concluded with a <strong>Premature Calibration Breach</strong> prior to the scheduled Day 11 Calibration Date (<span id="isoCalibDateTargetText" class="font-bold font-mono text-rose-600 dark:text-rose-400">--/--/----</span>).
+          </p>
+          <p class="font-mono text-xs text-slate-500 dark:text-slate-400">
+            • Calibration resolution actions and the session boundary stopwatch have been disabled.<br>
+            • Starting a new cycle is locked until original Day 11 calibration date has elapsed.
+          </p>
+        </div>
+
+        <div class="pt-3 border-t border-rose-500/20 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+          <span class="text-slate-600 dark:text-slate-400 font-mono">Need to re-evaluate this cycle?</span>
+          <button onclick="reopenSelectedCyclePrompt()" class="px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 text-white dark:text-slate-200 hover:bg-cyan-600 font-mono font-bold text-xs sm:text-sm transition shadow-md border border-slate-700">
+            ↺ Re-open Selected Cycle
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Operational Console -->
+      <div id="calibMainConsoleGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Resolution Gate Actions -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="glass-card rounded-3xl p-6 sm:p-8 border space-y-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2.5">
+                <span class="text-2xl">🎯</span>
+                <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                  Calibration Resolution Gate
+                </h3>
+              </div>
+              <span id="calibGateBadge" class="text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                Awaiting Target
+              </span>
+            </div>
+
+            <p id="calibGateExplanation" class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              When Calibration Day arrives, resolve the session according to protocol boundaries.
+            </p>
+
+            <!-- Pre-Date Breach Alert Banner -->
+            <div id="preDateAlertBanner" class="p-5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs sm:text-sm space-y-2 hidden">
+              <div class="flex items-center space-x-2 font-bold font-mono">
+                <span>⚠️ PRE-CALIBRATION LOCKOUT ACTIVE</span>
+              </div>
+              <p>
+                The simulated/current inspection date is prior to scheduled Calibration Date (<span id="alertCalibDate" class="font-bold">11/11/2026</span>).
+                <strong>"Successful Calibration" and "Skip (Sublime)" are strictly disabled.</strong>
+              </p>
+            </div>
+
+            <!-- Resolution Actions -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2" id="resolutionButtonsGrid">
+              
+              <!-- 1. Successful Calibration -->
+              <button onclick="openModal('completeSessionModal')" id="btnCalibComplete" class="flex flex-col items-start p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-lg shadow-emerald-600/25 transition transform active:scale-95 text-left group">
+                <div class="flex items-center space-x-2 font-bold text-sm sm:text-base mb-2">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                  <span>Successful</span>
+                </div>
+                <span class="text-xs text-emerald-100 leading-tight">
+                  Target 3–7m met. 100% somatic focus, zero fantasy.
+                </span>
+              </button>
+
+              <!-- 2. Failed Session / Premature Breach -->
+              <button onclick="openModal('failedSessionModal')" id="btnCalibFailed" class="flex flex-col items-start p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white shadow-lg shadow-rose-600/25 transition transform active:scale-95 text-left group">
+                <div class="flex items-center space-x-2 font-bold text-sm sm:text-base mb-2">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                  <span id="btnCalibFailedLabel">Log Failed</span>
+                </div>
+                <span id="btnCalibFailedDesc" class="text-xs text-rose-100 leading-tight">
+                  Drifted into fantasy, media clips, or ceiling breach.
+                </span>
+              </button>
+
+              <!-- 3. Skip Session (Sublime) -->
+              <button onclick="confirmSkipSession()" id="btnCalibSkip" class="flex flex-col items-start p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 hover:from-purple-500 hover:to-indigo-600 text-white shadow-lg shadow-purple-600/25 transition transform active:scale-95 text-left group">
+                <div class="flex items-center space-x-2 font-bold text-sm sm:text-base mb-2">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+                  <span>Skip (Sublime)</span>
+                </div>
+                <span class="text-xs text-purple-100 leading-tight">
+                  Bypass physical act and enter containment overtime.
+                </span>
+              </button>
+
+            </div>
+
+            <!-- Resolution Status Card (Displays in place of buttons once resolved) -->
+            <div id="calibrationResolvedStatusCard" class="hidden rounded-2xl p-5 border text-xs sm:text-sm transition-all duration-300"></div>
+
+            <!-- Overtime Rule Clarification -->
+            <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-600 dark:text-slate-400 space-y-1.5">
+              <span class="font-bold text-slate-900 dark:text-white font-mono block">🛡️ Overtime Governance:</span>
+              <p>
+                Clicking Skip (Sublime) locks the cycle into Overtime. Completed overtime days will only be sealed once Skip is approved.
+              </p>
+            </div>
+
+            <div class="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs sm:text-sm">
+              <span class="text-slate-500 dark:text-slate-400 font-mono">Need to re-evaluate this cycle?</span>
+              <button onclick="reopenSelectedCyclePrompt()" class="font-mono font-bold text-slate-700 dark:text-slate-300 hover:text-cyan-500 transition underline">
+                Re-open Selected Cycle
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Boundary Safeguards -->
+          <div id="calibSafeguardsBox" class="glass-card rounded-2xl p-6 border bg-amber-500/5 border-amber-500/20 space-y-3.5">
+            <h4 class="font-bold text-amber-700 dark:text-amber-400 flex items-center space-x-2 uppercase font-mono text-xs sm:text-sm">
+              <span>⚠️ Operational Boundaries & Safeguards</span>
+            </h4>
+            <div class="space-y-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div class="flex items-start space-x-2">
+                <span class="text-emerald-500 font-bold">1.</span>
+                <p><strong class="text-slate-900 dark:text-white">Strict Target Window: 3 to 7 Minutes.</strong> Controlled physical calibration.</p>
+              </div>
+              <div class="flex items-start space-x-2">
+                <span class="text-rose-500 font-bold">2.</span>
+                <p><strong class="text-rose-600 dark:text-rose-400">Hard Ceiling: 10 Minutes Non-Negotiable.</strong> Session ends instantly at 10m regardless of status.</p>
+              </div>
+              <div class="flex items-start space-x-2">
+                <span class="text-amber-500 font-bold">3.</span>
+                <p><strong class="text-amber-600 dark:text-amber-300">Pure Somatic Focus:</strong> Zero erotic visualizations, zero mental fantasy, zero video/movie scenes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session Boundary Timer -->
+        <div id="calibTimerContainer" class="lg:col-span-5">
+          <div class="glass-card rounded-3xl p-6 sm:p-8 border space-y-6 text-center">
+            
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2.5 text-left">
+                <span class="text-2xl">⏱️</span>
+                <div>
+                  <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Session Boundary Timer</h4>
+                  <p class="text-xs text-slate-500 font-mono">3–7m Target • 10m Hard Ceiling</p>
+                </div>
+              </div>
+              <span id="timerStatusPill" class="text-xs font-mono px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold">
+                Standby
+              </span>
+            </div>
+
+            <div class="py-8 px-4 rounded-3xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div id="stopwatchDisplay" class="text-6xl sm:text-7xl font-black font-mono tracking-tight text-slate-900 dark:text-white transition-colors">
+                00:00
+              </div>
+              <div id="timerZoneIndicator" class="text-xs sm:text-sm font-mono mt-3 font-bold text-slate-500 dark:text-slate-400">
+                Target Zone: 03:00 – 07:00
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center space-x-3">
+              <button id="btnStartTimer" onclick="toggleTimer()" class="flex-1 py-3 px-4 rounded-2xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs sm:text-sm font-mono shadow-md shadow-cyan-600/30 transition active:scale-95">
+                Start Session Timer
+              </button>
+              <button onclick="resetTimer()" class="py-3 px-4 rounded-2xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm font-mono transition">
+                Reset
+              </button>
+            </div>
+
+            <div class="space-y-2 pt-2 text-left">
+              <div class="flex justify-between text-xs font-mono text-slate-500">
+                <span>0m</span>
+                <span class="text-emerald-500 font-bold">3m – 7m (Target Zone)</span>
+                <span class="text-rose-500 font-bold">10m (Ceiling)</span>
+              </div>
+              <div class="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div id="timerProgressFill" class="h-full bg-cyan-500 transition-all duration-300" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-3 text-xs sm:text-sm">
+              <button id="timerTransferSuccessBtn" onclick="transferTimerToLogger(true)" class="font-mono font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+                → Log as Successful
+              </button>
+              <span id="timerTransferDivider" class="text-slate-400">•</span>
+              <button onclick="transferTimerToLogger(false)" class="font-mono font-bold text-rose-500 hover:underline">
+                Log as Premature / Failed
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: ARCHIVES & STATS                                                   -->
+    <!-- ========================================================================= -->
+    <section id="tab-content-history" class="tab-pane space-y-6 hidden">
+      
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card rounded-2xl p-5 border">
+          <span class="text-xs font-mono text-slate-500 dark:text-slate-400 uppercase font-bold block">Total Recorded</span>
+          <span id="statHistTotalCycles" class="text-3xl sm:text-4xl font-black font-mono text-cyan-600 dark:text-cyan-400 mt-1 block">1</span>
+          <span class="text-xs text-slate-400">Total Cycles</span>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border flex flex-col justify-between">
+          <span class="text-xs font-mono text-slate-500 dark:text-slate-400 uppercase font-bold block">Total Sealed Days</span>
+          <div class="flex items-end justify-between mt-2">
+            <div>
+              <span id="statHistTotalDays" class="text-3xl sm:text-4xl font-black font-mono text-emerald-600 dark:text-emerald-400 block">0d</span>
+              <span id="statHistTotalDaysSub" class="text-xs text-slate-400 font-mono">Normal Containment</span>
+            </div>
+            <div id="statHistBreakdownBox" class="text-right font-mono text-xs sm:text-sm bg-slate-100 dark:bg-slate-900 px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-1 shadow-inner">
+              <div class="text-slate-500 dark:text-slate-400">
+                Base: <strong id="statHistBaseDaysCount" class="text-cyan-600 dark:text-cyan-400 font-bold">0d</strong>
+              </div>
+              <div class="text-purple-600 dark:text-purple-400">
+                OT: <strong id="statHistOtDaysCount">+0d</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border">
+          <span class="text-xs font-mono text-slate-500 dark:text-slate-400 uppercase font-bold block">Success Rate</span>
+          <span id="statHistSuccessRate" class="text-3xl sm:text-4xl font-black font-mono text-emerald-500 mt-1 block">100%</span>
+          <span class="text-xs text-slate-400">Boundary Compliance</span>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border">
+          <span class="text-xs font-mono text-slate-500 dark:text-slate-400 uppercase font-bold block">Failed Sessions</span>
+          <span id="statHistFailedCount" class="text-3xl sm:text-4xl font-black font-mono text-rose-500 mt-1 block">0</span>
+          <span class="text-xs text-slate-400">Breaches / Premature</span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-3xl border overflow-hidden">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+              <span>📜</span>
+              <span>Archived Cycle Log</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Click any cycle row to inspect, or click Delete to remove individual cycles.</p>
+          </div>
+          <button onclick="clearHistoryWithPrompt()" class="text-xs font-mono text-rose-500 hover:text-rose-600 font-bold transition px-3.5 py-2 rounded-xl border border-rose-500/20 hover:bg-rose-500/10">
+            Clear All Logs
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm font-mono">
+            <thead class="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider text-xs">
+              <tr>
+                <th class="py-3.5 px-4">Cycle</th>
+                <th class="py-3.5 px-4">Anchor (Day 0)</th>
+                <th class="py-3.5 px-4">Calibration</th>
+                <th class="py-3.5 px-4">Baseline</th>
+                <th class="py-3.5 px-4">Total Sealed Days</th>
+                <th class="py-3.5 px-4">Resolution</th>
+                <th class="py-3.5 px-4">Duration</th>
+                <th class="py-3.5 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableRows" class="divide-y divide-slate-200 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: PARAMETERS & HUB                                                   -->
+    <!-- ========================================================================= -->
+    <section id="tab-content-hub" class="tab-pane space-y-6 hidden">
+      
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        
+        <div class="md:col-span-6 space-y-6">
+          <div class="glass-card rounded-3xl p-6 sm:p-8 border space-y-5">
+            <div class="flex items-center space-x-2.5">
+              <span class="text-2xl">⚙️</span>
+              <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                Cycle Anchoring & Baseline
+              </h3>
+            </div>
+            
+            <div class="p-5 rounded-2xl border border-cyan-500/30 space-y-3.5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <label class="block text-xs font-mono font-bold text-cyan-800 dark:text-cyan-300 uppercase tracking-wider">
+                    Anchor Date (Day 0)
+                  </label>
+                  <span id="hubAnchorFormattedPreview" class="text-base sm:text-lg font-mono font-black text-cyan-600 dark:text-cyan-400 mt-1 block">
+                    31/10/2026
+                  </span>
+                </div>
+                <button onclick="openAnchorEditorModal()" class="py-2.5 px-4 rounded-xl bg-cyan-700 hover:bg-cyan-500 text-white font-bold text-xs sm:text-sm font-mono transition shadow-md shadow-cyan-600/25 flex items-center space-x-1.5 active:scale-95">
+                  <span>✏️ Modify Anchor</span>
+                </button>
+              </div>
+
+              <p class="text-xs text-slate-500 font-mono pt-2 border-t border-cyan-500/20 leading-relaxed">
+                Launches the comprehensive Day/Month/Year modal to safely realign cycle containment in DD/MM/YYYY format.
+              </p>
+            </div>
+
+            <div class="space-y-3 pt-2">
+              <label class="block text-xs font-mono font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                Containment Gap (Days 1 to N)
+              </label>
+              <div class="flex items-center space-x-3">
+                <input type="number" id="hubBaselineInput" min="3" max="90" value="10" class="w-32 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-lg font-bold font-mono text-cyan-600 dark:text-cyan-400 outline-none focus:border-cyan-500 transition">
+                <span class="text-xs sm:text-sm text-slate-500 font-mono">Days (Standard: 10)</span>
+              </div>
+              <button onclick="applyHubBaselineChange()" class="mt-2 py-2.5 px-5 rounded-xl bg-cyan-700 hover:bg-cyan-500 text-white font-bold text-xs sm:text-sm font-mono transition shadow-md shadow-cyan-600/20">
+                Update Selected Cycle Baseline
+              </button>
+            </div>
+
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+              <span class="text-xs font-mono text-slate-500 block mb-2.5">Preset Horizons:</span>
+              <div class="flex flex-wrap gap-2.5">
+                <button onclick="setHubPreset(7)" class="px-3.5 py-2 rounded-xl text-xs font-mono bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition">7 Days</button>
+                <button onclick="setHubPreset(10)" class="px-3.5 py-2 rounded-xl text-xs font-mono font-bold bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 border border-cyan-500/40">10 Days</button>
+                <button onclick="setHubPreset(14)" class="px-3.5 py-2 rounded-xl text-xs font-mono bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition">14 Days</button>
+                <button onclick="setHubPreset(21)" class="px-3.5 py-2 rounded-xl text-xs font-mono bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition">21 Days</button>
+                <button onclick="setHubPreset(30)" class="px-3.5 py-2 rounded-xl text-xs font-mono bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition">30 Days</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="md:col-span-6 space-y-6">
+          <div class="glass-card rounded-3xl p-6 sm:p-8 border space-y-4">
+            <div class="flex items-center space-x-2.5">
+              <span class="text-2xl">📜</span>
+              <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                Vital Sublimation Governance Rules
+              </h3>
+            </div>
+
+            <div class="space-y-3.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div class="p-4 rounded-2xl border border-cyan-500/30 bg-cyan-500/5">
+                <span class="font-bold text-cyan-700 dark:text-cyan-400 font-mono block mb-1">1. Interval Gap Rule</span>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                  Anchor date is Day 0. The containment days are between 1 day and baseline day. Calibration falls strictly on the day next to the baseline.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-2xl border border-rose-500/30 bg-rose-500/5">
+                <span class="font-bold text-rose-700 dark:text-rose-400 font-mono block mb-1">2. Zero Mental Visualization & Premature Breach Lockout</span>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                  Premature calibration logs are operational breaches. The session console vanishes and new cycle creation remains locked until the predefined Day has elapsed.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-2xl border border-purple-500/30 bg-purple-500/5">
+                <span class="font-bold text-purple-700 dark:text-purple-400 font-mono block mb-1">3. Calibrated Overtime Activation & Sealed Stamps</span>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                  Overtime does not accrue automatically. Once Skip (Sublime) is approved, completed overtime days receive full sealed labels alongside a dedicated purple box count.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-950/95 border-t border-slate-200 dark:border-slate-800 backdrop-blur-lg px-2 py-2.5 flex items-center justify-around">
+    <button onclick="switchTab('dashboard')" id="nav-mobile-dashboard" class="flex flex-col items-center justify-center p-1.5 rounded-xl text-cyan-600 dark:text-cyan-400 font-bold text-xs font-mono transition">
+      <span class="text-xl">⚡</span>
+      <span>Dashboard</span>
+    </button>
+    <button onclick="switchTab('timeline')" id="nav-mobile-timeline" class="flex flex-col items-center justify-center p-1.5 rounded-xl text-slate-500 dark:text-slate-400 text-xs font-mono transition">
+      <span class="text-xl">📅</span>
+      <span>Timeline</span>
+    </button>
+    <button onclick="switchTab('calibration')" id="nav-mobile-calibration" class="flex flex-col items-center justify-center p-1.5 rounded-xl text-slate-500 dark:text-slate-400 text-xs font-mono transition">
+      <span class="text-xl">🎯</span>
+      <span>Calibrate</span>
+    </button>
+    <button onclick="switchTab('history')" id="nav-mobile-history" class="flex flex-col items-center justify-center p-1.5 rounded-xl text-slate-500 dark:text-slate-400 text-xs font-mono transition">
+      <span class="text-xl">📜</span>
+      <span>Archives</span>
+    </button>
+    <button onclick="switchTab('hub')" id="nav-mobile-hub" class="flex flex-col items-center justify-center p-1.5 rounded-xl text-slate-500 dark:text-slate-400 text-xs font-mono transition">
+      <span class="text-xl">⚙️</span>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+  <!-- ========================================================================= -->
+  <!-- MODALS                                                                    -->
+  <!-- ========================================================================= -->
+
+  <!-- Modal: Firestore Login (Stub for configuration) -->
+  <div id="authLoginModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card bg-white dark:bg-slate-900 border max-w-sm w-full rounded-3xl p-6 sm:p-7 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">Firestore Login</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Authenticate for cloud persistence</p>
+        </div>
+        <button onclick="closeModal('authLoginModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs font-mono">
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
+          <input type="email" id="authLoginEmail" placeholder="practitioner@vital.io" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-cyan-600 dark:text-cyan-400 outline-none focus:border-cyan-500">
+        </div>
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 mb-1">Password</label>
+          <input type="password" id="authLoginPassword" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white outline-none focus:border-cyan-500">
+        </div>
+        <p class="text-[11px] text-slate-400 leading-tight">
+          Staged for Firebase Auth SDK (`signInWithEmailAndPassword`). Currently operates in simulated authorized state.
+        </p>
+      </div>
+
+      <div class="flex items-center space-x-2 pt-2">
+        <button onclick="closeModal('authLoginModal')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-mono font-bold text-slate-700 dark:text-slate-300">Cancel</button>
+        <button onclick="submitSimulatedLogin()" class="flex-1 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold transition shadow-md shadow-cyan-600/25">Sign In</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Modify Anchor Date -->
+  <div id="editAnchorModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card bg-white dark:bg-slate-900 border max-w-sm w-full rounded-3xl p-6 sm:p-7 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">Modify Anchor Date</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Set Day 0 of this cycle (DD/MM/YYYY)</p>
+        </div>
+        <button onclick="closeModal('editAnchorModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">✕</button>
+      </div>
+
+      <div class="space-y-3.5">
+        <label class="block text-xs font-mono font-bold text-slate-700 dark:text-slate-300">
+          Enter Date (Day / Month / Year):
+        </label>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <span class="text-[10px] font-mono text-slate-400 block mb-1">Day</span>
+            <input type="number" id="anchorInputDay" min="1" max="31" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2 py-2 text-center text-base font-mono font-bold text-cyan-600 dark:text-cyan-400 outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <span class="text-[10px] font-mono text-slate-400 block mb-1">Month</span>
+            <input type="number" id="anchorInputMonth" min="1" max="12" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2 py-2 text-center text-base font-mono font-bold text-cyan-600 dark:text-cyan-400 outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <span class="text-[10px] font-mono text-slate-400 block mb-1">Year</span>
+            <input type="number" id="anchorInputYear" min="2020" max="2040" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2 py-2 text-center text-base font-mono font-bold text-cyan-600 dark:text-cyan-400 outline-none focus:border-cyan-500">
+          </div>
+        </div>
+
+        <div>
+          <span class="text-xs font-mono text-slate-400 block mb-1">Or choose via calendar picker:</span>
+          <input type="date" id="modalQuickAnchorInput" onchange="syncAnchorFieldsFromPicker(this.value)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-700 dark:text-slate-300 outline-none focus:border-cyan-500">
+        </div>
+
+        <div class="flex items-center space-x-2 pt-1 text-xs font-mono">
+          <button onclick="setModalAnchorToday()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-cyan-500 hover:text-white transition">Set Real Today</button>
+          <button onclick="shiftModalAnchorDays(-1)" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-cyan-500 hover:text-white transition">-1d</button>
+          <button onclick="shiftModalAnchorDays(1)" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-cyan-500 hover:text-white transition">+1d</button>
+        </div>
+
+        <p class="text-xs text-slate-500 font-mono">
+          Predefined calibration falls exactly 11 days after Day 0.
+        </p>
+      </div>
+
+      <div class="flex items-center space-x-2 pt-2">
+        <button onclick="closeModal('editAnchorModal')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-mono font-bold text-slate-700 dark:text-slate-300">Cancel</button>
+        <button onclick="submitAnchorDateChange()" class="flex-1 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold transition shadow-md shadow-cyan-600/25">Save Anchor</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Initialize New Cycle -->
+  <div id="newCycleModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card bg-white dark:bg-slate-900 border max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">Start New Cycle</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Anchor your physical session date (DD/MM/YYYY)</p>
+        </div>
+        <button onclick="closeModal('newCycleModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+            Anchor Date (Day 0)
+          </label>
+          <input type="date" id="modalInputStartDate" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono text-cyan-600 dark:text-cyan-400 outline-none focus:border-cyan-500 transition">
+          <p id="modalRecommendationHint" class="text-xs font-mono text-emerald-600 dark:text-emerald-400 mt-1">
+            Recommended: Derived from previous cycle.
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+            Containment Interval Gap (Days)
+          </label>
+          <input type="number" id="modalInputBaseline" value="10" min="1" max="90" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono text-slate-900 dark:text-white outline-none focus:border-cyan-500 transition">
+        </div>
+
+        <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-xs sm:text-sm text-cyan-700 dark:text-cyan-300 space-y-1">
+          <div>Anchor (Day 0): <strong id="modalPreviewStartDate">--</strong></div>
+          <div>Containment Days: <strong id="modalPreviewContainmentDays">Days 1 to 10</strong></div>
+          <div>Calibration Date (Day 11): <strong id="modalPreviewTargetDate">--</strong></div>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3 pt-2">
+        <button onclick="closeModal('newCycleModal')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-bold font-mono transition">Cancel</button>
+        <button onclick="submitNewCycle()" class="flex-1 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs sm:text-sm font-bold font-mono transition shadow-md shadow-cyan-600/25">Initialize Cycle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Mandatory Succession Cycle Creation -->
+  <div id="mandatorySuccessionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+    <div class="glass-card bg-white dark:bg-slate-900 border border-emerald-500/50 max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl">
+      <div class="flex justify-between items-start">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-500 font-bold">🎯</div>
+          <div>
+            <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">Succession Protocol Required</h3>
+            <p class="text-xs text-emerald-600 dark:text-emerald-400">Initialize Next Cycle to Validate</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-xs sm:text-sm">
+        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+          Your calibration was recorded. <strong>To prevent containment drift, the successful calibration only becomes valid once you accept and spawn the succeeding cycle anchored to today's date.</strong>
+        </p>
+
+        <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div>Next Cycle Number: <strong id="succModalCycleNum" class="text-emerald-600 dark:text-emerald-400 font-mono">Cycle #2</strong></div>
+          <div>Anchor Date (Real Today): <strong id="succModalAnchorDate" class="text-slate-900 dark:text-white font-mono">05/11/2026</strong></div>
+          <div class="flex items-center space-x-2 pt-1">
+            <span class="text-slate-600 dark:text-slate-400">Baseline Interval:</span>
+            <input type="number" id="succModalBaselineInput" value="10" min="1" max="90" class="w-16 bg-white dark:bg-slate-800 border border-emerald-500/40 rounded-lg px-2 py-1 text-center font-bold font-mono">
+            <span>Days</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3 pt-2">
+        <button onclick="abortSuccessionCycle()" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-bold font-mono transition">Discard</button>
+        <button onclick="confirmSuccessionCycle()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold font-mono transition shadow-md shadow-emerald-600/30">Accept & Spawn Cycle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Log Successful Session -->
+  <div id="completeSessionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card bg-white dark:bg-slate-900 border border-emerald-500/40 max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl">
+      <div class="flex justify-between items-start">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">✓</div>
+          <div>
+            <h3 class="text-lg font-black text-slate-900 dark:text-white">Successful Calibration</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Validate Operational Boundaries</p>
+          </div>
+        </div>
+        <button onclick="closeModal('completeSessionModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono font-bold text-slate-700 dark:text-slate-300 mb-1.5">Actual Duration (Minutes)</label>
+          <div class="flex items-center space-x-3">
+            <input type="number" id="inputDurationMinutes" value="5" min="1" max="10" class="w-24 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-base font-bold font-mono text-emerald-600 dark:text-emerald-400 outline-none focus:border-emerald-500 transition">
+            <span class="text-xs sm:text-sm text-slate-500">Target: <strong class="text-emerald-600 dark:text-emerald-400">3–7m</strong> (Max ceiling: 10m)</span>
+          </div>
+        </div>
+
+        <label class="flex items-start space-x-3 p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 cursor-pointer">
+          <input type="checkbox" id="checkPhysicalFocus" checked class="mt-1 rounded text-emerald-600 focus:ring-emerald-500">
+          <span class="text-xs sm:text-sm text-emerald-900 dark:text-emerald-200">
+            <strong>Affirmation:</strong> I remained 100% focused on physical sensation. No media clips, movie scenes, or erotic mental fantasy took place.
+          </span>
+        </label>
+
+        <div>
+          <label class="block text-xs font-mono font-bold text-slate-700 dark:text-slate-300 mb-1.5">Observations / Reflection</label>
+          <input type="text" id="inputDurationNotes" placeholder="Executed cleanly within 5m. Cold shower reset follow-up." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-emerald-500 transition">
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3 pt-2">
+        <button onclick="closeModal('completeSessionModal')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-bold font-mono transition">Cancel</button>
+        <button onclick="submitCompleteSession()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold font-mono transition shadow-md shadow-emerald-600/30">Confirm & Resolve</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Log Failed Session / Premature Breach -->
+  <div id="failedSessionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card bg-white dark:bg-slate-900 border border-rose-500/50 max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl">
+      <div class="flex justify-between items-start">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-600 dark:text-rose-400 font-bold">✕</div>
+          <div>
+            <h3 id="failedModalHeading" class="text-lg font-black text-slate-900 dark:text-white">Log Failed Session</h3>
+            <p class="text-xs text-rose-500 dark:text-rose-400 font-medium">Protocol Boundary Breach Accountability</p>
+          </div>
+        </div>
+        <button onclick="closeModal('failedSessionModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <p id="failedModalSubtext" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          Select what caused the boundary failure. Radical honesty is fundamental to subconscious retraining.
+        </p>
+
+        <div class="space-y-2.5 text-xs sm:text-sm font-mono">
+          <label id="failReasonPrematureContainer" class="flex items-start space-x-2.5 p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 cursor-pointer">
+            <input type="checkbox" id="failReasonPremature" class="mt-0.5 rounded text-rose-600">
+            <span class="text-rose-800 dark:text-rose-300 font-bold leading-snug">
+              ⚡ Premature Calibration Breach: Executed prior to scheduled Day 11 Calibration Date (Locks new cycle creation until Day 11 elapses)
+            </span>
+          </label>
+
+          <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
+            <input type="checkbox" id="failReasonFantasy" class="rounded text-rose-600">
+            <span>Erotic imagination / Mental visualization</span>
+          </label>
+          <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
+            <input type="checkbox" id="failReasonMedia" class="rounded text-rose-600">
+            <span>Viewed movie scenes / arousal media / clips</span>
+          </label>
+          <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
+            <input type="checkbox" id="failReasonFocus" class="rounded text-rose-600">
+            <span>Lack of physical / somatic focus</span>
+          </label>
+          <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
+            <input type="checkbox" id="failReasonCeiling" onchange="handleCeilingToggleChange(this.checked)" class="rounded text-rose-600">
+            <span>Breached 10-Minute Hard Ceiling (Duration &gt; 10m)</span>
+          </label>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+            Actual Session Duration (Mins)
+            <span id="failDurationHint" class="text-xs text-rose-500 font-normal hidden">(Must be &gt; 10 mins)</span>
+          </label>
+          <input type="number" id="inputFailDurationMinutes" value="6" min="1" max="120" class="w-24 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2 text-sm font-mono text-rose-600 dark:text-rose-400 outline-none focus:border-rose-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono font-bold text-slate-700 dark:text-slate-300 mb-1.5">Failure Debrief / Notes</label>
+          <input type="text" id="inputFailNotes" placeholder="State root triggers and remediation commitment." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-rose-500">
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3 pt-2">
+        <button onclick="closeModal('failedSessionModal')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-bold font-mono transition">Cancel</button>
+        <button onclick="submitFailedSession()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs sm:text-sm font-bold font-mono transition shadow-md shadow-rose-600/30">Log Failed & Conclude</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Banner -->
+  <div id="toastNotification" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 transform -translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+    <div id="toastInner" class="px-5 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm font-mono font-bold flex items-center space-x-2.5 bg-slate-900 text-white border-slate-700">
+      <span id="toastIcon">⚡</span>
+      <span id="toastMessage">Notification message</span>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- APPLICATION ENGINE (FIREBASE MODULAR ES-SDK + PERSISTENCE)                -->
+  <!-- ========================================================================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      getDoc, 
+      setDoc 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // --- FIREBASE CONFIGURATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3w6j6SfljmvP1IstkA_6uljKnu8D2I6A",
+      authDomain: "vital-sublimation.firebaseapp.com",
+      projectId: "vital-sublimation",
+      storageBucket: "vital-sublimation.firebasestorage.app",
+      messagingSenderId: "227562867665",
+      appId: "1:227562867665:web:d6f2481eca4839cee92ef0",
+      measurementId: "G-XSKFDPNYHS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const STORAGE_KEY_CYCLES = 'containment_cycles_collection_v10';
+    const STORAGE_KEY_SELECTED_INDEX = 'containment_selected_cycle_index_v10';
+    const STORAGE_KEY_THEME = 'containment_theme_mode_v10';
+    const STORAGE_KEY_SIM_DATE = 'containment_simulated_date_v10';
+
+    let currentTab = 'dashboard';
+    let cycles = [];
+    let selectedCycleIndex = 0;
+    let simulatedDateISO = null;
+
+    let historyUndoStack = [];
+    let historyRedoStack = [];
+    let pendingCompletionState = null;
+    let currentUser = null;
+    let isCloudSyncing = false;
+
+    // --- CLOUD FIRESTORE SYNCHRONIZATION ---
+    async function syncLocalToFirestore() {
+      if (!currentUser || isCloudSyncing || simulatedDateISO) return;
+      try {
+        cycles.forEach(c => sanitizeDailySeals(c));
+        const userDocRef = doc(db, "vital_cycles", currentUser.uid);
+        await setDoc(userDocRef, {
+          lastSyncedAt: new Date().toISOString(),
+          cycles: cycles,
+          selectedCycleIndex: selectedCycleIndex
+        });
+      } catch (err) {
+        console.error("Firestore sync error:", err);
+        showToast("⚠️ Cloud sync failed: " + err.message);
+      }
+    }
+
+    async function loadFromFirestore(user) {
+      if (!user) return;
+      isCloudSyncing = true;
+      try {
+        const userDocRef = doc(db, "vital_cycles", user.uid);
+        const docSnap = await getDoc(userDocRef);
+
+        if (docSnap.exists()) {
+          const cloudData = docSnap.data();
+          if (cloudData.cycles && Array.isArray(cloudData.cycles)) {
+            cycles = cloudData.cycles;
+            cycles.forEach(c => sanitizeDailySeals(c));
+            selectedCycleIndex = (typeof cloudData.selectedCycleIndex === 'number') 
+              ? cloudData.selectedCycleIndex 
+              : cycles.length - 1;
+
+            localStorage.setItem(STORAGE_KEY_CYCLES, JSON.stringify(cycles));
+            localStorage.setItem(STORAGE_KEY_SELECTED_INDEX, selectedCycleIndex.toString());
+            renderApp();
+            showToast("☁️ Synced from Cloud Firestore.");
+          }
+        } else {
+          // If no cloud document exists yet, initialize it with current local state
+          await syncLocalToFirestore();
+        }
+      } catch (err) {
+        console.error("Firestore load error:", err);
+        showToast("⚠️ Could not load cloud data: " + err.message);
+      } finally {
+        isCloudSyncing = false;
+      }
+    }
+
+    // --- AUTH LISTENERS & HANDLERS ---
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        renderAuthUI();
+        await loadFromFirestore(user);
+      } else {
+        currentUser = null;
+        renderAuthUI();
+      }
+    });
+
+    function handleLogin() {
+      openModal('authLoginModal');
+    }
+
+    async function submitSimulatedLogin() {
+      const email = document.getElementById('authLoginEmail').value.trim();
+      const password = document.getElementById('authLoginPassword').value;
+
+      if (!email || !password) {
+        showToast("⚠️ Please enter both email and password.");
+        return;
+      }
+
+      try {
+        showToast("Authenticating...");
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        currentUser = userCredential.user;
+        closeModal('authLoginModal');
+        playTone('victory');
+        showToast(`🔑 Signed in as ${currentUser.email}`);
+      } catch (error) {
+        console.error("Firebase auth error:", error);
+        showToast(`✕ Login error: ${error.message}`);
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        await signOut(auth);
+        currentUser = null;
+        renderAuthUI();
+        playTone('click');
+        showToast("⏻ Logged out. Operating in local mode.");
+      } catch (error) {
+        showToast(`✕ Logout error: ${error.message}`);
+      }
+    }
+
+    function renderAuthUI() {
+      const pill = document.getElementById('authStatusPill');
+      const userInfo = document.getElementById('authUserInfo');
+      const userEmail = document.getElementById('authUserEmail');
+      const btnLogin = document.getElementById('btnAuthLogin');
+      const btnLogout = document.getElementById('btnAuthLogout');
+
+      if (currentUser && currentUser.email) {
+        pill.textContent = "Cloud Synced";
+        pill.className = "text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30";
+        userInfo.classList.remove('hidden');
+        userEmail.textContent = currentUser.email;
+        btnLogin.classList.add('hidden');
+        btnLogout.classList.remove('hidden');
+      } else {
+        pill.textContent = "Local Mode";
+        pill.className = "text-xs font-mono px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold";
+        userInfo.classList.add('hidden');
+        btnLogin.classList.remove('hidden');
+        btnLogout.classList.add('hidden');
+      }
+    }
+
+    /* -------------------------------------------------------------
+       DATE & TIME UTILITIES (STRICT DD/MM/YYYY FORMATTING)
+       ------------------------------------------------------------- */
+    function getTodayRealDate() {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      return now;
+    }
+
+    function parseISODate(str) {
+      if (!str) return getTodayRealDate();
+      const parts = str.split('-').map(Number);
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function formatISODate(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatNumericDate(d) {
+      if (!d) return '--/--/----';
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    function addDays(d, days) {
+      const res = new Date(d);
+      res.setDate(res.getDate() + days);
+      return res;
+    }
+
+    function diffDays(a, b) {
+      const ms = 1000 * 60 * 60 * 24;
+      const da = new Date(a);
+      da.setHours(0, 0, 0, 0);
+      const db = new Date(b);
+      db.setHours(0, 0, 0, 0);
+      return Math.round((da - db) / ms);
+    }
+
+    function sanitizeDailySeals(cycle) {
+      if (!cycle.dailySeals) cycle.dailySeals = {};
+      const cleanSeals = {};
+      const sDate = parseISODate(cycle.startDate);
+      const baseline = parseInt(cycle.baselineDays, 10) || 10;
+      const m = calculateMetrics(cycle);
+      const maxDay = baseline + (m && m.overtimeDays ? m.overtimeDays : 0);
+
+      for (let d = 1; d <= maxDay; d++) {
+        const dISO = formatISODate(addDays(sDate, d));
+        if (cycle.dailySeals[dISO]) {
+          cleanSeals[dISO] = cycle.dailySeals[dISO];
+        }
+      }
+
+      delete cycle.daySeals;
+      cycle.dailySeals = cleanSeals;
+      return cleanSeals;
+    }
+
+    function getActiveInspectionDate() {
+      if (simulatedDateISO) {
+        return parseISODate(simulatedDateISO);
+      }
+      return getTodayRealDate();
+    }
+
+    /* -------------------------------------------------------------
+       DRAWER, THEME & JSON EXPORT
+       ------------------------------------------------------------- */
+    function toggleSidebarDrawer() {
+      const drawer = document.getElementById('sidebarDrawer');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const isOpen = !drawer.classList.contains('translate-x-full');
+
+      if (isOpen) {
+        drawer.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+      } else {
+        drawer.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+      }
+      playTone('click');
+    }
+
+    function exportDataAsJSON() {
+      try {
+        cycles.forEach(c => sanitizeDailySeals(c));
+
+        // Enforce strict canonical key order for line-by-line parity
+        const orderedCycles = cycles.map(c => ({
+          cycleNumber: c.cycleNumber,
+          startDate: c.startDate,
+          baselineDays: c.baselineDays,
+          status: c.status,
+          durationMinutes: c.durationMinutes ?? null,
+          failureReasons: c.failureReasons || [],
+          isPrematureBreach: Boolean(c.isPrematureBreach),
+          notes: c.notes || "",
+          resolvedDate: c.resolvedDate ?? null,
+          dailySeals: c.dailySeals || {}
+        }));
+
+        const payload = {
+          app: "Vital Sublimation Tracker",
+          version: "10.4",
+          exportTimestamp: new Date().toISOString(),
+          selectedCycleIndex: selectedCycleIndex,
+          totalCyclesCount: cycles.length,
+          simulatedDateISO: simulatedDateISO,
+          cycles: orderedCycles
+        };
+
+        const jsonString = JSON.stringify(payload, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const now = getTodayRealDate();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `vital-sublimation-backup-${yyyy}-${mm}-${dd}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        playTone('victory');
+        showToast('📦 Data exported as JSON!');
+      } catch (err) {
+        console.error('JSON export error:', err);
+        showToast('⚠️ Failed to export JSON.');
+      }
+    }
+
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      const themeStatus = document.getElementById('themeStatusText');
+      const themeBtnIcon = document.getElementById('themeBtnIcon');
+
+      if (theme === 'dark') {
+        html.classList.add('dark');
+        if (themeStatus) themeStatus.textContent = 'Dark Mode Active';
+        if (themeBtnIcon) themeBtnIcon.textContent = '☀️';
+      } else {
+        html.classList.remove('dark');
+        if (themeStatus) themeStatus.textContent = 'Light Mode Active';
+        if (themeBtnIcon) themeBtnIcon.textContent = '🌙';
+      }
+      localStorage.setItem(STORAGE_KEY_THEME, theme);
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      applyTheme(isDark ? 'light' : 'dark');
+      playTone('click');
+    }
+
+    /* -------------------------------------------------------------
+       STATE MANAGEMENT & CLOUD TRIGGER
+       ------------------------------------------------------------- */
+    function loadState() {
+      try {
+        const savedCycles = localStorage.getItem(STORAGE_KEY_CYCLES);
+        if (savedCycles) {
+          cycles = JSON.parse(savedCycles);
+        } else {
+          cycles = [
+            {
+              cycleNumber: 1,
+              startDate: '2026-10-31',
+              baselineDays: 10,
+              status: 'in_progress',
+              durationMinutes: null,
+              failureReasons: [],
+              isPrematureBreach: false,
+              notes: '',
+              resolvedDate: null
+            }
+          ];
+        }
+
+        const savedIndex = localStorage.getItem(STORAGE_KEY_SELECTED_INDEX);
+        if (savedIndex !== null) {
+          const idx = parseInt(savedIndex, 10);
+          selectedCycleIndex = (idx >= 0 && idx < cycles.length) ? idx : (cycles.length - 1);
+        } else {
+          selectedCycleIndex = cycles.length - 1;
+        }
+
+        const savedSim = localStorage.getItem(STORAGE_KEY_SIM_DATE);
+        if (savedSim) simulatedDateISO = savedSim;
+
+        const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'dark';
+        applyTheme(savedTheme);
+
+      } catch (e) {
+        console.error('State load error:', e);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY_CYCLES, JSON.stringify(cycles));
+        localStorage.setItem(STORAGE_KEY_SELECTED_INDEX, selectedCycleIndex.toString());
+        if (simulatedDateISO) {
+          localStorage.setItem(STORAGE_KEY_SIM_DATE, simulatedDateISO);
+        } else {
+          localStorage.removeItem(STORAGE_KEY_SIM_DATE);
+        }
+
+        // Auto-save mutation to Cloud Firestore if signed in
+        if (currentUser && !simulatedDateISO) {
+          syncLocalToFirestore();
+        }
+      } catch (e) {
+        console.error('State save error:', e);
+      }
+    }
+
+    function getPrematureLockoutState() {
+      if (!cycles || cycles.length === 0) return { isLocked: false };
+      const latest = cycles[cycles.length - 1];
+      if (latest && latest.status === 'failed' && latest.isPrematureBreach) {
+        const m = calculateMetrics(latest);
+        const inspectionDate = getActiveInspectionDate();
+        const daysRemaining = diffDays(m.calibrationDate, inspectionDate);
+        if (daysRemaining > 0) {
+          return {
+            isLocked: true,
+            cycleNumber: latest.cycleNumber,
+            calibrationDate: m.calibrationDate,
+            daysRemaining: daysRemaining
+          };
+        }
+      }
+      return { isLocked: false };
+    }
+
+    function handleNewCycleButtonClick() {
+      const lock = getPrematureLockoutState();
+      if (lock.isLocked) {
+        playTone('alarm');
+        showToast(`🔒 New Cycle Locked until Day 11 (${formatNumericDate(lock.calibrationDate)}).`);
+        return;
+      }
+      openModal('newCycleModal');
+    }
+
+    function openSimulationDatePicker() {
+      const simInput = document.getElementById('simulatedDateInput');
+      if (simInput) {
+        if (typeof simInput.showPicker === 'function') simInput.showPicker();
+        else { simInput.focus(); simInput.click(); }
+      }
+    }
+
+    function pushHistorySnapshot() {
+      if (simulatedDateISO) return;
+      const snapshot = JSON.stringify({
+        cycles: cycles,
+        selectedCycleIndex: selectedCycleIndex
+      });
+      historyUndoStack.push(snapshot);
+      if (historyUndoStack.length > 30) historyUndoStack.shift();
+      historyRedoStack = [];
+      updateUndoRedoUI();
+    }
+
+    function triggerUndo() {
+      if (simulatedDateISO || historyUndoStack.length === 0) return;
+      historyRedoStack.push(JSON.stringify({ cycles: cycles, selectedCycleIndex: selectedCycleIndex }));
+      const prev = JSON.parse(historyUndoStack.pop());
+      cycles = prev.cycles;
+      selectedCycleIndex = prev.selectedCycleIndex;
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      playTone('click');
+      showToast('↶ Action undone.');
+    }
+
+    function triggerRedo() {
+      if (simulatedDateISO || historyRedoStack.length === 0) return;
+      historyUndoStack.push(JSON.stringify({ cycles: cycles, selectedCycleIndex: selectedCycleIndex }));
+      const next = JSON.parse(historyRedoStack.pop());
+      cycles = next.cycles;
+      selectedCycleIndex = next.selectedCycleIndex;
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      playTone('click');
+      showToast('↷ Action redone.');
+    }
+
+    function updateUndoRedoUI() {
+      const btnUndo = document.getElementById('btnUndo');
+      const btnRedo = document.getElementById('btnRedo');
+      if (btnUndo) btnUndo.disabled = (historyUndoStack.length === 0 || Boolean(simulatedDateISO));
+      if (btnRedo) btnRedo.disabled = (historyRedoStack.length === 0 || Boolean(simulatedDateISO));
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) triggerRedo();
+        else triggerUndo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        triggerRedo();
+      }
+    });
+
+    function getSelectedCycle() {
+      if (!cycles || cycles.length === 0) return null;
+      if (selectedCycleIndex < 0) selectedCycleIndex = 0;
+      if (selectedCycleIndex >= cycles.length) selectedCycleIndex = cycles.length - 1;
+      return cycles[selectedCycleIndex];
+    }
+
+    function prevCycle() {
+      if (selectedCycleIndex > 0) {
+        selectedCycleIndex--;
+        saveState();
+        renderApp();
+        playTone('click');
+      }
+    }
+
+    function nextCycle() {
+      if (selectedCycleIndex < cycles.length - 1) {
+        selectedCycleIndex++;
+        saveState();
+        renderApp();
+        playTone('click');
+      }
+    }
+
+    function selectCycleByIndex(index) {
+      if (index >= 0 && index < cycles.length) {
+        selectedCycleIndex = index;
+        saveState();
+        renderApp();
+        switchTab('dashboard');
+        playTone('click');
+      }
+    }
+
+    function deleteCycleByIndex(index, event) {
+      if (event) event.stopPropagation();
+      if (cycles.length <= 1) {
+        showToast('⚠️ Cannot delete only remaining cycle.');
+        return;
+      }
+      const confirmed = confirm(`Permanently delete Cycle #${cycles[index].cycleNumber}?`);
+      if (!confirmed) return;
+
+      pushHistorySnapshot();
+      cycles.splice(index, 1);
+      if (selectedCycleIndex >= cycles.length) selectedCycleIndex = cycles.length - 1;
+
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      playTone('alarm');
+      showToast('Cycle deleted.');
+    }
+
+    const tabsList = ['dashboard', 'timeline', 'calibration', 'history', 'hub'];
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+      tabsList.forEach(t => {
+        const pane = document.getElementById(`tab-content-${t}`);
+        if (pane) {
+          if (t === tabId) {
+            pane.classList.remove('hidden');
+            pane.classList.add('block');
+          } else {
+            pane.classList.add('hidden');
+            pane.classList.remove('block');
+          }
+        }
+        const dBtn = document.getElementById(`nav-desktop-${t}`);
+        if (dBtn) {
+          dBtn.className = (t === tabId) 
+            ? "tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono transition-all flex items-center space-x-2 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700"
+            : "tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono transition-all flex items-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200";
+        }
+        const mBtn = document.getElementById(`nav-mobile-${t}`);
+        if (mBtn) {
+          mBtn.className = (t === tabId)
+            ? "flex flex-col items-center justify-center p-1.5 rounded-xl text-cyan-600 dark:text-cyan-400 font-bold text-xs font-mono transition scale-105"
+            : "flex flex-col items-center justify-center p-1.5 rounded-xl text-slate-500 dark:text-slate-400 text-xs font-mono transition";
+        }
+      });
+      playTone('click');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function eraseSimulationResultsIfAny() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      if (cycle.status !== 'in_progress' || cycle.resolvedDate !== null) {
+        cycle.status = 'in_progress';
+        cycle.resolvedDate = null;
+        cycle.durationMinutes = null;
+        cycle.failureReasons = [];
+        cycle.isPrematureBreach = false;
+        cycle.notes = '';
+      }
+    }
+
+    function handleSimulatedDateChange(val) {
+      if (!val) { resetToRealDate(); return; }
+      const cycle = getSelectedCycle();
+      const anchorDate = parseISODate(cycle.startDate);
+      const chosen = parseISODate(val);
+
+      if (chosen < anchorDate) {
+        showToast('⚠️ Simulation date cannot precede Cycle Day 0.');
+        document.getElementById('simulatedDateInput').value = formatISODate(anchorDate);
+        simulatedDateISO = formatISODate(anchorDate);
+      } else {
+        simulatedDateISO = val;
+      }
+      eraseSimulationResultsIfAny();
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      playTone('click');
+      showToast(`Simulation: ${formatNumericDate(parseISODate(simulatedDateISO))}`);
+    }
+
+    function resetToRealDate() {
+      simulatedDateISO = null;
+      eraseSimulationResultsIfAny();
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      playTone('click');
+      showToast('Returned to Live Real Date.');
+    }
+
+    function stepSimulatedDays(delta) {
+      const active = getActiveInspectionDate();
+      handleSimulatedDateChange(formatISODate(addDays(active, delta)));
+    }
+
+    function jumpToCalibrationDay() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      handleSimulatedDateChange(formatISODate(calculateMetrics(cycle).calibrationDate));
+    }
+
+    function jumpToOvertimeDay(days) {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      handleSimulatedDateChange(formatISODate(addDays(calculateMetrics(cycle).calibrationDate, days || 3)));
+    }
+
+    /* -------------------------------------------------------------
+       CYCLE MATHEMATICS
+       ------------------------------------------------------------- */
+    function calculateMetrics(cycle) {
+      if (!cycle) return null;
+      const startDate = parseISODate(cycle.startDate);
+      const baseline = parseInt(cycle.baselineDays, 10) || 10;
+      const calibDayNumber = baseline + 1;
+      const calibrationDate = addDays(startDate, calibDayNumber);
+      const inspectionDate = getActiveInspectionDate();
+      const realToday = getTodayRealDate();
+
+      const daysPassed = diffDays(inspectionDate, startDate); 
+      const daysUntilCalibration = diffDays(calibrationDate, inspectionDate); 
+
+      let effectiveEndDate = inspectionDate;
+      if (cycle.resolvedDate) effectiveEndDate = parseISODate(cycle.resolvedDate);
+
+      let overtimeDays = 0;
+      if (cycle.status === 'completed' || cycle.status === 'skipped' || cycle.status === 'failed') {
+        const diffFromCalib = diffDays(effectiveEndDate, calibrationDate);
+        if (diffFromCalib > 0) overtimeDays = diffFromCalib;
+      } else {
+        if (daysUntilCalibration < 0) overtimeDays = Math.abs(daysUntilCalibration);
+      }
+
+      const isResolved = (cycle.status === 'completed' || cycle.status === 'skipped' || cycle.status === 'failed');
+
+      // For an active cycle, only completed days prior to today are sealed
+      const effectiveDaysForBaseline = isResolved
+        ? diffDays(effectiveEndDate, startDate)
+        : Math.max(0, daysPassed - 1);
+
+      let baselineSealed = effectiveDaysForBaseline;
+      if (baselineSealed < 0) baselineSealed = 0;
+      if (baselineSealed > baseline) baselineSealed = baseline;
+
+      const totalSealedDays = baselineSealed + overtimeDays;
+      let percentage = baseline > 0 ? Math.round((totalSealedDays / baseline) * 100) : 0;
+      if (percentage < 0) percentage = 0;
+
+      let phase = 'in_progress';
+      if (cycle.status === 'completed' || cycle.status === 'failed' || cycle.status === 'skipped') phase = cycle.status;
+      else if (daysPassed < 0) phase = 'unstarted';
+      else if (daysUntilCalibration > 0) phase = 'in_progress';
+      else if (daysUntilCalibration === 0) phase = 'calibration_day';
+      else phase = 'awaiting_resolution';
+
+      return {
+        startDate, calibrationDate, inspectionDate, realToday,
+        baseline, calibDayNumber, daysPassed, daysUntilCalibration,
+        baselineSealed, overtimeDays, totalSealedDays, percentage,
+        phase, isPreCalibration: (daysUntilCalibration > 0),
+        isCalibrationDay: (daysUntilCalibration === 0),
+        isOvertimeDay: (daysUntilCalibration < 0 || overtimeDays > 0)
+      };
+    }
+
+    /* -------------------------------------------------------------
+       DISPATCHER & TAB RENDERERS
+       ------------------------------------------------------------- */
+    function renderApp() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+
+      const metrics = calculateMetrics(cycle);
+      const isLatestActive = (selectedCycleIndex === cycles.length - 1);
+      const isSimulating = Boolean(simulatedDateISO);
+
+      const inspectionPill = document.getElementById('inspectionDatePill');
+      if (inspectionPill) inspectionPill.textContent = formatNumericDate(metrics.inspectionDate);
+
+      const simInput = document.getElementById('simulatedDateInput');
+      simInput.value = formatISODate(metrics.inspectionDate);
+      simInput.min = cycle.startDate;
+
+      const headerSimBadge = document.getElementById('headerSimActiveBadge');
+      const headerSimText = document.getElementById('headerSimActiveText');
+      if (headerSimBadge && headerSimText) {
+        if (isSimulating) {
+          headerSimBadge.classList.remove('hidden');
+          headerSimBadge.classList.add('flex');
+          headerSimText.textContent = `Simulated: ${formatNumericDate(metrics.inspectionDate)}`;
+        } else {
+          headerSimBadge.classList.add('hidden');
+          headerSimBadge.classList.remove('flex');
+        }
+      }
+
+      const simTag = document.getElementById('simulationTag');
+      const simDot = document.getElementById('simStatusDot');
+      const simPing = document.getElementById('simStatusPing');
+
+      if (isSimulating) {
+        simTag.innerHTML = `<span>Simulation Active</span>`;
+        simTag.className = "text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-400";
+        simDot.className = "relative inline-flex rounded-full h-2.5 w-2.5 bg-purple-500";
+        simPing.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75";
+      } else {
+        simTag.innerHTML = `<span>Live Real Date</span>`;
+        simTag.className = "text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400";
+        simDot.className = "relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500";
+        simPing.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75";
+      }
+
+      document.getElementById('realCalendarStaticText').textContent = formatNumericDate(metrics.realToday);
+      document.getElementById('headerProtocolTag').textContent = `${cycle.baselineDays || 10}D Protocol`;
+      document.getElementById('cycleSelectorLabel').textContent = `Cycle #${cycle.cycleNumber}`;
+      document.getElementById('btnPrevCycle').disabled = (selectedCycleIndex <= 0);
+      document.getElementById('btnNextCycle').disabled = (selectedCycleIndex >= cycles.length - 1);
+
+      const statusDot = document.getElementById('cycleSelectorStatusDot');
+      const selectorSub = document.getElementById('cycleSelectorSublabel');
+
+      if (cycle.status === 'in_progress') {
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse";
+        selectorSub.textContent = isLatestActive ? "Active Cycle" : "In Progress";
+      } else if (cycle.status === 'completed') {
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+        selectorSub.textContent = "Archived • Done";
+      } else if (cycle.status === 'failed') {
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+        selectorSub.textContent = cycle.isPrematureBreach ? "Archived • Premature" : "Archived • Failed";
+      } else if (cycle.status === 'skipped') {
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-purple-500";
+        selectorSub.textContent = "Overtime • Active";
+      }
+
+      const lockout = getPrematureLockoutState();
+      const headerNewBtn = document.getElementById('btnHeaderNewCycle');
+      const headerNewIcon = document.getElementById('btnHeaderNewCycleIcon');
+      const headerNewText = document.getElementById('btnHeaderNewCycleText');
+      const lockoutBanner = document.getElementById('prematureLockoutDashboardBanner');
+
+      if (lockout.isLocked) {
+        headerNewBtn.className = "flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-bold transition border border-rose-500/40 cursor-not-allowed shadow-none";
+        headerNewIcon.innerHTML = `<span class="text-sm">🔒</span>`;
+        headerNewText.textContent = "Locked (Cooldown)";
+        if (lockoutBanner) {
+          lockoutBanner.classList.remove('hidden');
+          document.getElementById('lockoutBadgeDaysRemaining').textContent = `${lockout.daysRemaining}d Cooldown Remaining`;
+          document.getElementById('lockoutTargetCalibDateText').textContent = formatNumericDate(lockout.calibrationDate);
+        }
+      } else {
+        headerNewBtn.className = "flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 via-teal-500 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-bold transition shadow-md shadow-cyan-500/25 active:scale-95 whitespace-nowrap";
+        headerNewIcon.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>`;
+        headerNewText.textContent = "New Cycle";
+        if (lockoutBanner) lockoutBanner.classList.add('hidden');
+      }
+
+      document.getElementById('desktopTabTimelineTitle').textContent = `${cycle.baselineDays}-Day Timeline`;
+      const scrubBtn = document.getElementById('scrubCalibBtn');
+      if (scrubBtn) scrubBtn.textContent = `🎯 Day ${metrics.calibDayNumber} (Calib)`;
+
+      renderDashboard(cycle, metrics);
+      renderTimeline(cycle, metrics);
+      renderCalibrationTab(cycle, metrics);
+      renderHistory();
+      renderAuthUI();
+      updateUndoRedoUI();
+
+      document.getElementById('hubBaselineInput').value = cycle.baselineDays;
+      const hubPreview = document.getElementById('hubAnchorFormattedPreview');
+      if (hubPreview) hubPreview.textContent = formatNumericDate(parseISODate(cycle.startDate));
+    }
+
+    /* -------------------------------------------------------------
+       TAB 1: DASHBOARD RENDERER (DASHBOARD-ONLY DISPLAY LOGIC)
+       ------------------------------------------------------------- */
+    function renderDashboard(cycle, metrics) {
+      document.getElementById('badgeCycleNumber').textContent = `Cycle #${cycle.cycleNumber}`;
+      document.getElementById('labelDateRange').textContent = `${formatNumericDate(metrics.startDate)} (Day 0) → ${formatNumericDate(metrics.calibrationDate)} (Day ${metrics.calibDayNumber})`;
+      document.getElementById('dashLastSessionDate').textContent = formatNumericDate(metrics.startDate);
+      document.getElementById('dashCalibrationDate').textContent = formatNumericDate(metrics.calibrationDate);
+      const calibTileLabel = document.getElementById('dashCalibTileLabel');
+      if (calibTileLabel) calibTileLabel.textContent = `Calibration (Day ${metrics.calibDayNumber})`;
+
+      const aura = document.getElementById('heroAura');
+      const badge = document.getElementById('badgeCurrentPhase');
+      const badgeText = document.getElementById('badgeCurrentPhaseText');
+      const headline = document.getElementById('heroHeadline');
+      const subtext = document.getElementById('heroSubtext');
+      const progRatio = document.getElementById('progressRatio');
+      const progPercent = document.getElementById('progressPercent');
+      const progIndicator = document.getElementById('linearProgressIndicator');
+      const overtimeIndicator = document.getElementById('linearOvertimeIndicator');
+      const overtimeBarLabel = document.getElementById('overtimeBarLabel');
+      const remainingDays = document.getElementById('dashRemainingDays');
+      
+      const dashTotalSealed = document.getElementById('dashTotalSealedBreakdown');
+      const dashOvertimeBox = document.getElementById('dashOvertimeBoxCount');
+      const dashBaselineSubtext = document.getElementById('dashBaselineBreakdownText');
+      const dashOvertimeSub = document.getElementById('dashOvertimeSubtext');
+
+      const gaugeCircle = document.getElementById('gaugeCircle');
+      const gaugeOvertimeCircle = document.getElementById('gaugeOvertimeCircle');
+      const gaugeTop = document.getElementById('gaugeTopLabel');
+      const gaugeNumber = document.getElementById('gaugeMainNumber');
+      const gaugeSub = document.getElementById('gaugeSubLabel');
+
+      // --- DASHBOARD-SPECIFIC REAL-TIME COUNT CALCULATIONS ---
+      const currentDayNumber = Math.max(1, Math.min(metrics.baseline, metrics.daysPassed));
+      const completedDays = metrics.baselineSealed;
+      const displayTotalSealed = metrics.totalSealedDays;
+      const displayPercentage = metrics.baseline > 0 ? Math.round((displayTotalSealed / metrics.baseline) * 100) : 0;
+
+      const circBaseline = 301.59;
+      const baselineFill = Math.min(1, completedDays / metrics.baseline);
+      gaugeCircle.style.strokeDashoffset = circBaseline - baselineFill * circBaseline;
+
+      const circOvertime = 345.57;
+      dashTotalSealed.textContent = `${displayTotalSealed}d`;
+      dashOvertimeBox.textContent = `+${metrics.overtimeDays}d OT`;
+      dashBaselineSubtext.textContent = `${completedDays}d Base`;
+
+      if (dashOvertimeSub) {
+        if (metrics.overtimeDays > 0) {
+          dashOvertimeSub.textContent = `Includes +${metrics.overtimeDays}d Overtime`;
+        } else if (metrics.phase === 'in_progress') {
+          dashOvertimeSub.textContent = `Day ${currentDayNumber} in progress`;
+        } else {
+          dashOvertimeSub.textContent = 'Normal Containment';
+        }
+      }
+
+      if (metrics.overtimeDays > 0) {
+        dashOvertimeBox.className = "text-xs font-mono font-black px-2.5 py-1 rounded-lg bg-purple-500/25 border border-purple-500/50 text-purple-700 dark:text-purple-300 shadow-sm animate-pulse";
+        progIndicator.style.width = '65%';
+        const otFill = Math.min(35, Math.max(6, (metrics.overtimeDays / metrics.baseline) * 35));
+        overtimeIndicator.style.width = `${otFill}%`;
+        overtimeBarLabel.classList.remove('hidden');
+        overtimeBarLabel.textContent = `⚡ Overtime Containment Active: +${metrics.overtimeDays} Days Accumulated`;
+
+        const otGaugeOffset = circOvertime - Math.min(1, metrics.overtimeDays / 14) * circOvertime;
+        gaugeOvertimeCircle.style.strokeDashoffset = otGaugeOffset;
+        gaugeOvertimeCircle.classList.remove('opacity-0');
+        gaugeOvertimeCircle.classList.add('opacity-100');
+
+        progRatio.innerHTML = `Containment Progress: <strong class="text-cyan-600 dark:text-cyan-400 font-bold">${displayTotalSealed} / ${metrics.baseline} Days Sealed</strong> <span class="text-purple-600 dark:text-purple-400 font-bold font-mono">(+${metrics.overtimeDays}d OT)</span>`;
+        progPercent.textContent = `${displayPercentage}% Completed`;
+      } else {
+        dashOvertimeBox.className = "text-xs font-mono font-bold px-2 py-0.5 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-600/70 dark:text-purple-400/70";
+        progIndicator.style.width = `${displayPercentage}%`;
+        overtimeIndicator.style.width = '0%';
+        overtimeBarLabel.classList.add('hidden');
+        gaugeOvertimeCircle.classList.add('opacity-0');
+        gaugeOvertimeCircle.classList.remove('opacity-100');
+
+        if (metrics.phase === 'in_progress') {
+          progRatio.innerHTML = `Containment Progress: <strong class="text-cyan-600 dark:text-cyan-400 font-bold">${completedDays} / ${metrics.baseline} Days Sealed</strong> <span class="text-slate-500 dark:text-slate-400 font-normal font-mono">(Day ${currentDayNumber} Active)</span>`;
+        } else {
+          progRatio.innerHTML = `Containment Progress: <strong class="text-cyan-600 dark:text-cyan-400 font-bold">${completedDays} / ${metrics.baseline} Days Sealed</strong>`;
+        }
+        progPercent.textContent = `${displayPercentage}% Completed`;
+      }
+
+      // --- PHASE RESOLUTIONS ---
+      if (cycle.status === 'completed') {
+        badge.className = "inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-400 dark:border-emerald-500/40";
+        badgeText.textContent = "SUCCESSFUL CALIBRATION";
+        headline.innerHTML = `✓ Cycle #${cycle.cycleNumber} <span class="text-emerald-600 dark:text-emerald-400">Validated</span>`;
+        subtext.textContent = `Session executed cleanly within parameters (${cycle.durationMinutes || 5} mins). Total sealed: ${metrics.totalSealedDays} days.`;
+        aura.className = "absolute -top-32 -right-32 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-emerald-500/25 blur-3xl pointer-events-none transition-all duration-700";
+        remainingDays.textContent = "Completed";
+        remainingDays.className = "text-sm sm:text-base font-bold font-mono text-emerald-600 dark:text-emerald-400";
+        gaugeTop.textContent = "Resolution";
+        gaugeNumber.innerHTML = `<span class="text-3xl text-emerald-600 dark:text-emerald-400 font-black">DONE</span>`;
+        gaugeSub.textContent = `${metrics.totalSealedDays}d Sealed`;
+
+      } else if (cycle.status === 'failed') {
+        badge.className = "inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 border border-rose-400 dark:border-rose-500/40";
+        badgeText.textContent = cycle.isPrematureBreach ? "PREMATURE BREACH RECORDED" : "FAILED SESSION RECORDED";
+        headline.innerHTML = `✕ Cycle #${cycle.cycleNumber} <span class="text-rose-600 dark:text-rose-400">${cycle.isPrematureBreach ? 'Premature Breach' : 'Boundary Breach'}</span>`;
+        subtext.textContent = cycle.isPrematureBreach ? `Session logged prior to Day ${metrics.calibDayNumber} calibration date.` : `Boundary violated. ${metrics.totalSealedDays} containment days sealed prior to breach.`;
+        aura.className = "absolute -top-32 -right-32 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-rose-500/25 blur-3xl pointer-events-none transition-all duration-700";
+        remainingDays.textContent = "Breached";
+        remainingDays.className = "text-sm sm:text-base font-bold font-mono text-rose-600 dark:text-rose-400";
+        gaugeTop.textContent = "Resolution";
+        gaugeNumber.innerHTML = `<span class="text-3xl text-rose-600 dark:text-rose-400 font-black">BREACH</span>`;
+        gaugeSub.textContent = "Boundary Violated";
+
+      } else if (cycle.status === 'skipped') {
+        badge.className = "inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-400 dark:border-purple-500/40";
+        badgeText.textContent = "SUBLIMED • OVERTIME ACTIVE";
+        headline.innerHTML = `⏭️ Cycle #${cycle.cycleNumber} <span class="text-purple-600 dark:text-purple-400">+${metrics.overtimeDays}d Overtime</span>`;
+        subtext.textContent = `Physical session bypassed. Total ${metrics.totalSealedDays} days sealed unbroken in overtime.`;
+        aura.className = "absolute -top-32 -right-32 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-purple-500/25 blur-3xl pointer-events-none transition-all duration-700";
+        remainingDays.textContent = `+${metrics.overtimeDays}d Over`;
+        remainingDays.className = "text-sm sm:text-base font-bold font-mono text-purple-600 dark:text-purple-300";
+        gaugeTop.textContent = "Overtime";
+        gaugeNumber.innerHTML = `<span class="text-3xl text-purple-600 dark:text-purple-400 font-black">+${metrics.overtimeDays}d</span>`;
+        gaugeSub.textContent = `${metrics.totalSealedDays}d Sealed`;
+
+      } else if (metrics.phase === 'calibration_day') {
+        badge.className = "inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-400 dark:border-amber-500/40 animate-pulse";
+        badgeText.textContent = `🎯 DAY ${metrics.calibDayNumber}: CALIBRATION WINDOW OPEN`;
+        headline.innerHTML = `🎯 Target Reached: <span class="text-amber-600 dark:text-amber-400">Day ${metrics.calibDayNumber} Calibration Gate OPEN</span>`;
+        subtext.textContent = `The ${metrics.baseline}-day containment gap is complete. Session is permitted today under strict boundary rules: 3–7m target, 10m ceiling.`;
+        aura.className = "absolute -top-32 -right-32 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-amber-500/30 blur-3xl pointer-events-none transition-all duration-700";
+        remainingDays.textContent = "TODAY";
+        remainingDays.className = "text-sm sm:text-base font-bold font-mono text-amber-600 dark:text-amber-300 animate-bounce";
+        gaugeTop.textContent = "Window Status";
+        gaugeNumber.innerHTML = `<span class="text-3xl text-amber-600 dark:text-amber-300 font-black">OPEN</span>`;
+        gaugeSub.textContent = "Resolve Today";
+
+      } else if (metrics.phase === 'awaiting_resolution') {
+        badge.className = "inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-400 dark:border-amber-500/40 animate-pulse";
+        badgeText.textContent = `⏳ RESOLUTION GATE DUE (+${metrics.overtimeDays}D)`;
+        headline.innerHTML = `⏳ Calibration Due: <span class="text-amber-600 dark:text-amber-400">Awaiting Formal Resolution</span>`;
+        subtext.textContent = `Baseline has elapsed (${metrics.overtimeDays} days ago). Overtime active: ${metrics.totalSealedDays} total days sealed.`;
+        aura.className = "absolute -top-32 -right-32 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-amber-500/25 blur-3xl pointer-events-none transition-all duration-700";
+        remainingDays.textContent = `+${metrics.overtimeDays}d Over`;
+        remainingDays.className = "text-sm sm:text-base font-bold font-mono text-amber-600 dark:text-amber-300";
+        gaugeTop.textContent = "Overtime";
+        gaugeNumber.innerHTML = `<span class="text-3xl text-amber-600 dark:text-amber-400 font-black">+${metrics.overtimeDays}d</span>`;
+        gaugeSub.textContent = `${metrics.totalSealedDays}d Sealed`;
+
+      } else {
+        // --- ONGOING IN-PROGRESS CONTAINMENT (ACCURATE WORDING) ---
+        badge.className = "inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border border-cyan-400 dark:border-cyan-500/40";
+        badgeText.textContent = `🔒 ACTIVE CONTAINMENT (DAY ${currentDayNumber}/${metrics.baseline})`;
+        headline.innerHTML = `Containment: <span class="text-cyan-600 dark:text-cyan-400">Day ${currentDayNumber} of ${metrics.baseline}</span> Active`;
+        subtext.textContent = `Anchor Day 0 is excluded. ${completedDays} of ${metrics.baseline} containment days fully sealed. Day ${currentDayNumber} is actively underway.`;
+        aura.className = "absolute -top-32 -right-32 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none transition-all duration-700";
+        remainingDays.textContent = `${metrics.daysUntilCalibration} Days`;
+        remainingDays.className = "text-sm sm:text-base font-bold font-mono text-cyan-600 dark:text-cyan-300";
+        gaugeTop.textContent = "Calibration In";
+        gaugeNumber.innerHTML = `${String(metrics.daysUntilCalibration).padStart(2, '0')}<span class="text-base text-cyan-500 font-bold ml-0.5">d</span>`;
+        gaugeSub.textContent = `${metrics.daysUntilCalibration * 24}h Remaining`;
+      }
+    }
+
+    function renderTimeline(cycle, metrics) {
+      const container = document.getElementById('timelineGridContainer');
+      document.getElementById('timelineHeaderTitle').textContent = `${cycle.baselineDays}-Day Timeline & Overtime Track`;
+      document.getElementById('timelineHeaderSubtext').textContent = `Cycle #${cycle.cycleNumber}: Anchor (Day 0) is excluded; Days 1–${metrics.baseline} containment; Day ${metrics.calibDayNumber} is Calibration Gate; Overtime days seal strictly after Skip approval.`;
+
+      container.innerHTML = '';
+      const baseDays = metrics.baseline + 1;
+      const overtimeToRender = metrics.overtimeDays > 0 ? metrics.overtimeDays : 0;
+      const totalTimelineDays = baseDays + overtimeToRender;
+      const isOvertimeApproved = (cycle.status === 'skipped');
+
+      for (let day = 0; day <= totalTimelineDays; day++) {
+        const dayDate = addDays(metrics.startDate, day);
+        const dayFormatted = formatNumericDate(dayDate);
+        const isInspectionDate = diffDays(dayDate, metrics.inspectionDate) === 0;
+        const isPast = diffDays(dayDate, metrics.inspectionDate) < 0;
+        const isFuture = diffDays(dayDate, metrics.inspectionDate) > 0;
+        const isAnchorDay = (day === 0);
+        const isCalibrationDay = (day === baseDays);
+        const isOvertimeDay = (day > baseDays);
+
+        const card = document.createElement('div');
+        const dayISO = formatISODate(dayDate);
+        card.id = `timeline-card-${dayISO}`;
+
+        if (isInspectionDate) {
+          card.className = "relative rounded-2xl p-4 sm:p-5 glass-interactive border-2 border-cyan-500 bg-cyan-50/80 dark:bg-cyan-950/40 shadow-lg shadow-cyan-500/20 flex flex-col justify-between transition-all scale-[1.02] z-10";
+        } else if (isOvertimeDay) {
+          card.className = "relative rounded-2xl p-4 sm:p-5 glass-interactive border border-purple-500/50 bg-purple-50/50 dark:bg-purple-950/30 flex flex-col justify-between";
+        } else if (isCalibrationDay) {
+          card.className = "relative rounded-2xl p-4 sm:p-5 glass-interactive border border-amber-400 dark:border-amber-500/40 bg-amber-50/50 dark:bg-amber-950/20 flex flex-col justify-between";
+        } else if (isPast) {
+          card.className = "relative rounded-2xl p-4 sm:p-5 glass-card border border-slate-200 dark:border-slate-800 flex flex-col justify-between opacity-85 transition-all";
+        } else {
+          card.className = "relative rounded-2xl p-4 sm:p-5 glass-card border border-slate-200/50 dark:border-slate-800/40 flex flex-col justify-between opacity-55";
+        }
+
+        let dayTag = '';
+        if (isAnchorDay) {
+          dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">DAY 0 (ANCHOR)</span>`;
+        } else if (isCalibrationDay) {
+          dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">DAY ${metrics.calibDayNumber} (CALIB) 🎯</span>`;
+        } else if (isOvertimeDay) {
+          dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30">DAY ${day} (+${day - baseDays}d OT) ⚡</span>`;
+        } else if (isInspectionDate) {
+          // Current progressing day -> (ACTIVE)
+          dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 border border-cyan-500/40">DAY ${day} (ACTIVE)</span>`;
+        } else if (isPast) {
+          // Untouched original SEALED tag for completed past days
+          dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-400">DAY ${day} (SEALED)</span>`;
+        } else {
+          // Future containment days -> (UPCOMING)
+          dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500">DAY ${day} (UPCOMING)</span>`;
+        }
+
+        let statusIcon = isInspectionDate ? `<span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span></span>` :
+          (isPast && isOvertimeDay && isOvertimeApproved) ? `<span class="text-purple-500 font-bold text-sm">✓⚡</span>` :
+          (isPast && !isAnchorDay && !isOvertimeDay) ? `<span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm">✓</span>` :
+          isOvertimeDay ? `<span class="text-purple-500 font-bold text-sm">⏳</span>` :
+          isCalibrationDay ? `<span class="text-amber-500 font-bold text-sm">★</span>` :
+          `<span class="text-slate-400 dark:text-slate-600 text-sm">🔒</span>`;
+
+        let roleText = isAnchorDay ? 'Anchor Session (Excluded)' :
+          isCalibrationDay ? `Day ${metrics.calibDayNumber} Calibration Gate` :
+          isOvertimeDay ? `Overtime Sublimation +${day - baseDays}d` : `Containment Day ${day} of ${metrics.baseline}`;
+
+        const sealTier = (cycle.dailySeals && cycle.dailySeals[dayISO]) ? cycle.dailySeals[dayISO] : 'normal';
+        let footerLabel = '';
+        const canToggleSeal = (isPast && !isAnchorDay && (!isOvertimeDay || isOvertimeApproved));
+
+        if (isInspectionDate) {
+          footerLabel = '<span class="text-cyan-600 dark:text-cyan-400 font-black">INSPECTION</span>';
+        } else if (canToggleSeal) {
+          if (sealTier === 'high') {
+            footerLabel = `
+              <button onclick="toggleSingleDateSeal('${dayISO}', event)" title="Click to switch to Sealed" class="group flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-600 dark:text-cyan-400 transition-all active:scale-95">
+                <span class="text-rose-500 group-hover:scale-125 transition-transform">❤️</span>
+                <span class="font-black text-xs">High-Sealed</span>
+                <span class="text-[10px] text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition">⇄</span>
+              </button>`;
+          } else {
+            footerLabel = `
+              <button onclick="toggleSingleDateSeal('${dayISO}', event)" title="Click to upgrade to High-Sealed" class="group flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 transition-all active:scale-95">
+                <span class="text-emerald-500 font-bold group-hover:scale-125 transition-transform">✓</span>
+                <span class="font-bold text-xs">Sealed</span>
+                <span class="text-[10px] text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition">⇄</span>
+              </button>`;
+          }
+        } else if (isOvertimeDay && !isOvertimeApproved) {
+          footerLabel = '<span class="text-purple-600/70 dark:text-purple-400/70 font-semibold">Overtime (Pending Skip)</span>';
+        } else if (isCalibrationDay && !isPast) {
+          footerLabel = '<span class="text-amber-600 dark:text-amber-400 font-bold">Target Gate</span>';
+        } else if (isFuture) {
+          footerLabel = '<span class="text-slate-400">Pending</span>';
+        } else {
+          footerLabel = '<span class="text-slate-400">Anchor</span>';
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              ${dayTag}
+              ${statusIcon}
+            </div>
+            <div class="font-mono text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">${dayFormatted}</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">${roleText}</div>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            ${footerLabel}
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    function renderCalibrationTab(cycle, metrics) {
+      const prematureBanner = document.getElementById('calibPrematureBreachIsolationBanner');
+      const mainConsoleGrid = document.getElementById('calibMainConsoleGrid');
+      const isoCalibDateText = document.getElementById('isoCalibDateTargetText');
+
+      if (cycle.status === 'failed' && cycle.isPrematureBreach) {
+        if (prematureBanner) prematureBanner.classList.remove('hidden');
+        if (mainConsoleGrid) mainConsoleGrid.classList.add('hidden');
+        if (isoCalibDateText) isoCalibDateText.textContent = formatNumericDate(metrics.calibrationDate);
+        return;
+      }
+
+      if (prematureBanner) prematureBanner.classList.add('hidden');
+      if (mainConsoleGrid) mainConsoleGrid.classList.remove('hidden');
+
+      const calibBadge = document.getElementById('calibGateBadge');
+      const calibExp = document.getElementById('calibGateExplanation');
+      const btnComplete = document.getElementById('btnCalibComplete');
+      const btnSkip = document.getElementById('btnCalibSkip');
+      const btnFailed = document.getElementById('btnCalibFailed');
+      const btnFailedLabel = document.getElementById('btnCalibFailedLabel');
+      const btnFailedDesc = document.getElementById('btnCalibFailedDesc');
+      const preDateAlert = document.getElementById('preDateAlertBanner');
+      const alertCalibDate = document.getElementById('alertCalibDate');
+      const timerTransferSuccess = document.getElementById('timerTransferSuccessBtn');
+      const timerTransferDivider = document.getElementById('timerTransferDivider');
+      const buttonsGrid = document.getElementById('resolutionButtonsGrid');
+      const resolvedCard = document.getElementById('calibrationResolvedStatusCard');
+
+      if (resolvedCard) resolvedCard.classList.add('hidden');
+      if (buttonsGrid) buttonsGrid.classList.remove('hidden');
+      alertCalibDate.textContent = formatNumericDate(metrics.calibrationDate);
+
+      if (cycle.status === 'skipped') {
+        calibBadge.textContent = "Overtime Active (Sublimed)";
+        calibBadge.className = "text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-500/30";
+        calibExp.textContent = `Skip triggered (+${metrics.overtimeDays}d). Settle session when completed.`;
+        btnSkip.classList.add('hidden');
+        btnComplete.classList.remove('hidden');
+        btnFailed.classList.remove('hidden');
+        preDateAlert.classList.add('hidden');
+        btnFailedLabel.textContent = "Log Failed Session";
+        btnFailedDesc.textContent = "Breached boundaries during overtime.";
+        timerTransferSuccess.classList.remove('hidden');
+        timerTransferDivider.classList.remove('hidden');
+        return;
+      }
+
+      if (cycle.status === 'completed') {
+        calibBadge.textContent = "Resolved (Successful)";
+        calibBadge.className = "text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30";
+        calibExp.textContent = `Cycle #${cycle.cycleNumber} calibration validated.`;
+        if (buttonsGrid) buttonsGrid.classList.add('hidden');
+        if (resolvedCard) {
+          resolvedCard.className = "rounded-2xl p-5 border border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200 space-y-2 block shadow-md";
+          resolvedCard.innerHTML = `
+            <div class="flex items-center space-x-2.5 font-bold font-mono text-emerald-600 dark:text-emerald-400">
+              <span class="text-xl">✓</span>
+              <span>Calibration Resolved: Succeeded</span>
+            </div>
+            <p class="text-xs sm:text-sm">Target window met. Duration: <strong>${cycle.durationMinutes || 5} min</strong>.</p>
+            ${cycle.notes ? `<p class="text-xs font-mono border-t border-emerald-500/20 pt-2 mt-2">Notes: ${cycle.notes}</p>` : ''}
+          `;
+        }
+        preDateAlert.classList.add('hidden');
+        timerTransferSuccess.classList.add('hidden');
+        timerTransferDivider.classList.add('hidden');
+        return;
+      }
+
+      if (cycle.status === 'failed') {
+        calibBadge.textContent = cycle.isPrematureBreach ? "Resolved (Premature Breach)" : "Resolved (Failed Session)";
+        calibBadge.className = "text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-500/30";
+        calibExp.textContent = `Cycle #${cycle.cycleNumber} concluded with breach.`;
+        if (buttonsGrid) buttonsGrid.classList.add('hidden');
+        if (resolvedCard) {
+          resolvedCard.className = "rounded-2xl p-5 border border-rose-500/40 bg-rose-500/10 text-rose-800 dark:text-rose-200 space-y-2 block shadow-md";
+          resolvedCard.innerHTML = `
+            <div class="flex items-center space-x-2.5 font-bold font-mono text-rose-600 dark:text-rose-400">
+              <span class="text-xl">✕</span>
+              <span>Calibration Resolved: Failed</span>
+            </div>
+            <p class="text-xs sm:text-sm">${cycle.isPrematureBreach ? 'Premature calibration breach logged prior to target date.' : 'Protocol boundary violation.'}</p>
+            ${cycle.notes ? `<p class="text-xs font-mono border-t border-rose-500/20 pt-2 mt-2">Notes: ${cycle.notes}</p>` : ''}
+          `;
+        }
+        preDateAlert.classList.add('hidden');
+        timerTransferSuccess.classList.add('hidden');
+        timerTransferDivider.classList.add('hidden');
+        return;
+      }
+
+      if (metrics.isPreCalibration) {
+        btnComplete.classList.add('hidden');
+        btnSkip.classList.add('hidden');
+        btnFailed.classList.remove('hidden');
+        preDateAlert.classList.remove('hidden');
+        btnFailedLabel.textContent = "Log Premature Breach / Failed Session";
+        btnFailedDesc.textContent = "Calibration prior to Day 11 is an operational failure.";
+        timerTransferSuccess.classList.add('hidden');
+        timerTransferDivider.classList.add('hidden');
+        calibBadge.textContent = `Locked (${metrics.daysUntilCalibration}d Remaining)`;
+        calibBadge.className = "text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-full bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/40";
+        calibExp.textContent = `Gate is locked until Day 11 (${formatNumericDate(metrics.calibrationDate)}).`;
+      } else if (metrics.isCalibrationDay) {
+        btnComplete.classList.remove('hidden');
+        btnFailed.classList.remove('hidden');
+        btnSkip.classList.add('hidden');
+        preDateAlert.classList.add('hidden');
+        btnFailedLabel.textContent = "Log Failed Session";
+        btnFailedDesc.textContent = "Drifted into fantasy, media clips, or ceiling breach.";
+        timerTransferSuccess.classList.remove('hidden');
+        timerTransferDivider.classList.remove('hidden');
+        calibBadge.textContent = "Gate OPEN (Day 11)";
+        calibBadge.className = "text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-full bg-amber-500 text-slate-950 animate-pulse font-black";
+        calibExp.textContent = `Calibration Day has arrived! Execute between 3 to 7 minutes (10m ceiling).`;
+      } else {
+        btnSkip.classList.remove('hidden');
+        btnComplete.classList.add('hidden');
+        btnFailed.classList.add('hidden');
+        preDateAlert.classList.add('hidden');
+        timerTransferSuccess.classList.add('hidden');
+        timerTransferDivider.classList.add('hidden');
+        calibBadge.textContent = `Overtime Pending (+${metrics.overtimeDays}d)`;
+        calibBadge.className = "text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-full bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/40 animate-pulse";
+        calibExp.textContent = `Click "Skip (Sublime)" to enter overtime containment.`;
+      }
+    }
+
+    function renderHistory() {
+      const tbody = document.getElementById('historyTableRows');
+      tbody.innerHTML = '';
+
+      let totalDays = 0, totalOvertimeDays = 0, totalBaseDays = 0, totalCompleted = 0, totalFailed = 0;
+      cycles.forEach((c) => {
+        const m = calculateMetrics(c);
+        if (c.status === 'completed') totalCompleted++;
+        if (c.status === 'failed') totalFailed++;
+        totalDays += m.totalSealedDays;
+        totalBaseDays += m.baselineSealed;
+        totalOvertimeDays += (m.overtimeDays > 0 ? m.overtimeDays : 0);
+      });
+
+      document.getElementById('statHistTotalCycles').textContent = cycles.length;
+      document.getElementById('statHistTotalDays').textContent = `${totalDays}d`;
+      document.getElementById('statHistTotalDaysSub').textContent = totalOvertimeDays > 0 ? `Includes +${totalOvertimeDays}d Overtime` : "Normal Containment";
+      document.getElementById('statHistFailedCount').textContent = totalFailed;
+      
+      const baseEl = document.getElementById('statHistBaseDaysCount');
+      if (baseEl) baseEl.textContent = `${totalBaseDays}d`;
+      const otEl = document.getElementById('statHistOtDaysCount');
+      if (otEl) otEl.textContent = `+${totalOvertimeDays}d`;
+
+      const resolvedTotal = totalCompleted + totalFailed;
+      const rate = resolvedTotal > 0 ? Math.round((totalCompleted / resolvedTotal) * 100) : 100;
+      document.getElementById('statHistSuccessRate').textContent = `${rate}%`;
+
+      cycles.slice().reverse().forEach((c, revIdx) => {
+        const actualIdx = cycles.length - 1 - revIdx;
+        const m = calculateMetrics(c);
+        const row = document.createElement('tr');
+        row.className = `cursor-pointer transition ${actualIdx === selectedCycleIndex ? 'bg-cyan-50/70 dark:bg-cyan-950/30 font-bold' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'}`;
+        
+        let badge = c.status === 'completed' ? `<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">✓ Done</span>` :
+          c.status === 'failed' ? `<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-500/30">${c.isPrematureBreach ? '⚡ Premature' : '✕ Failed'}</span>` :
+          c.status === 'skipped' ? `<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-500/30">⏭️ Overtime</span>` :
+          `<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30">⚡ Day ${m.baselineSealed}/${c.baselineDays}</span>`;
+
+        let sealedDisplay = `${m.totalSealedDays}d`;
+        if (m.overtimeDays > 0) {
+          sealedDisplay = `${m.totalSealedDays}d <span class="text-xs text-purple-600 dark:text-purple-400 block font-normal">${m.baselineSealed}d Base + ${m.overtimeDays}d OT</span>`;
+        }
+
+        row.innerHTML = `
+          <td class="py-3.5 px-4 font-mono font-bold text-slate-900 dark:text-white">Cycle #${c.cycleNumber} ${actualIdx === selectedCycleIndex ? '★' : ''}</td>
+          <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400">${formatNumericDate(parseISODate(c.startDate))}</td>
+          <td class="py-3.5 px-4 text-amber-600 dark:text-amber-300">${formatNumericDate(m.calibrationDate)} <span class="text-xs text-amber-500/70 font-normal block">(Day ${m.calibDayNumber})</span></td>
+          <td class="py-3.5 px-4 text-cyan-600 dark:text-cyan-300 font-bold">${c.baselineDays} Days</td>
+          <td class="py-3.5 px-4 text-emerald-600 dark:text-emerald-400 font-bold">${sealedDisplay}</td>
+          <td class="py-3.5 px-4">${badge}</td>
+          <td class="py-3.5 px-4 text-slate-500">${c.durationMinutes ? `${c.durationMinutes} min` : (c.status === 'skipped' ? 'Sublimed' : '--')}</td>
+          <td class="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+            <button onclick="event.stopPropagation(); selectCycleByIndex(${actualIdx})" class="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition text-xs font-bold">Load</button>
+            <button onclick="deleteCycleByIndex(${actualIdx}, event)" title="Delete Cycle #${c.cycleNumber}" class="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500 text-rose-600 hover:text-white transition text-xs font-bold">🗑️</button>
+          </td>
+        `;
+        row.onclick = () => selectCycleByIndex(actualIdx);
+        tbody.appendChild(row);
+      });
+    }
+
+    /* -------------------------------------------------------------
+       STOPWATCH & TIMER
+       ------------------------------------------------------------- */
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let isTimerRunning = false;
+
+    function toggleTimer() {
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        document.getElementById('btnStartTimer').textContent = 'Resume Timer';
+        document.getElementById('btnStartTimer').className = "flex-1 py-3 px-4 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs sm:text-sm font-mono transition";
+        document.getElementById('timerStatusPill').textContent = 'Paused';
+        playTone('click');
+      } else {
+        isTimerRunning = true;
+        document.getElementById('btnStartTimer').textContent = 'Pause Timer';
+        document.getElementById('btnStartTimer').className = "flex-1 py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs sm:text-sm font-mono transition";
+        document.getElementById('timerStatusPill').textContent = 'Active Running';
+        playTone('start');
+        timerInterval = setInterval(() => { timerSeconds++; updateTimerUI(); }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      timerSeconds = 0;
+      document.getElementById('btnStartTimer').textContent = 'Start Session Timer';
+      document.getElementById('btnStartTimer').className = "flex-1 py-3 px-4 rounded-2xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs sm:text-sm font-mono shadow-md shadow-cyan-600/30 transition";
+      document.getElementById('timerStatusPill').textContent = 'Standby';
+      updateTimerUI();
+      playTone('click');
+    }
+
+    function updateTimerUI() {
+      const mins = Math.floor(timerSeconds / 60);
+      const secs = timerSeconds % 60;
+      const display = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      const stopwatchEl = document.getElementById('stopwatchDisplay');
+      const zoneEl = document.getElementById('timerZoneIndicator');
+      const fillEl = document.getElementById('timerProgressFill');
+
+      stopwatchEl.textContent = display;
+      fillEl.style.width = `${Math.min(100, (timerSeconds / 600) * 100)}%`;
+
+      if (timerSeconds < 180) {
+        stopwatchEl.className = "text-6xl sm:text-7xl font-black font-mono tracking-tight text-slate-900 dark:text-white";
+        zoneEl.textContent = "Pre-Target Zone (00:00 – 03:00)";
+        zoneEl.className = "text-xs sm:text-sm font-mono mt-3 font-bold text-slate-500";
+        fillEl.className = "h-full bg-cyan-500 transition-all duration-300";
+      } else if (timerSeconds >= 180 && timerSeconds <= 420) {
+        stopwatchEl.className = "text-6xl sm:text-7xl font-black font-mono tracking-tight text-emerald-600 dark:text-emerald-400 animate-pulse";
+        zoneEl.textContent = "🎯 OPTIMAL TARGET WINDOW (3–7 MINS) • Conclude Session";
+        zoneEl.className = "text-xs sm:text-sm font-mono mt-3 font-bold text-emerald-600 dark:text-emerald-400";
+        fillEl.className = "h-full bg-emerald-500 transition-all duration-300";
+        if (timerSeconds === 180 || timerSeconds === 420) playTone('beep');
+      } else if (timerSeconds > 420 && timerSeconds < 600) {
+        stopwatchEl.className = "text-6xl sm:text-7xl font-black font-mono tracking-tight text-amber-600 dark:text-amber-400";
+        zoneEl.textContent = "⚠️ OVER TARGET: Approaching 10m Hard Ceiling";
+        zoneEl.className = "text-xs sm:text-sm font-mono mt-3 font-bold text-amber-600 dark:text-amber-400";
+        fillEl.className = "h-full bg-amber-500 transition-all duration-300";
+      } else {
+        stopwatchEl.className = "text-6xl sm:text-7xl font-black font-mono tracking-tight text-rose-600 dark:text-rose-400 animate-bounce";
+        zoneEl.textContent = "🛑 10-MINUTE HARD CEILING BREACHED • TERMINATE NOW";
+        zoneEl.className = "text-xs sm:text-sm font-mono mt-3 font-bold text-rose-600 dark:text-rose-400";
+        fillEl.className = "h-full bg-rose-600 transition-all duration-300";
+        if (timerSeconds % 2 === 0) playTone('alarm');
+      }
+    }
+
+    function transferTimerToLogger(isSuccess) {
+      const elapsedMins = Math.max(1, Math.round(timerSeconds / 60));
+      const cycle = getSelectedCycle();
+      const metrics = calculateMetrics(cycle);
+
+      if (isSuccess) {
+        if (metrics.isPreCalibration) {
+          showToast('⚠️ Pre-Calibration Lock: Cannot log as successful prior to Day 11.');
+          return;
+        }
+        document.getElementById('inputDurationMinutes').value = elapsedMins;
+        openModal('completeSessionModal');
+      } else {
+        const failInput = document.getElementById('inputFailDurationMinutes');
+        failInput.value = elapsedMins;
+        const isCeiling = timerSeconds >= 600;
+        document.getElementById('failReasonCeiling').checked = isCeiling;
+        handleCeilingToggleChange(isCeiling);
+        openModal('failedSessionModal');
+      }
+    }
+
+    function handleCeilingToggleChange(isChecked) {
+      const durationInput = document.getElementById('inputFailDurationMinutes');
+      const hint = document.getElementById('failDurationHint');
+      if (isChecked) {
+        durationInput.min = "11";
+        if (parseInt(durationInput.value, 10) <= 10) durationInput.value = 11;
+        hint.classList.remove('hidden');
+      } else {
+        durationInput.min = "1";
+        hint.classList.add('hidden');
+      }
+    }
+
+    function submitCompleteSession() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      const metrics = calculateMetrics(cycle);
+      if (metrics.isPreCalibration) {
+        showToast('⚠️ Operational Lock: Cannot log successful calibration prior to Day 11.');
+        return;
+      }
+
+      const dur = parseInt(document.getElementById('inputDurationMinutes').value, 10) || 5;
+      const notes = document.getElementById('inputDurationNotes').value;
+      const focusAffirmed = document.getElementById('checkPhysicalFocus').checked;
+
+      if (!focusAffirmed) {
+        showToast('⚠️ Physical focus affirmation is mandatory.');
+        return;
+      }
+
+      if (simulatedDateISO) {
+        cycle.status = 'completed';
+        cycle.durationMinutes = dur;
+        cycle.notes = notes;
+        cycle.isPrematureBreach = false;
+        cycle.resolvedDate = formatISODate(metrics.inspectionDate);
+        saveState();
+        closeModal('completeSessionModal');
+        renderApp();
+        launchConfetti();
+        playTone('victory');
+        showToast(`✓ Simulation: Cycle #${cycle.cycleNumber} validated.`);
+      } else {
+        pendingCompletionState = {
+          cycleIndex: selectedCycleIndex,
+          durationMinutes: dur,
+          notes: notes,
+          resolvedDate: formatISODate(getTodayRealDate())
+        };
+        closeModal('completeSessionModal');
+        document.getElementById('succModalCycleNum').textContent = `Cycle #${cycle.cycleNumber + 1}`;
+        document.getElementById('succModalAnchorDate').textContent = formatNumericDate(getTodayRealDate());
+        document.getElementById('succModalBaselineInput').value = cycle.baselineDays || 10;
+        openModal('mandatorySuccessionModal');
+      }
+    }
+
+    function confirmSuccessionCycle() {
+      if (!pendingCompletionState) return;
+      pushHistorySnapshot();
+
+      const cycle = cycles[pendingCompletionState.cycleIndex];
+      cycle.status = 'completed';
+      cycle.durationMinutes = pendingCompletionState.durationMinutes;
+      cycle.notes = pendingCompletionState.notes;
+      cycle.isPrematureBreach = false;
+      cycle.resolvedDate = pendingCompletionState.resolvedDate;
+
+      const nextBaseline = parseInt(document.getElementById('succModalBaselineInput').value, 10) || 10;
+      const newCycle = {
+        cycleNumber: cycle.cycleNumber + 1,
+        startDate: formatISODate(getTodayRealDate()),
+        baselineDays: nextBaseline,
+        status: 'in_progress',
+        durationMinutes: null,
+        failureReasons: [],
+        isPrematureBreach: false,
+        notes: '',
+        resolvedDate: null
+      };
+
+      cycles.push(newCycle);
+      selectedCycleIndex = cycles.length - 1;
+      pendingCompletionState = null;
+
+      closeModal('mandatorySuccessionModal');
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      launchConfetti();
+      playTone('victory');
+      showToast(`✓ Cycle #${cycle.cycleNumber} validated! Cycle #${newCycle.cycleNumber} initialized.`);
+    }
+
+    function abortSuccessionCycle() {
+      pendingCompletionState = null;
+      closeModal('mandatorySuccessionModal');
+      showToast('Calibration discarded. Ongoing containment cycle preserved.');
+    }
+
+    function submitFailedSession() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      pushHistorySnapshot();
+
+      const metrics = calculateMetrics(cycle);
+      let dur = parseInt(document.getElementById('inputFailDurationMinutes').value, 10) || 6;
+      const notes = document.getElementById('inputFailNotes').value;
+      const isCeilingBreach = document.getElementById('failReasonCeiling').checked;
+      if (isCeilingBreach && dur <= 10) dur = 11;
+      
+      const reasons = [];
+      const prematureBox = document.getElementById('failReasonPremature');
+      const isPremature = (metrics.isPreCalibration && prematureBox && prematureBox.checked);
+
+      if (isPremature) reasons.push('Premature Calibration Breach (Prior to Day 11)');
+      if (document.getElementById('failReasonFantasy').checked) reasons.push('Erotic Fantasy/Visualization');
+      if (document.getElementById('failReasonMedia').checked) reasons.push('Arousal Media/Clips');
+      if (document.getElementById('failReasonFocus').checked) reasons.push('Lack of Physical/Somatic Focus');
+      if (isCeilingBreach) reasons.push('Breached 10m Ceiling');
+
+      cycle.status = 'failed';
+      cycle.durationMinutes = dur;
+      cycle.failureReasons = reasons;
+      cycle.isPrematureBreach = isPremature;
+      cycle.notes = notes || reasons.join(', ');
+      cycle.resolvedDate = formatISODate(metrics.inspectionDate);
+
+      saveState();
+      closeModal('failedSessionModal');
+      renderApp();
+      updateUndoRedoUI();
+      playTone('alarm');
+
+      if (isPremature) {
+        showToast(`✕ Premature Breach logged. Cooldown locked until ${formatNumericDate(metrics.calibrationDate)}.`);
+      } else {
+        showToast(`✕ Cycle #${cycle.cycleNumber} logged as Failed Session.`);
+      }
+    }
+
+    function confirmSkipSession() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      const metrics = calculateMetrics(cycle);
+      if (metrics.isPreCalibration) {
+        showToast('⚠️ Pre-Calibration Lock: Skip is only available on or after Day 11.');
+        return;
+      }
+      pushHistorySnapshot();
+      cycle.status = 'skipped';
+      cycle.durationMinutes = null;
+      cycle.isPrematureBreach = false;
+      cycle.resolvedDate = formatISODate(metrics.inspectionDate);
+
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      launchConfetti();
+      playTone('victory');
+      showToast(`⏭️ Cycle #${cycle.cycleNumber} sublimed! Overtime active.`);
+    }
+
+    function reopenSelectedCyclePrompt() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      pushHistorySnapshot();
+      cycle.status = 'in_progress';
+      cycle.resolvedDate = null;
+      cycle.isPrematureBreach = false;
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      playTone('click');
+      showToast(`Cycle #${cycle.cycleNumber} re-opened to In-Progress.`);
+    }
+
+    function syncAnchorFieldsFromPicker(isoStr) {
+      if (!isoStr) return;
+      const d = parseISODate(isoStr);
+      document.getElementById('anchorInputDay').value = d.getDate();
+      document.getElementById('anchorInputMonth').value = d.getMonth() + 1;
+      document.getElementById('anchorInputYear').value = d.getFullYear();
+    }
+
+    function openAnchorEditorModal() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      const curDate = parseISODate(cycle.startDate);
+      document.getElementById('modalQuickAnchorInput').value = cycle.startDate;
+      document.getElementById('anchorInputDay').value = curDate.getDate();
+      document.getElementById('anchorInputMonth').value = curDate.getMonth() + 1;
+      document.getElementById('anchorInputYear').value = curDate.getFullYear();
+      openModal('editAnchorModal');
+    }
+
+    function setModalAnchorToday() {
+      const t = getTodayRealDate();
+      document.getElementById('modalQuickAnchorInput').value = formatISODate(t);
+      syncAnchorFieldsFromPicker(formatISODate(t));
+    }
+
+    function shiftModalAnchorDays(delta) {
+      const day = parseInt(document.getElementById('anchorInputDay').value, 10);
+      const month = parseInt(document.getElementById('anchorInputMonth').value, 10);
+      const year = parseInt(document.getElementById('anchorInputYear').value, 10);
+      const cur = new Date(year, month - 1, day);
+      const shifted = addDays(cur, delta);
+      document.getElementById('modalQuickAnchorInput').value = formatISODate(shifted);
+      syncAnchorFieldsFromPicker(formatISODate(shifted));
+    }
+
+    function submitAnchorDateChange() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      const day = parseInt(document.getElementById('anchorInputDay').value, 10);
+      const month = parseInt(document.getElementById('anchorInputMonth').value, 10);
+      const year = parseInt(document.getElementById('anchorInputYear').value, 10);
+
+      if (isNaN(day) || isNaN(month) || isNaN(year) || day < 1 || day > 31 || month < 1 || month > 12) {
+        showToast('⚠️ Please enter a valid Day, Month, and Year.');
+        return;
+      }
+      const constructedDate = new Date(year, month - 1, day);
+      const newDateISO = formatISODate(constructedDate);
+
+      pushHistorySnapshot();
+      cycle.startDate = newDateISO;
+      if (simulatedDateISO && parseISODate(simulatedDateISO) < constructedDate) {
+        simulatedDateISO = newDateISO;
+      }
+      eraseSimulationResultsIfAny();
+      saveState();
+      closeModal('editAnchorModal');
+      renderApp();
+      updateUndoRedoUI();
+      playTone('click');
+      showToast(`Anchor updated to ${formatNumericDate(constructedDate)}.`);
+    }
+
+    function getRecommendedStartDate() {
+      if (cycles.length > 0) {
+        const last = cycles[cycles.length - 1];
+        const lastMetrics = calculateMetrics(last);
+        if (last.status === 'skipped' && last.resolvedDate) return last.resolvedDate;
+        return formatISODate(lastMetrics.calibrationDate);
+      }
+      return formatISODate(getTodayRealDate());
+    }
+
+    function submitNewCycle() {
+      const lock = getPrematureLockoutState();
+      if (lock.isLocked) {
+        playTone('alarm');
+        showToast(`🔒 New Cycle Locked: Day 11 (${formatNumericDate(lock.calibrationDate)}) has not elapsed.`);
+        closeModal('newCycleModal');
+        return;
+      }
+
+      const startVal = document.getElementById('modalInputStartDate').value;
+      const baseVal = parseInt(document.getElementById('modalInputBaseline').value, 10) || 10;
+      if (!startVal) return;
+
+      pushHistorySnapshot();
+      const newCycleNum = cycles.length > 0 ? (cycles[cycles.length - 1].cycleNumber + 1) : 1;
+      const newCycle = {
+        cycleNumber: newCycleNum,
+        startDate: startVal,
+        baselineDays: baseVal,
+        status: 'in_progress',
+        durationMinutes: null,
+        failureReasons: [],
+        isPrematureBreach: false,
+        notes: '',
+        resolvedDate: null
+      };
+
+      cycles.push(newCycle);
+      selectedCycleIndex = cycles.length - 1;
+
+      saveState();
+      closeModal('newCycleModal');
+      renderApp();
+      updateUndoRedoUI();
+      switchTab('dashboard');
+      playTone('start');
+      showToast(`Initialized Cycle #${newCycle.cycleNumber}`);
+    }
+
+    function updateModalPreview() {
+      const d = document.getElementById('modalInputStartDate').value;
+      const b = parseInt(document.getElementById('modalInputBaseline').value, 10) || 10;
+      if (d) {
+        const parsed = parseISODate(d);
+        const target = addDays(parsed, b + 1);
+        document.getElementById('modalPreviewStartDate').textContent = `${formatNumericDate(parsed)} (Day 0)`;
+        document.getElementById('modalPreviewContainmentDays').textContent = `Days 1 to ${b} (${b} full days)`;
+        document.getElementById('modalPreviewTargetDate').textContent = `${formatNumericDate(target)} (Day ${b + 1})`;
+      }
+    }
+
+    document.getElementById('modalInputStartDate').addEventListener('change', updateModalPreview);
+    document.getElementById('modalInputBaseline').addEventListener('input', updateModalPreview);
+
+    function applyHubBaselineChange() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      const val = parseInt(document.getElementById('hubBaselineInput').value, 10) || 10;
+      pushHistorySnapshot();
+      cycle.baselineDays = val;
+      eraseSimulationResultsIfAny();
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      playTone('click');
+      showToast(`Cycle #${cycle.cycleNumber} baseline updated to ${val} Days!`);
+    }
+
+    function setHubPreset(days) {
+      document.getElementById('hubBaselineInput').value = days;
+      applyHubBaselineChange();
+    }
+
+    function clearHistoryWithPrompt() {
+      if (cycles.length <= 1) return;
+      pushHistorySnapshot();
+      cycles = [cycles[cycles.length - 1]];
+      selectedCycleIndex = 0;
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      playTone('click');
+      showToast('Archived logs cleared.');
+    }
+
+    function openModal(id) {
+      const cycle = getSelectedCycle();
+      const metrics = cycle ? calculateMetrics(cycle) : null;
+
+      if (id === 'newCycleModal') {
+        const lock = getPrematureLockoutState();
+        if (lock.isLocked) {
+          playTone('alarm');
+          showToast(`🔒 New Cycle Locked until Day 11 (${formatNumericDate(lock.calibrationDate)}).`);
+          return;
+        }
+        const recDate = getRecommendedStartDate();
+        document.getElementById('modalInputStartDate').value = recDate;
+        const lastBaseline = cycles.length > 0 ? (cycles[cycles.length - 1].baselineDays || 10) : 10;
+        document.getElementById('modalInputBaseline').value = lastBaseline;
+        updateModalPreview();
+      }
+
+      if (id === 'failedSessionModal' && metrics) {
+        const prematureContainer = document.getElementById('failReasonPrematureContainer');
+        const prematureBox = document.getElementById('failReasonPremature');
+        const heading = document.getElementById('failedModalHeading');
+        const subtext = document.getElementById('failedModalSubtext');
+        const ceilingBox = document.getElementById('failReasonCeiling');
+        ceilingBox.checked = false;
+        handleCeilingToggleChange(false);
+
+        if (metrics.isCalibrationDay || metrics.isOvertimeDay) {
+          prematureContainer.classList.add('hidden');
+          prematureBox.checked = false;
+          heading.textContent = "Log Failed Session";
+          subtext.textContent = "Select what caused boundary failure during this calibration/overtime window.";
+        } else {
+          prematureContainer.classList.remove('hidden');
+          prematureBox.checked = true;
+          heading.textContent = "Log Premature Calibration Breach";
+          subtext.textContent = `Date (${formatNumericDate(metrics.inspectionDate)}) is prior to Day 11 Calibration Date (${formatNumericDate(metrics.calibrationDate)}). Logging prior locks new cycle creation until Day 11 has elapsed.`;
+        }
+      }
+
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      const label = document.getElementById('toastMessage');
+      label.textContent = msg;
+      toast.classList.remove('-translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('-translate-y-24', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3400);
+    }
+
+    /* -------------------------------------------------------------
+       AUDIO & VISUAL EFFECTS
+       ------------------------------------------------------------- */
+    let audioContext = null;
+    function getAudioCtx() {
+      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === 'suspended') audioContext.resume();
+      return audioContext;
+    }
+
+    function playTone(type) {
+      try {
+        const ctx = getAudioCtx();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(540, now);
+          osc.frequency.exponentialRampToValueAtTime(320, now + 0.04);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        } else if (type === 'start') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.exponentialRampToValueAtTime(520, now + 0.15);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        } else if (type === 'beep') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.start(now);
+          osc.stop(now + 0.1);
+        } else if (type === 'alarm') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(880, now + 0.1);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+          osc.start(now);
+          osc.stop(now + 0.2);
+        } else if (type === 'victory') {
+          [523.25, 659.25, 783.99, 1046.50].forEach((f, idx) => {
+            const chOsc = ctx.createOscillator();
+            const chGain = ctx.createGain();
+            chOsc.type = 'sine';
+            chOsc.frequency.setValueAtTime(f, now + idx * 0.06);
+            chGain.gain.setValueAtTime(0.08, now + idx * 0.06);
+            chGain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.3);
+            chOsc.connect(chGain);
+            chGain.connect(ctx.destination);
+            chOsc.start(now + idx * 0.06);
+            chOsc.stop(now + idx * 0.06 + 0.3);
+          });
+        }
+      } catch (e) {}
+    }
+
+    const canvas = document.getElementById('confettiCanvas');
+    const confettiCtx = canvas.getContext('2d');
+    let confetti = [];
+    let confettiRaf = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function launchConfetti() {
+      confetti = [];
+      const colors = ['#06b6d4', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+      for (let i = 0; i < 90; i++) {
+        confetti.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2 + 40,
+          w: Math.random() * 8 + 4,
+          h: Math.random() * 8 + 4,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.8) * 15,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vr: (Math.random() - 0.5) * 10,
+          alpha: 1,
+          gravity: 0.28
+        });
+      }
+      if (!confettiRaf) animateConfetti();
+    }
+
+    function animateConfetti() {
+      confettiCtx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      for (let p of confetti) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.rotation += p.vr;
+        p.alpha -= 0.01;
+        if (p.alpha > 0) {
+          alive = true;
+          confettiCtx.save();
+          confettiCtx.translate(p.x, p.y);
+          confettiCtx.rotate((p.rotation * Math.PI) / 180);
+          confettiCtx.globalAlpha = Math.max(0, p.alpha);
+          confettiCtx.fillStyle = p.color;
+          confettiCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          confettiCtx.restore();
+        }
+      }
+      if (alive) {
+        confettiRaf = requestAnimationFrame(animateConfetti);
+      } else {
+        cancelAnimationFrame(confettiRaf);
+        confettiRaf = null;
+        confettiCtx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    /* -------------------------------------------------------------
+       DAILY SEAL REVIEW QUEUE
+       ------------------------------------------------------------- */
+    let reviewQueue = [];
+    let reviewQueueCurrentIndex = 0;
+
+    function buildCycleReviewQueue(cycle) {
+      if (!cycle) return [];
+      if (!cycle.dailySeals) cycle.dailySeals = {};
+
+      const metrics = calculateMetrics(cycle);
+      const queue = [];
+      const totalDays = metrics.baseline + (metrics.overtimeDays || 0);
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dayDate = addDays(metrics.startDate, day);
+        if (diffDays(dayDate, metrics.inspectionDate) <= 0) {
+          queue.push({
+            dayNumber: day,
+            date: dayDate,
+            dateISO: formatISODate(dayDate),
+            isOvertime: (day > metrics.baseline)
+          });
+        }
+      }
+      queue.sort((a, b) => b.date - a.date);
+      return queue;
+    }
+
+    function openSequentialSealReview() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      if (!cycle.dailySeals) cycle.dailySeals = {};
+
+      reviewQueue = buildCycleReviewQueue(cycle);
+      if (reviewQueue.length === 0) {
+        showToast('No elapsed containment days available to review yet.');
+        return;
+      }
+      reviewQueueCurrentIndex = 0;
+      renderCurrentQueueItem();
+      document.getElementById('dailySealReviewModal').classList.remove('hidden');
+    }
+
+    function closeSealReviewModal() {
+      document.getElementById('dailySealReviewModal').classList.add('hidden');
+    }
+
+    function renderCurrentQueueItem() {
+      if (reviewQueue.length === 0 || reviewQueueCurrentIndex >= reviewQueue.length) {
+        closeSealReviewModal();
+        showToast('✨ All days in sequence reviewed!');
+        return;
+      }
+
+      const cycle = getSelectedCycle();
+      const item = reviewQueue[reviewQueueCurrentIndex];
+      const dateFormatted = formatNumericDate(item.date);
+      const currentTier = cycle.dailySeals[item.dateISO] || 'normal';
+
+      document.getElementById('sealModalQueueCounter').textContent = 
+        `Reviewing ${reviewQueueCurrentIndex + 1} of ${reviewQueue.length} (Latest → Past)`;
+      document.getElementById('sealModalDayTag').textContent = 
+        item.isOvertime ? `DAY ${item.dayNumber} (OVERTIME)` : `DAY ${item.dayNumber}`;
+      document.getElementById('sealModalTargetDate').textContent = dateFormatted;
+
+      const statusLabel = document.getElementById('sealModalCurrentStatus');
+      if (currentTier === 'high') {
+        statusLabel.textContent = '❤️ High-Sealed';
+        statusLabel.className = 'text-xs font-mono font-bold text-cyan-500';
+      } else {
+        statusLabel.textContent = '✓ Just Sealed';
+        statusLabel.className = 'text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400';
+      }
+
+      document.getElementById('btnPrevQueueDay').disabled = (reviewQueueCurrentIndex <= 0);
+      document.getElementById('btnNextQueueDay').textContent = 
+        (reviewQueueCurrentIndex === reviewQueue.length - 1) ? 'Finish Review' : 'Skip / Next Day →';
+    }
+
+    function toggleSingleDateSeal(dateISO, event) {
+      if (event) event.stopPropagation();
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      if (!cycle.dailySeals) cycle.dailySeals = {};
+
+      pushHistorySnapshot();
+      const currentTier = cycle.dailySeals[dateISO] || 'normal';
+      const newTier = (currentTier === 'high') ? 'normal' : 'high';
+      cycle.dailySeals[dateISO] = newTier;
+
+      saveState();
+      renderApp();
+
+      const cardEl = document.getElementById(`timeline-card-${dateISO}`);
+      if (newTier === 'high') {
+        launchConfetti();
+        playTone('victory');
+        if (cardEl) {
+          cardEl.classList.remove('pulse-flat-seal');
+          cardEl.classList.add('celebrate-high-seal');
+          setTimeout(() => cardEl.classList.remove('celebrate-high-seal'), 600);
+        }
+        showToast(`❤️ ${formatNumericDate(parseISODate(dateISO))} upgraded to High-Sealed!`);
+      } else {
+        playTone('click');
+        if (cardEl) {
+          cardEl.classList.remove('celebrate-high-seal');
+          cardEl.classList.add('pulse-flat-seal');
+          setTimeout(() => cardEl.classList.remove('pulse-flat-seal'), 300);
+        }
+        showToast(`✓ ${formatNumericDate(parseISODate(dateISO))} set to Sealed.`);
+      }
+    }
+
+    let isReviewTransitioning = false;
+
+    function applySealDecision(tier) {
+      if (isReviewTransitioning) return;
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      if (!cycle.dailySeals) cycle.dailySeals = {};
+
+      pushHistorySnapshot();
+      const item = reviewQueue[reviewQueueCurrentIndex];
+      cycle.dailySeals[item.dateISO] = tier;
+
+      const statusLabel = document.getElementById('sealModalCurrentStatus');
+      const targetBox = document.getElementById('sealModalTargetBox');
+
+      if (tier === 'high') {
+        if (statusLabel) {
+          statusLabel.textContent = '❤️ High-Sealed';
+          statusLabel.className = 'text-xs font-mono font-black text-cyan-400 scale-105 transition-all';
+        }
+        launchConfetti();
+        playTone('victory');
+        if (targetBox) {
+          targetBox.classList.remove('modal-pulse-flat');
+          targetBox.classList.add('modal-celebrate-high');
+        }
+      } else {
+        if (statusLabel) {
+          statusLabel.textContent = '✓ Just Sealed';
+          statusLabel.className = 'text-xs font-mono font-bold text-emerald-500 transition-all';
+        }
+        playTone('click');
+        if (targetBox) {
+          targetBox.classList.remove('modal-celebrate-high');
+          targetBox.classList.add('modal-pulse-flat');
+        }
+      }
+
+      saveState();
+      renderApp();
+
+      isReviewTransitioning = true;
+      const transitionDelay = (tier === 'high') ? 420 : 220;
+
+      setTimeout(() => {
+        if (targetBox) {
+          targetBox.classList.remove('modal-celebrate-high', 'modal-pulse-flat');
+        }
+        isReviewTransitioning = false;
+        reviewQueueCurrentIndex++;
+
+        if (reviewQueueCurrentIndex < reviewQueue.length) {
+          renderCurrentQueueItem();
+        } else {
+          closeSealReviewModal();
+          showToast(`✓ Cycle #${cycle.cycleNumber} reviews updated!`);
+        }
+      }, transitionDelay);
+    }
+
+    function stepReviewQueue(delta) {
+      const targetIndex = reviewQueueCurrentIndex + delta;
+      if (targetIndex >= 0 && targetIndex < reviewQueue.length) {
+        reviewQueueCurrentIndex = targetIndex;
+        renderCurrentQueueItem();
+        playTone('click');
+      } else if (targetIndex >= reviewQueue.length) {
+        closeSealReviewModal();
+      }
+    }
+
+    // --- BIND ALL FUNCTIONS TO GLOBAL WINDOW OBJECT FOR INLINE HANDLERS ---
+    window.handleLogin = handleLogin;
+    window.submitSimulatedLogin = submitSimulatedLogin;
+    window.handleLogout = handleLogout;
+    window.toggleSidebarDrawer = toggleSidebarDrawer;
+    window.exportDataAsJSON = exportDataAsJSON;
+    window.toggleTheme = toggleTheme;
+    window.prevCycle = prevCycle;
+    window.nextCycle = nextCycle;
+    window.switchTab = switchTab;
+    window.triggerUndo = triggerUndo;
+    window.triggerRedo = triggerRedo;
+    window.handleNewCycleButtonClick = handleNewCycleButtonClick;
+    window.openSimulationDatePicker = openSimulationDatePicker;
+    window.handleSimulatedDateChange = handleSimulatedDateChange;
+    window.stepSimulatedDays = stepSimulatedDays;
+    window.jumpToCalibrationDay = jumpToCalibrationDay;
+    window.jumpToOvertimeDay = jumpToOvertimeDay;
+    window.resetToRealDate = resetToRealDate;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.openAnchorEditorModal = openAnchorEditorModal;
+    window.submitAnchorDateChange = submitAnchorDateChange;
+    window.syncAnchorFieldsFromPicker = syncAnchorFieldsFromPicker;
+    window.setModalAnchorToday = setModalAnchorToday;
+    window.shiftModalAnchorDays = shiftModalAnchorDays;
+    window.submitNewCycle = submitNewCycle;
+    window.confirmSuccessionCycle = confirmSuccessionCycle;
+    window.abortSuccessionCycle = abortSuccessionCycle;
+    window.submitCompleteSession = submitCompleteSession;
+    window.submitFailedSession = submitFailedSession;
+    window.confirmSkipSession = confirmSkipSession;
+    window.reopenSelectedCyclePrompt = reopenSelectedCyclePrompt;
+    window.handleCeilingToggleChange = handleCeilingToggleChange;
+    window.toggleTimer = toggleTimer;
+    window.resetTimer = resetTimer;
+    window.transferTimerToLogger = transferTimerToLogger;
+    window.selectCycleByIndex = selectCycleByIndex;
+    window.deleteCycleByIndex = deleteCycleByIndex;
+    window.clearHistoryWithPrompt = clearHistoryWithPrompt;
+    window.applyHubBaselineChange = applyHubBaselineChange;
+    window.setHubPreset = setHubPreset;
+    window.openSequentialSealReview = openSequentialSealReview;
+    window.closeSealReviewModal = closeSealReviewModal;
+    window.applySealDecision = applySealDecision;
+    window.stepReviewQueue = stepReviewQueue;
+    window.toggleSingleDateSeal = toggleSingleDateSeal;
+
+    /* Initialize App */
+    loadState();
+    renderApp();
+    switchTab('dashboard');
+  </script>
+
+  <!-- Modal: Daily Seal Tier Sequential Review Overlay -->
+  <div id="dailySealReviewModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="glass-card bg-white dark:bg-slate-900 border border-cyan-500/40 max-w-lg w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl relative">
+      
+      <!-- Header with Step Indicator -->
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">✨</span>
+          <div>
+            <h3 class="text-base font-black text-slate-900 dark:text-white">Daily Seal Review</h3>
+            <p class="text-[11px] font-mono text-cyan-600 dark:text-cyan-400" id="sealModalQueueCounter">Day 4 of 4 (Latest → Past)</p>
+          </div>
+        </div>
+        <button onclick="closeSealReviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 text-sm">✕</button>
+      </div>
+
+      <!-- Active Review Target Day Details -->
+      <div id="sealModalTargetBox" class="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div>
+          <span id="sealModalDayTag" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-700 dark:text-cyan-300">DAY 4</span>
+          <h4 id="sealModalTargetDate" class="text-sm font-black font-mono text-slate-900 dark:text-white mt-1">04/11/2026</h4>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] font-mono text-slate-400 block">Current Status</span>
+          <span id="sealModalCurrentStatus" class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">Normal Sealed</span>
+        </div>
+      </div>
+
+      <!-- Recommendation Tier Explanations -->
+      <div class="space-y-3 text-xs leading-relaxed">
+        <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-slate-700 dark:text-slate-200 space-y-2">
+          <div class="flex items-center justify-between font-bold text-cyan-700 dark:text-cyan-300">
+            <span class="flex items-center space-x-1.5 font-mono text-xs">
+              <span>❤️</span>
+              <span>Recommended: High-Sealed Edition</span>
+            </span>
+            <span class="text-[10px] uppercase font-mono px-2 py-0.2 rounded bg-cyan-500/20">Optional</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-300">
+            <strong>Conditions:</strong> I did not voluntarily or deliberately entertain any kind of sexually arousing actions or representations. Even when required to engage through external circumstances, I did not view them through an <strong>Erotic Lens</strong>.
+          </p>
+          
+          <!-- Erotic Lens Definition Box -->
+          <div class="p-3 rounded-xl bg-slate-900/90 border border-rose-500/40 text-[11px] text-slate-200 space-y-1">
+            <div class="font-bold text-rose-400 flex items-center space-x-1">
+              <span>❤️‍🔥</span>
+              <span>The Erotic Lens (Beautiful / Desirable / Sensual):</span>
+            </div>
+            <p class="text-slate-300 italic">
+              "Consciously desiring or engaging to cultivate, amplify, or indulge in sexual arousal—beyond what is objectively presented—for one's own sexual satisfaction."
+            </p>
+            <span class="text-[10px] text-slate-400 block font-mono">Note: Encompasses both physical and/or mental gratification.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier Choice Buttons -->
+      <div class="grid grid-cols-2 gap-3 pt-1">
+        <button onclick="applySealDecision('normal')" class="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-left transition active:scale-95">
+          <div class="font-bold text-slate-800 dark:text-white text-xs mb-0.5 font-mono">✅ Just Sealed</div>
+          <span class="text-[10px] text-slate-500 dark:text-slate-300 block leading-tight">Physical boundaries intact. Standard protocol containment.</span>
+        </button>
+
+        <button onclick="applySealDecision('high')" class="p-3 rounded-2xl bg-gradient-to-br from-cyan-900 via-teal-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white border border-cyan-400/40 text-left transition shadow-lg shadow-cyan-600/25 active:scale-95">
+          <div class="font-bold text-xs mb-0.5 font-mono flex items-center space-x-1">
+            <span>❤️</span>
+            <span>High-Sealed</span>
+          </div>
+          <span class="text-[10px] text-cyan-100 block leading-tight">Zero voluntary arousal indulged + zero erotic lens applied.</span>
+        </button>
+      </div>
+
+      <!-- Navigation / Skip / Auto-Advance Footer -->
+      <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800 text-[11px] font-mono">
+        <button onclick="stepReviewQueue(-1)" id="btnPrevQueueDay" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 disabled:opacity-30">
+          ← Previous Day
+        </button>
+        <button onclick="stepReviewQueue(1)" id="btnNextQueueDay" class="text-cyan-600 dark:text-cyan-400 hover:underline font-bold">
+          Skip / Next Day →
+        </button>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
