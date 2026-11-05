@@ -435,6 +435,21 @@
     <!-- TAB 1: ACTIVE DASHBOARD                                                   -->
     <!-- ========================================================================= -->
     <section id="tab-content-dashboard" class="tab-pane space-y-6 block">
+      <!-- Unevaluated High-Seal Notice Banner -->
+      <div id="unevaluatedSealDashboardBanner" class="glass-card rounded-2xl p-4 sm:p-5 border border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-200 hidden items-center justify-between gap-4 shadow-lg transition-all">
+        <div class="space-y-1">
+          <div class="flex items-center space-x-2 font-mono font-bold text-sm sm:text-base text-amber-600 dark:text-amber-400">
+            <span>⚠️</span>
+            <span>HIGH-SEAL AUDIT PENDING</span>
+          </div>
+          <p id="unevaluatedDashboardMessage" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            You have elapsed containment days held under the normal seal that have not yet been evaluated for High Seal.
+          </p>
+        </div>
+        <button onclick="triggerPendingSealAudit()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-mono font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95 whitespace-nowrap">
+          Review Now →
+        </button>
+      </div>
       
       <!-- HERO STATUS BANNER -->
       <div id="heroCard" class="relative rounded-3xl p-6 sm:p-9 glass-card overflow-hidden transition-all duration-500">
@@ -1603,9 +1618,15 @@
       const maxDay = baseline + (m && m.overtimeDays ? m.overtimeDays : 0);
 
       for (let d = 1; d <= maxDay; d++) {
-        const dISO = formatISODate(addDays(sDate, d));
-        if (cycle.dailySeals[dISO]) {
-          cleanSeals[dISO] = cycle.dailySeals[dISO];
+        const dDate = addDays(sDate, d);
+        const dISO = formatISODate(dDate);
+
+        // CORE FIX: Prevent future simulation evaluations from bleeding back into real time.
+        // We only retain seals for days that are STRICTLY IN THE PAST relative to the current inspection date.
+        if (diffDays(dDate, m.inspectionDate) < 0) {
+          if (cycle.dailySeals[dISO]) {
+            cleanSeals[dISO] = cycle.dailySeals[dISO];
+          }
         }
       }
 
@@ -1760,6 +1781,10 @@
 
     function saveState() {
       try {
+        // CORE FIX: Ensure daily seals are actively sanitized locally before saving, 
+        // instantly wiping out any phantom future seals caused by reversing time.
+        cycles.forEach(c => sanitizeDailySeals(c));
+
         localStorage.setItem(STORAGE_KEY_CYCLES, JSON.stringify(cycles));
         localStorage.setItem(STORAGE_KEY_SELECTED_INDEX, selectedCycleIndex.toString());
         if (simulatedDateISO) {
@@ -1955,6 +1980,10 @@
       });
       playTone('click');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (tabId === 'dashboard') {
+        checkDashboardUnevaluatedSeals(false);
+      }
     }
 
     function eraseSimulationResultsIfAny() {
@@ -1984,21 +2013,25 @@
         simulatedDateISO = val;
       }
       eraseSimulationResultsIfAny();
+      hasAutoPromptedDashboardAudit = false; // <-- ADD THIS
       saveState();
       renderApp();
       updateUndoRedoUI();
       playTone('click');
       showToast(`Simulation: ${formatNumericDate(parseISODate(simulatedDateISO))}`);
+      checkDashboardUnevaluatedSeals(true); // <-- FORCE CHECK ON DATE CHANGE
     }
 
     function resetToRealDate() {
       simulatedDateISO = null;
       eraseSimulationResultsIfAny();
+      hasAutoPromptedDashboardAudit = false; // <-- ADD THIS
       saveState();
       renderApp();
       updateUndoRedoUI();
       playTone('click');
       showToast('Returned to Live Real Date.');
+      checkDashboardUnevaluatedSeals(true); // <-- FORCE CHECK ON RESET
     }
 
     function stepSimulatedDays(delta) {
@@ -2348,6 +2381,7 @@
         gaugeNumber.innerHTML = `${String(metrics.daysUntilCalibration).padStart(2, '0')}<span class="text-base text-cyan-500 font-bold ml-0.5">d</span>`;
         gaugeSub.textContent = `${metrics.daysUntilCalibration * 24}h Remaining`;
       }
+      checkDashboardUnevaluatedSeals(false);
     }
 
     function renderTimeline(cycle, metrics) {
@@ -3274,9 +3308,106 @@
       }
     }
 
+
+
     /* -------------------------------------------------------------
        DAILY SEAL REVIEW QUEUE
        ------------------------------------------------------------- */
+    let hasAutoPromptedDashboardAudit = false;
+
+    function getUnevaluatedPastDatesQueue(cycle) {
+      if (!cycle) return [];
+      if (!cycle.dailySeals) cycle.dailySeals = {};
+
+      const metrics = calculateMetrics(cycle);
+      const queue = [];
+      const baseDays = metrics.baseline;
+      const isOvertimeApproved = (cycle.status === 'skipped');
+      const totalDays = baseDays + (metrics.overtimeDays || 0);
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dayDate = addDays(metrics.startDate, day);
+        const dayISO = formatISODate(dayDate);
+        // Past day relative to current inspection date
+        const isPast = diffDays(dayDate, metrics.inspectionDate) < 0;
+        const isOvertime = (day > baseDays);
+
+        // A day is eligible if:
+        // 1. It is strictly in the past (before inspection date)
+        // 2. If it's an overtime day, overtime must be approved (cycle skipped)
+        if (isPast && (!isOvertime || isOvertimeApproved)) {
+          // If the day hasn't been explicitly classified as 'high' or 'normal' in dailySeals
+          if (!cycle.dailySeals[dayISO]) {
+            queue.push({
+              dayNumber: day,
+              date: dayDate,
+              dateISO: dayISO,
+              isOvertime: isOvertime
+            });
+          }
+        }
+      }
+
+      return queue.sort((a, b) => b.date - a.date);
+    }
+
+    function checkDashboardUnevaluatedSeals() {
+      if (currentTab !== 'dashboard') return;
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+
+      const unevaluated = getUnevaluatedPastDatesQueue(cycle);
+      const banner = document.getElementById('unevaluatedSealDashboardBanner');
+      const bannerMsg = document.getElementById('unevaluatedDashboardMessage');
+
+      if (unevaluated.length > 0) {
+        if (banner) {
+          banner.classList.remove('hidden');
+          banner.classList.add('flex');
+          if (bannerMsg) {
+            bannerMsg.innerHTML = `You have <strong>${unevaluated.length} past containment day${unevaluated.length > 1 ? 's' : ''}</strong> held with normal seal pending High-Seal evaluation.`;
+          }
+        }
+      } else {
+        if (banner) {
+          banner.classList.add('hidden');
+          banner.classList.remove('flex');
+        }
+      }
+    }
+
+    function triggerPendingSealAudit() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      const unevaluated = getUnevaluatedPastDatesQueue(cycle);
+      if (unevaluated.length === 0) {
+        showToast('✓ All past days have already been evaluated!');
+        return;
+      }
+      reviewQueue = unevaluated;
+      reviewQueueCurrentIndex = 0;
+      renderCurrentQueueItem();
+      openModal('dailySealReviewModal');
+    }
+
+    function batchConfirmRemainingAsNormal() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      if (!cycle.dailySeals) cycle.dailySeals = {};
+
+      pushHistorySnapshot();
+      for (let i = reviewQueueCurrentIndex; i < reviewQueue.length; i++) {
+        const item = reviewQueue[i];
+        cycle.dailySeals[item.dateISO] = 'normal';
+      }
+
+      saveState();
+      renderApp();
+      closeSealReviewModal();
+      playTone('click');
+      showToast('✓ Remaining days recorded as Normal Seal.');
+    }
+
     let reviewQueue = [];
     let reviewQueueCurrentIndex = 0;
 
@@ -3332,10 +3463,11 @@
       const cycle = getSelectedCycle();
       const item = reviewQueue[reviewQueueCurrentIndex];
       const dateFormatted = formatNumericDate(item.date);
-      const currentTier = cycle.dailySeals[item.dateISO] || 'normal';
+      const isExplicitlyRecorded = Boolean(cycle.dailySeals && cycle.dailySeals[item.dateISO]);
+      const currentTier = (cycle.dailySeals && cycle.dailySeals[item.dateISO]) ? cycle.dailySeals[item.dateISO] : 'normal';
 
       document.getElementById('sealModalQueueCounter').textContent = 
-        `Reviewing ${reviewQueueCurrentIndex + 1} of ${reviewQueue.length} (Latest → Past)`;
+        `Day ${reviewQueueCurrentIndex + 1} of ${reviewQueue.length} (${isExplicitlyRecorded ? 'Audited' : 'Pending Evaluation'})`;
       document.getElementById('sealModalDayTag').textContent = 
         item.isOvertime ? `DAY ${item.dayNumber} (OVERTIME)` : `DAY ${item.dayNumber}`;
       document.getElementById('sealModalTargetDate').textContent = dateFormatted;
@@ -3344,9 +3476,12 @@
       if (currentTier === 'high') {
         statusLabel.textContent = '❤️ High-Sealed';
         statusLabel.className = 'text-xs font-mono font-bold text-cyan-500';
-      } else {
-        statusLabel.textContent = '✓ Just Sealed';
+      } else if (isExplicitlyRecorded) {
+        statusLabel.textContent = '✓ Normal Sealed';
         statusLabel.className = 'text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400';
+      } else {
+        statusLabel.textContent = '⚠️ Unevaluated (Normal Seal)';
+        statusLabel.className = 'text-xs font-mono font-bold text-amber-500';
       }
 
       document.getElementById('btnPrevQueueDay').disabled = (reviewQueueCurrentIndex <= 0);
@@ -3507,11 +3642,17 @@
     window.applySealDecision = applySealDecision;
     window.stepReviewQueue = stepReviewQueue;
     window.toggleSingleDateSeal = toggleSingleDateSeal;
+    window.triggerPendingSealAudit = triggerPendingSealAudit;
+    window.batchConfirmRemainingAsNormal = batchConfirmRemainingAsNormal;
 
     /* Initialize App */
     loadState();
     renderApp();
     switchTab('dashboard');
+
+    setTimeout(() => {
+      checkDashboardUnevaluatedSeals(true);
+    }, 400);
   </script>
 
   <!-- Modal: Daily Seal Tier Sequential Review Overlay -->
@@ -3595,7 +3736,12 @@
           Skip / Next Day →
         </button>
       </div>
-
+      <!-- Quick Batch Normal Seal Option -->
+      <div class="pt-2 text-center">
+        <button onclick="batchConfirmRemainingAsNormal()" class="text-[11px] font-mono text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 underline transition">
+          Confirm remaining unevaluated days as Normal Seal
+        </button>
+      </div>
     </div>
   </div>
 </body>
