@@ -1288,6 +1288,18 @@
     <!-- TAB 1: DASHBOARD                           -->
     <!-- ========================================== -->
     <section id="tab-dashboard" class="tab-pane active">
+
+      <!-- Unevaluated High-Seal Banner -->
+      <div id="unevaluatedSealBanner" class="glass-card mono" style="display:none; padding:12px 14px; border:1px solid var(--amber-border); background:var(--amber-soft); border-radius:18px; margin-bottom:12px; align-items:center; justify-content:space-between; gap:10px;">
+        <div style="font-size:12px; line-height:1.4;">
+          <strong style="color:var(--amber);">⚠️ High-Seal Audit Pending:</strong>
+          <div id="unevaluatedBannerText" style="color:var(--text-muted); font-size:11px;">1 past day has normal seal but hasn't been evaluated.</div>
+        </div>
+        <button onclick="startAuditFromBanner()" style="background:var(--amber); color:#000; border:none; padding:7px 12px; border-radius:12px; font-weight:900; font-size:11.5px; cursor:pointer; white-space:nowrap; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
+          Review Now →
+        </button>
+      </div>
+
       <div class="glass-card hero-card">
         <!-- Ambient Responsive Hero Aura -->
         <div id="heroAura" class="hero-aura"></div>
@@ -1913,9 +1925,12 @@
           ◀ Newer Day
         </button>
         <button class="btn-sheet-primary" id="btnAuditNext" onclick="stepAuditSequence(1)" style="flex:1; padding:11px; font-size:13px;">
-          Older Day ▶
+          Skip / Older Day ▶
         </button>
       </div>
+      <button onclick="confirmRemainingAsNormalSeal()" style="width:100%; margin-top:12px; background:transparent; border:none; color:var(--text-dim); font-size:11.5px; font-weight:800; cursor:pointer; text-decoration:underline;">
+        Confirm remaining as Normal Seal
+      </button>
     </div>
   </div>
 
@@ -2185,9 +2200,12 @@
       const maxDay = baseline + 1 + (m && m.overtimeDays ? m.overtimeDays : 0);
 
       for (let d = 1; d <= maxDay; d++) {
-        const dISO = toISO(addDays(sDate, d));
-        if (cycle.dailySeals[dISO]) {
-          cleanSeals[dISO] = cycle.dailySeals[dISO];
+        const dDate = addDays(sDate, d);
+        const dISO = toISO(dDate);
+        if (diffDays(dDate, m.inspectionDate) < 0) {
+          if (cycle.dailySeals[dISO]) {
+            cleanSeals[dISO] = cycle.dailySeals[dISO];
+          }
         }
       }
 
@@ -2371,6 +2389,9 @@
 
       playTone('click');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (id === 'dashboard') {
+        checkAndPromptUnevaluatedAudit();
+      }
     }
 
     /* ---------------- SIDEBAR CONTROLLER ---------------- */
@@ -2669,13 +2690,95 @@
       const m = getMetrics(cycle);
       handleSimDateInput(toISO(addDays(m.calibrationDate, days || 3)));
     }
-
+    
     /* ---------------- HIGH SEAL AUDIT OVERLAY ENGINE ---------------- */
+    function getUnevaluatedPastDays(cycle) {
+      if (!cycle) return [];
+      const m = getMetrics(cycle);
+      if (!cycle.dailySeals) cycle.dailySeals = {};
+      const unevaluated = [];
+      const baseDays = m.baseline;
+      const isOvertimeApproved = (cycle.status === 'skipped');
+      const totalDays = baseDays + (m.overtimeDays || 0);
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dayDate = addDays(m.startDate, day);
+        const dayISO = toISO(dayDate);
+        const isPast = diffDays(dayDate, m.inspectionDate) < 0;
+        const isOvertime = (day > baseDays);
+
+        if (isPast && (!isOvertime || isOvertimeApproved)) {
+          if (!cycle.dailySeals[dayISO]) {
+            unevaluated.push(day);
+          }
+        }
+      }
+      return unevaluated.sort((a, b) => b - a); // Newest to oldest
+    }
+
+    function checkAndPromptUnevaluatedAudit() {
+      if (currentTab !== 'dashboard') return;
+      const cycle = getSelected();
+      if (!cycle) return;
+
+      const banner = document.getElementById('unevaluatedSealBanner');
+      const bannerText = document.getElementById('unevaluatedBannerText');
+      const m = getMetrics(cycle);
+
+      // CORE FIX: Suppress the High-Seal audit banner completely if overtime is 
+      // naturally accumulating but hasn't been officially approved (Skip/Sublimed) yet.
+      if (m.overtimeDays > 0 && cycle.status === 'in_progress') {
+        if (banner) banner.style.display = 'none';
+        return;
+      }
+
+      const unevaluated = getUnevaluatedPastDays(cycle);
+
+      if (unevaluated.length > 0) {
+        if (banner) {
+          banner.style.display = 'flex';
+          bannerText.textContent = `${unevaluated.length} past day${unevaluated.length > 1 ? 's have' : ' has'} normal seal pending high-seal evaluation.`;
+        }
+      } else {
+        if (banner) banner.style.display = 'none';
+      }
+    }
+
+    function startAuditFromBanner() {
+      const cycle = getSelected();
+      const unevaluated = getUnevaluatedPastDays(cycle);
+      if (unevaluated.length === 0) {
+        showToast('✓ All past days have been evaluated!');
+        return;
+      }
+      auditDayList = [...unevaluated];
+      auditCurrentIndex = 0;
+      openAuditModalForCurrent();
+    }
+
+    function confirmRemainingAsNormalSeal() {
+      const cycle = getSelected();
+      if (!cycle) return;
+      pushHistory();
+
+      const m = getMetrics(cycle);
+      for (let i = auditCurrentIndex; i < auditDayList.length; i++) {
+        const dNum = auditDayList[i];
+        const dDate = addDays(m.startDate, dNum);
+        setSealTierForDay(cycle, dNum, dDate, 'normal');
+      }
+
+      saveState();
+      renderApp();
+      closeModal('modalDailySealAudit');
+      playTone('click');
+      showToast('✓ Remaining days marked as Normal Sealed.');
+    }
+
     function openAuditModalForDay(dayNumber) {
       const cycle = getSelected();
       if (!cycle) return;
       const m = getMetrics(cycle);
-
       if (dayNumber <= 0 || dayNumber > m.totalSealedDays) return;
 
       auditDayList = [];
@@ -2696,19 +2799,30 @@
       const dayNumber = auditDayList[auditCurrentIndex];
       const dayDate = addDays(m.startDate, dayNumber);
       const isOvertime = dayNumber > m.baseline;
+      const dayISO = toISO(dayDate);
+      const isUnevaluated = !cycle.dailySeals || !cycle.dailySeals[dayISO];
       const currentTier = getSealTierForDay(cycle, dayNumber, dayDate);
 
-      document.getElementById('auditStepBadge').textContent = `Day ${dayNumber} of ${m.totalSealedDays} (${auditCurrentIndex + 1}/${auditDayList.length} in Review)`;
+      const badge = document.getElementById('auditStepBadge');
+      if (badge) {
+        badge.textContent = isUnevaluated 
+          ? `Pending Review (${auditCurrentIndex + 1}/${auditDayList.length})`
+          : `Day ${dayNumber} (${auditCurrentIndex + 1}/${auditDayList.length})`;
+        badge.style.background = isUnevaluated ? 'var(--amber-soft)' : 'var(--cyan-soft)';
+        badge.style.color = isUnevaluated ? 'var(--amber)' : 'var(--cyan)';
+        badge.style.borderColor = isUnevaluated ? 'var(--amber-border)' : 'var(--cyan-border)';
+      }
+
       document.getElementById('auditModalDayTitle').textContent = `Day ${dayNumber}: ${toDDMMYYYY(dayDate)}`;
       document.getElementById('auditModalDaySubtitle').textContent = isOvertime ? `Overtime Day (+${dayNumber - m.baseline}d OT)` : `Containment Baseline Day ${dayNumber}`;
 
       const highCard = document.getElementById('auditChoiceHigh');
       const normalCard = document.getElementById('auditChoiceNormal');
       highCard.classList.toggle('selected', currentTier === 'high');
-      normalCard.classList.toggle('selected', currentTier === 'normal');
+      normalCard.classList.toggle('selected', currentTier === 'normal' && !isUnevaluated);
 
       document.getElementById('btnAuditPrev').disabled = (auditCurrentIndex <= 0);
-      document.getElementById('btnAuditNext').textContent = (auditCurrentIndex >= auditDayList.length - 1) ? 'Finish Audit ✓' : 'Older Day ▶';
+      document.getElementById('btnAuditNext').textContent = (auditCurrentIndex >= auditDayList.length - 1) ? 'Finish Audit ✓' : 'Skip / Older Day ▶';
 
       openModal('modalDailySealAudit');
     }
@@ -2716,7 +2830,6 @@
     function selectAuditSeal(tier) {
       const cycle = getSelected();
       if (!cycle) return;
-
       pushHistory();
 
       const dayNumber = auditDayList[auditCurrentIndex];
@@ -2736,7 +2849,6 @@
 
       document.getElementById('auditChoiceHigh').classList.toggle('selected', tier === 'high');
       document.getElementById('auditChoiceNormal').classList.toggle('selected', tier === 'normal');
-
       showToast(`Day ${dayNumber} classified as ${tier === 'high' ? '❤️ High-Sealed' : '🛡️ Normal Sealed'}`);
 
       setTimeout(() => {
@@ -2993,6 +3105,7 @@
         dialNum.textContent = `${String(m.daysUntilCalib).padStart(2, '0')}d`;
         dialSub.textContent = `${m.daysUntilCalib * 24}h Left`;
       }
+      checkAndPromptUnevaluatedAudit();
     }
 
     /* ---------------- RENDER TIMELINE ---------------- */
@@ -3866,6 +3979,7 @@
 
     function saveState() {
       try {
+        cycles.forEach(c => sanitizeDailySeals(c));
         localStorage.setItem(STORAGE_KEY, JSON.stringify(cycles));
         if (simulatedDateISO) {
           localStorage.setItem(SIM_KEY, simulatedDateISO);
@@ -3931,13 +4045,16 @@
       jumpToOvertimeDay,
       openModal,
       closeModal,
-      closeModalOnBackdrop
+      closeModalOnBackdrop,
+      startAuditFromBanner,
+      confirmRemainingAsNormalSeal
     });
 
     window.addEventListener('DOMContentLoaded', () => {
       loadState();
       renderApp();
       switchTab('dashboard');
+      checkAndPromptUnevaluatedAudit();
     });
   </script>
 </body>
