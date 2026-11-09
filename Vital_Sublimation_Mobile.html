@@ -1373,6 +1373,13 @@
           </div>
         </div>
 
+        <!-- INSERT HERE: Calibration Console Direct Shortcut -->
+        <div id="heroCalibActionWrap" style="display:none; text-align:center; margin-top:-6px; margin-bottom:16px;">
+          <button onclick="switchTab('calibration')" style="background:transparent; border:1px solid var(--amber-border); color:var(--amber); padding:8px 16px; border-radius:14px; font-size:12.5px; font-weight:800; cursor:pointer;" class="mono">
+            Open Calibration Console →
+          </button>
+        </div>
+
         <!-- Dual Progress Bar: Baseline + Dynamic Overtime -->
         <div class="prog-header mono">
           <span id="progRatio">Progress: 4 / 10 Days</span>
@@ -2772,10 +2779,6 @@
 
       // CORE FIX: Suppress the High-Seal audit banner completely if overtime is 
       // naturally accumulating but hasn't been officially approved (Skip/Sublimed) yet.
-      if (m.overtimeDays > 0 && cycle.status === 'in_progress') {
-        if (banner) banner.style.display = 'none';
-        return;
-      }
 
       const unevaluated = getUnevaluatedPastDays(cycle);
 
@@ -3052,19 +3055,22 @@
         const otW = Math.min(35, (m.overtimeDays / m.baseline) * 35);
         barOt.style.width = `${otW}%`;
         otBanner.style.display = 'block';
-        otBanner.textContent = `⚡ Overtime Active: +${m.overtimeDays} Days Accumulated`;
+        otBanner.textContent = `⚡ Overtime Containment Active: +${m.overtimeDays} Days Accumulated`;
 
         radialOt.style.opacity = '1';
         radialOt.style.strokeDashoffset = circOt - Math.min(1, m.overtimeDays / 14) * circOt;
+        
+        document.getElementById('progRatio').textContent = `Containment Progress: ${m.totalSealedDays} / ${m.baseline} Days Sealed (+${m.overtimeDays}d OT)`;
       } else {
         barBase.style.width = `${m.percentage}%`;
         barOt.style.width = '0%';
         otBanner.style.display = 'none';
         radialOt.style.opacity = '0';
+        
+        document.getElementById('progRatio').textContent = `Containment Progress: ${m.totalSealedDays} / ${m.baseline} Days Sealed`;
       }
 
-      document.getElementById('progRatio').textContent = `Progress: ${m.totalSealedDays} / ${m.baseline} Days`;
-      document.getElementById('progPct').textContent = `${m.percentage}%`;
+      document.getElementById('progPct').textContent = `${m.percentage}% Completed`;
 
       document.getElementById('metricTotalSealed').textContent = `${m.totalSealedDays}d`;
       document.getElementById('metricOtBadge').textContent = `+${m.overtimeDays}d OT`;
@@ -3127,18 +3133,18 @@
         dialSub.textContent = 'Resolve Today';
 
       } else if (m.phase === 'awaiting_resolution') {
-        badgeText.textContent = `ACTIVE (DAY ${currentDayNumber}/${m.baseline} • +${m.overtimeDays + 1}d OT)`;
-        badge.style.background = 'var(--purple-soft)';
-        badge.style.color = 'var(--purple)';
-        badge.style.border = '1px solid var(--purple-border)';
-        if (aura) aura.style.background = 'rgba(139, 92, 246, 0.25)';
+        // --- PRE-APPROVAL OVERTIME (AWAITING SKIP / SUBLIME) ---
+        badgeText.textContent = `⏳ RESOLUTION GATE DUE (+${m.overtimeDays}D)`;
+        badge.style.background = 'var(--amber-soft)';
+        badge.style.color = 'var(--amber)';
+        badge.style.border = '1px solid var(--amber-border)';
+        if (aura) aura.style.background = 'rgba(245, 158, 11, 0.28)';
 
-        headline.innerHTML = `Containment: <span style="color:var(--purple);">Day ${currentDayNumber} of ${m.baseline}</span> Active`;
-        // Clean text: removes (+4d OT) and cleanly says Day 14 in progress
-        sub.textContent = `Anchor Day 0 is excluded. ${m.totalSealedDays} days sealed (${m.baseline} Base + ${m.overtimeDays} OT). Day ${currentDayNumber} in progress.`;
+        headline.innerHTML = `⏳ Calibration Due: <span style="color:var(--amber);">Awaiting Formal Resolution</span>`;
+        sub.textContent = `Baseline has elapsed (${m.overtimeDays} day${m.overtimeDays > 1 ? 's' : ''} ago). Overtime active: ${m.totalSealedDays} total days sealed.`;
 
         document.getElementById('metricRemain').textContent = `+${m.overtimeDays}d Over`;
-        dialLabel.textContent = 'Overtime';
+        dialLabel.textContent = 'OVERTIME';
         dialNum.textContent = `+${m.overtimeDays}d`;
         dialSub.textContent = `${m.totalSealedDays}d Sealed`;
 
@@ -3157,6 +3163,12 @@
         dialLabel.textContent = 'Calibration In';
         dialNum.textContent = `${String(m.daysUntilCalib).padStart(2, '0')}d`;
         dialSub.textContent = `${m.daysUntilCalib * 24}h Left`;
+      }
+
+      // INSERT HERE: Toggle visibility of the console link
+      const calibBtnWrap = document.getElementById('heroCalibActionWrap');
+      if (calibBtnWrap) {
+        calibBtnWrap.style.display = (m.phase === 'awaiting_resolution' || m.phase === 'calibration_day') ? 'block' : 'none';
       }
 
       checkAndPromptUnevaluatedAudit();
