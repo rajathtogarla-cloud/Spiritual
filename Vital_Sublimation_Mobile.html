@@ -1246,7 +1246,132 @@
       animation: barPulsePurple 2.4s ease-in-out infinite;
     }
 
-    
+    /* Wave Dial Container & Centered Counter */
+    .wave-dial-wrapper {
+      position: relative;
+      width: 210px;
+      height: 210px;
+      margin: 6px auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wave-dial-bezel {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.85);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .wave-dial-canvas {
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      display: block;
+      background: transparent;
+    }
+
+    .wave-dial-content {
+      position: absolute;
+      z-index: 10;
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.95), 0 0 20px rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    html.light .wave-dial-content {
+      background: #ffffff;
+      border-color: rgba(0, 0, 0, 0.1);
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.05), 0 0 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .wave-dial-label {
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-dim);
+      font-weight: 800;
+    }
+
+    .wave-dial-val {
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -1.2px;
+      color: var(--text);
+      margin: 2px 0;
+    }
+
+    .wave-dial-sub {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--cyan);
+    }
+
+    /* Comet Conduit Track & Headers */
+    .conduit-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .conduit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-muted);
+      padding: 0 2px;
+    }
+
+    .conduit-track-shell {
+      position: relative;
+      width: 100%;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+    }
+
+    .conduit-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .overtime-callout {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--purple);
+      padding: 4px 8px;
+      background: var(--purple-soft);
+      border: 1px solid var(--purple-border);
+      border-radius: 10px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
   </style>
 </head>
 
@@ -1352,44 +1477,40 @@
         <h2 class="hero-heading" id="heroHeadline">Containment: <span style="color:var(--cyan);">Day 4 of 10</span> Active</h2>
         <p class="hero-sub" id="heroSubtext">Anchor Day 0 is excluded. Somatic boundaries sealed.</p>
 
-        <!-- Big Radial Dial Countdown (Tri-Color Cyber Gradient) -->
-        <div class="radial-center-wrap">
-          <svg class="radial-svg" viewBox="0 0 120 120">
-            <defs>
-              <linearGradient id="gaugeGradMobile" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#06b6d4" />
-                <stop offset="60%" stop-color="#10b981" />
-                <stop offset="100%" stop-color="#f59e0b" />
-              </linearGradient>
-            </defs>
-            <circle cx="60" cy="60" r="48" stroke="rgba(255,255,255,0.08)" stroke-width="8" fill="transparent"/>
-            <circle id="radialProgress" cx="60" cy="60" r="48" stroke="url(#gaugeGradMobile)" stroke-width="8" stroke-linecap="round" fill="transparent" stroke-dasharray="301.59" stroke-dashoffset="180" style="transition:stroke-dashoffset 0.5s ease;"/>
-            <circle id="radialOvertime" cx="60" cy="60" r="55" stroke="var(--purple)" stroke-width="5" stroke-linecap="round" fill="transparent" stroke-dasharray="345.57" stroke-dashoffset="345.57" style="opacity:0; transition:all 0.5s ease;"/>
-          </svg>
-          <div class="radial-content mono">
-            <div class="radial-tag" id="dialLabel">Calibration In</div>
-            <div class="radial-value" id="dialNum">07d</div>
-            <div class="radial-foot" id="dialSub">168h left</div>
+        <!-- 1. FLUID WAVE FILL CIRCULAR DIAL -->
+        <div class="wave-dial-wrapper">
+          <div class="wave-dial-bezel"></div>
+          <canvas id="waveCanvas" class="wave-dial-canvas" width="210" height="210"></canvas>
+          <div class="wave-dial-content mono">
+            <div class="wave-dial-label" id="dialLabel">Calibration In</div>
+            <div class="wave-dial-val" id="dialNum">07d</div>
+            <div class="wave-dial-sub" id="dialSub">168h left</div>
           </div>
         </div>
 
         <!-- INSERT HERE: Calibration Console Direct Shortcut -->
-        <div id="heroCalibActionWrap" style="display:none; text-align:center; margin-top:-6px; margin-bottom:16px;">
+        <div id="heroCalibActionWrap" style="display:none; text-align:center; margin-top:-6px; margin-bottom:14px;">
           <button onclick="switchTab('calibration')" style="background:transparent; border:1px solid var(--amber-border); color:var(--amber); padding:8px 16px; border-radius:14px; font-size:12.5px; font-weight:800; cursor:pointer;" class="mono">
             Open Calibration Console →
           </button>
         </div>
 
-        <!-- Dual Progress Bar: Baseline + Dynamic Overtime -->
-        <div class="prog-header mono">
-          <span id="progRatio">Progress: 4 / 10 Days</span>
-          <span id="progPct" style="color:var(--emerald);">40%</span>
+        <!-- 2. PARTICLE COMET CONDUIT (PROGRESS BAR) -->
+        <div class="conduit-section mono">
+          <div class="conduit-header">
+            <span id="progRatio">Progress: 4 / 10 Days</span>
+            <span id="progPct" style="color:var(--cyan);">40%</span>
+          </div>
+
+          <div class="conduit-track-shell">
+            <canvas id="cometCanvas" class="conduit-canvas" height="22"></canvas>
+          </div>
+
+          <div class="overtime-callout" id="otBanner">
+            <span>⚡ Overtime Sublimation Active:</span>
+            <span id="otDaysCount">+0 Days</span>
+          </div>
         </div>
-        <div class="dual-bar-track">
-          <div class="bar-baseline" id="barBase" style="width:40%;"></div>
-          <div class="bar-overtime" id="barOt" style="width:0%;"></div>
-        </div>
-        <div class="overtime-active-label mono" id="otBanner">⚡ Overtime Active: +0 Days Accumulated</div>
 
         <!-- 2x2 Metric Grid -->
         <div class="metric-grid mono">
@@ -2442,6 +2563,7 @@
       playTone('click');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (id === 'dashboard') {
+        setTimeout(resizeCometTrack, 20);
         checkAndPromptUnevaluatedAudit();
       }
     }
@@ -3019,6 +3141,265 @@
       document.getElementById('hubBaselineInput').value = cycle.baselineDays;
     }
 
+    /* ========================================================================= */
+    /* PROGRESSION ENGINE: WAVE DIAL & COMET CONDUIT                             */
+    /* ========================================================================= */
+    let activeProgVal = 0;       // Bound dynamically to cycle metrics (0 to 150+)
+    let activeBaseDays = 10;
+    let waveStep = 0;
+    let cometParticles = [];
+    let bubbleParticles = [];
+
+    const waveCanvas = document.getElementById('waveCanvas');
+    const waveCtx = waveCanvas ? waveCanvas.getContext('2d') : null;
+    const cometCanvas = document.getElementById('cometCanvas');
+    const cometCtx = cometCanvas ? cometCanvas.getContext('2d') : null;
+
+    // Initialize Ambient Rising Bubbles
+    for (let i = 0; i < 18; i++) {
+      bubbleParticles.push({
+        x: Math.random() * 210,
+        y: Math.random() * 210,
+        r: 1.0 + Math.random() * 2.2,
+        vy: 0.4 + Math.random() * 0.8,
+        alpha: 0.2 + Math.random() * 0.6
+      });
+    }
+
+    function resizeCometTrack() {
+      if (!cometCanvas || !cometCanvas.parentElement) return;
+      const rect = cometCanvas.parentElement.getBoundingClientRect();
+      cometCanvas.width = rect.width;
+      cometCanvas.height = 22;
+    }
+
+    window.addEventListener('resize', resizeCometTrack);
+
+    /* Dual Concentric Fluid Wave Render */
+    function renderWaveDial() {
+      if (!waveCtx || currentTab !== 'dashboard') return;
+      const w = waveCanvas.width;
+      const h = waveCanvas.height;
+      waveCtx.clearRect(0, 0, w, h);
+
+      const cx = w / 2;
+      const cy = h / 2;
+      const otOuterR = 100, otInnerR = 84;
+      const baseOuterR = 78, baseInnerR = 58;
+
+      waveStep += 0.045;
+
+      // Track Backgrounds
+      waveCtx.save();
+      waveCtx.beginPath();
+      waveCtx.arc(cx, cy, otOuterR, 0, Math.PI * 2, false);
+      waveCtx.arc(cx, cy, otInnerR, 0, Math.PI * 2, true);
+      waveCtx.fillStyle = activeProgVal > 100 ? 'rgba(139, 92, 246, 0.12)' : 'rgba(255, 255, 255, 0.04)';
+      waveCtx.fill();
+      waveCtx.strokeStyle = activeProgVal > 100 ? 'rgba(139, 92, 246, 0.35)' : 'rgba(255, 255, 255, 0.06)';
+      waveCtx.lineWidth = 1;
+      waveCtx.stroke();
+
+      waveCtx.beginPath();
+      waveCtx.arc(cx, cy, baseOuterR, 0, Math.PI * 2, false);
+      waveCtx.arc(cx, cy, baseInnerR, 0, Math.PI * 2, true);
+      waveCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      waveCtx.fill();
+      waveCtx.strokeStyle = 'rgba(6, 182, 212, 0.25)';
+      waveCtx.lineWidth = 1;
+      waveCtx.stroke();
+      waveCtx.restore();
+
+      // Baseline Wave Fill (Inner Ring)
+      const baseFillRatio = Math.min(1.0, activeProgVal / 100);
+      if (baseFillRatio > 0) {
+        waveCtx.save();
+        waveCtx.beginPath();
+        waveCtx.arc(cx, cy, baseOuterR, 0, Math.PI * 2, false);
+        waveCtx.arc(cx, cy, baseInnerR, 0, Math.PI * 2, true);
+        waveCtx.clip();
+
+        const baseWaterY = (cy + baseOuterR) - (baseFillRatio * (baseOuterR * 2));
+        const baseGrad = waveCtx.createLinearGradient(0, baseWaterY - 10, 0, cy + baseOuterR);
+        baseGrad.addColorStop(0, 'rgba(34, 211, 238, 0.9)');
+        baseGrad.addColorStop(0.5, 'rgba(16, 185, 129, 0.85)');
+        baseGrad.addColorStop(1, 'rgba(5, 150, 105, 1)');
+
+        // Swell Layer
+        waveCtx.fillStyle = 'rgba(6, 182, 212, 0.45)';
+        waveCtx.beginPath();
+        waveCtx.moveTo(0, h);
+        for (let x = 0; x <= w; x += 4) {
+          waveCtx.lineTo(x, baseWaterY + Math.sin(x * 0.06 + waveStep * 0.9) * 3.5);
+        }
+        waveCtx.lineTo(w, h);
+        waveCtx.fill();
+
+        // Foreground Layer
+        waveCtx.fillStyle = baseGrad;
+        waveCtx.beginPath();
+        waveCtx.moveTo(0, h);
+        for (let x = 0; x <= w; x += 4) {
+          waveCtx.lineTo(x, baseWaterY + Math.cos(x * 0.065 - waveStep) * 4);
+        }
+        waveCtx.lineTo(w, h);
+        waveCtx.fill();
+        waveCtx.restore();
+      }
+
+      // Overtime Wave Fill (Outer Ring)
+      if (activeProgVal > 100) {
+        const otRatio = Math.min(1.0, (activeProgVal - 100) / 50);
+        waveCtx.save();
+        waveCtx.beginPath();
+        waveCtx.arc(cx, cy, otOuterR, 0, Math.PI * 2, false);
+        waveCtx.arc(cx, cy, otInnerR, 0, Math.PI * 2, true);
+        waveCtx.clip();
+
+        const otWaterY = (cy + otOuterR) - (otRatio * (otOuterR * 2));
+        const otGrad = waveCtx.createLinearGradient(0, otWaterY - 12, 0, cy + otOuterR);
+        otGrad.addColorStop(0, 'rgba(192, 132, 252, 0.95)');
+        otGrad.addColorStop(0.5, 'rgba(139, 92, 246, 0.85)');
+        otGrad.addColorStop(1, 'rgba(79, 70, 229, 1)');
+
+        waveCtx.fillStyle = 'rgba(139, 92, 246, 0.45)';
+        waveCtx.beginPath();
+        waveCtx.moveTo(0, h);
+        for (let x = 0; x <= w; x += 4) {
+          waveCtx.lineTo(x, otWaterY + Math.sin(x * 0.055 + waveStep * 1.1) * 3.5);
+        }
+        waveCtx.lineTo(w, h);
+        waveCtx.fill();
+
+        waveCtx.fillStyle = otGrad;
+        waveCtx.beginPath();
+        waveCtx.moveTo(0, h);
+        for (let x = 0; x <= w; x += 4) {
+          waveCtx.lineTo(x, otWaterY + Math.cos(x * 0.06 - waveStep * 1.1) * 4.2);
+        }
+        waveCtx.lineTo(w, h);
+        waveCtx.fill();
+        waveCtx.restore();
+      }
+
+      // Rising Sublimation Bubbles
+      bubbleParticles.forEach(b => {
+        b.y -= b.vy;
+        if (b.y < 5) {
+          b.y = h - 10;
+          b.x = cx + (Math.random() - 0.5) * (otOuterR * 1.8);
+        }
+        const dist = Math.hypot(b.x - cx, b.y - cy);
+        const inInner = dist >= baseInnerR && dist <= baseOuterR && baseFillRatio > 0;
+        const inOuter = dist >= otInnerR && dist <= otOuterR && activeProgVal > 100;
+
+        if (inInner || inOuter) {
+          waveCtx.save();
+          waveCtx.fillStyle = inOuter ? `rgba(233, 213, 255, ${b.alpha})` : `rgba(255, 255, 255, ${b.alpha})`;
+          waveCtx.beginPath();
+          waveCtx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+          waveCtx.fill();
+          waveCtx.restore();
+        }
+      });
+    }
+
+    /* Particle Comet Conduit Bar Render */
+    function renderCometConduit() {
+      if (!cometCtx || currentTab !== 'dashboard') return;
+      const w = cometCanvas.width;
+      const h = cometCanvas.height;
+      cometCtx.clearRect(0, 0, w, h);
+
+      let baseTargetWidth = (Math.min(100, activeProgVal) / 100) * w;
+      let otWidth = 0;
+
+      if (activeProgVal > 100) {
+        baseTargetWidth = w * 0.70;
+        const otRatio = Math.min(1.0, (activeProgVal - 100) / 50);
+        otWidth = (w - baseTargetWidth - 4) * otRatio;
+      }
+
+      // Baseline Bar
+      if (baseTargetWidth > 0) {
+        const baseGrad = cometCtx.createLinearGradient(0, 0, baseTargetWidth, 0);
+        baseGrad.addColorStop(0, '#06b6d4');
+        baseGrad.addColorStop(0.6, '#10b981');
+        baseGrad.addColorStop(1, '#34d399');
+
+        cometCtx.fillStyle = baseGrad;
+        cometCtx.beginPath();
+        cometCtx.roundRect(0, 1, baseTargetWidth, h - 2, [99, activeProgVal > 100 ? 0 : 99, activeProgVal > 100 ? 0 : 99, 99]);
+        cometCtx.fill();
+      }
+
+      // Overtime Bar
+      if (otWidth > 0) {
+        const otStartX = baseTargetWidth + 3;
+        const otGrad = cometCtx.createLinearGradient(otStartX, 0, otStartX + otWidth, 0);
+        otGrad.addColorStop(0, '#8b5cf6');
+        otGrad.addColorStop(1, '#c084fc');
+
+        cometCtx.fillStyle = otGrad;
+        cometCtx.beginPath();
+        cometCtx.roundRect(otStartX, 1, otWidth, h - 2, [0, 99, 99, 0]);
+        cometCtx.fill();
+      }
+
+      const activeHeadX = activeProgVal > 100 ? (baseTargetWidth + 3 + otWidth) : baseTargetWidth;
+
+      // Comet Particle Streamers
+      if (activeHeadX > 15 && Math.random() < 0.75) {
+        cometParticles.push({
+          x: Math.max(0, activeHeadX - (20 + Math.random() * 80)),
+          y: 3 + Math.random() * (h - 6),
+          vx: 2.2 + Math.random() * 3.4,
+          len: 6 + Math.random() * 12,
+          color: activeProgVal > 100 ? '#e9d5ff' : '#a7f3d0',
+          alpha: 0.85
+        });
+      }
+
+      cometCtx.save();
+      for (let i = cometParticles.length - 1; i >= 0; i--) {
+        const p = cometParticles[i];
+        p.x += p.vx;
+        p.alpha -= 0.024;
+
+        if (p.x >= activeHeadX || p.alpha <= 0) {
+          cometParticles.splice(i, 1);
+          continue;
+        }
+
+        cometCtx.strokeStyle = p.color;
+        cometCtx.lineWidth = 1.6;
+        cometCtx.globalAlpha = Math.max(0, p.alpha);
+        cometCtx.beginPath();
+        cometCtx.moveTo(p.x, p.y);
+        cometCtx.lineTo(Math.max(0, p.x - p.len), p.y);
+        cometCtx.stroke();
+      }
+      cometCtx.restore();
+
+      // Comet Leading Flare
+      if (activeHeadX > 2) {
+        cometCtx.save();
+        cometCtx.beginPath();
+        cometCtx.arc(activeHeadX - 2, h / 2, 4.5, 0, Math.PI * 2);
+        cometCtx.fillStyle = '#ffffff';
+        cometCtx.shadowColor = activeProgVal > 100 ? '#c084fc' : '#22d3ee';
+        cometCtx.shadowBlur = 12;
+        cometCtx.fill();
+        cometCtx.restore();
+      }
+    }
+
+    function masterAnimationLoop() {
+      renderWaveDial();
+      renderCometConduit();
+      requestAnimationFrame(masterAnimationLoop);
+    }
+
     /* ---------------- RENDER DASHBOARD ---------------- */
     function renderDashboard(cycle, m) {
       document.getElementById('metricAnchor').textContent = toDDMMYYYY(m.startDate);
@@ -3035,42 +3416,36 @@
       const dialLabel = document.getElementById('dialLabel');
       const dialSub = document.getElementById('dialSub');
 
-      const radialProg = document.getElementById('radialProgress');
-      const radialOt = document.getElementById('radialOvertime');
+      // 1. Sync Animation Engine Baseline and Percentage
+      activeBaseDays = m.baseline;
+      const legendBase = document.getElementById('legendBaseDays');
+      if (legendBase) legendBase.textContent = m.baseline;
 
-      const barBase = document.getElementById('barBase');
-      const barOt = document.getElementById('barOt');
-      const otBanner = document.getElementById('otBanner');
-
-      const circBase = 301.59;
-      const circOt = 345.57;
-
-      // Base progress ratio
-      const baseRatio = Math.min(1, m.baselineSealed / m.baseline);
-      radialProg.style.strokeDashoffset = circBase - (baseRatio * circBase);
-
-      // Overtime Bar & Radial Display
+      // Active value drives both the concentric wave height and the comet conduit fill
       if (m.overtimeDays > 0) {
-        barBase.style.width = '65%';
-        const otW = Math.min(35, (m.overtimeDays / m.baseline) * 35);
-        barOt.style.width = `${otW}%`;
-        otBanner.style.display = 'block';
-        otBanner.textContent = `⚡ Overtime Containment Active: +${m.overtimeDays} Days Accumulated`;
-
-        radialOt.style.opacity = '1';
-        radialOt.style.strokeDashoffset = circOt - Math.min(1, m.overtimeDays / 14) * circOt;
-        
-        document.getElementById('progRatio').textContent = `Containment Progress: ${m.totalSealedDays} / ${m.baseline} Days Sealed (+${m.overtimeDays}d OT)`;
+        activeProgVal = 100 + (m.overtimeDays * 10);
       } else {
-        barBase.style.width = `${m.percentage}%`;
-        barOt.style.width = '0%';
-        otBanner.style.display = 'none';
-        radialOt.style.opacity = '0';
-        
-        document.getElementById('progRatio').textContent = `Containment Progress: ${m.totalSealedDays} / ${m.baseline} Days Sealed`;
+        activeProgVal = m.baseline > 0 ? Math.round((m.baselineSealed / m.baseline) * 100) : 0;
       }
 
-      document.getElementById('progPct').textContent = `${m.percentage}% Completed`;
+      // 2. Synchronize Comet Conduit Header & Overtime Pill
+      const progPct = document.getElementById('progPct');
+      const progRatio = document.getElementById('progRatio');
+      const otBanner = document.getElementById('otBanner');
+      const otDaysCount = document.getElementById('otDaysCount');
+
+      if (m.overtimeDays > 0) {
+        progPct.textContent = `${activeProgVal}%`;
+        progPct.style.color = 'var(--purple)';
+        progRatio.textContent = `Progress: ${m.totalSealedDays} / ${m.baseline} Days Sealed (+${m.overtimeDays}d OT)`;
+        if (otBanner) otBanner.style.display = 'flex';
+        if (otDaysCount) otDaysCount.textContent = `+${m.overtimeDays} Day${m.overtimeDays > 1 ? 's' : ''}`;
+      } else {
+        progPct.textContent = `${activeProgVal}%`;
+        progPct.style.color = 'var(--cyan)';
+        progRatio.textContent = `Progress: ${m.totalSealedDays} / ${m.baseline} Days Sealed`;
+        if (otBanner) otBanner.style.display = 'none';
+      }
 
       document.getElementById('metricTotalSealed').textContent = `${m.totalSealedDays}d`;
       document.getElementById('metricOtBadge').textContent = `+${m.overtimeDays}d OT`;
@@ -4135,9 +4510,11 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       loadState();
+      resizeCometTrack();
       renderApp();
       switchTab('dashboard');
       checkAndPromptUnevaluatedAudit();
+      requestAnimationFrame(masterAnimationLoop); // <--- Starts animation loop
     });
   </script>
 </body>
