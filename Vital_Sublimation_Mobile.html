@@ -1206,6 +1206,47 @@
       display: inline-block;
       animation: timerBounce 0.65s infinite;
     }
+
+    /* Progress Bar Pulsating & Shimmer Animation */
+    @keyframes barPulse {
+      0%, 100% {
+        box-shadow: 0 0 8px rgba(6, 182, 212, 0.4), inset 0 0 6px rgba(255, 255, 255, 0.2);
+        filter: brightness(1);
+      }
+      50% {
+        box-shadow: 0 0 18px rgba(6, 182, 212, 0.75), inset 0 0 10px rgba(255, 255, 255, 0.45);
+        filter: brightness(1.15);
+      }
+    }
+
+    @keyframes barPulsePurple {
+      0%, 100% {
+        box-shadow: 0 0 8px rgba(139, 92, 246, 0.4), inset 0 0 6px rgba(255, 255, 255, 0.2);
+        filter: brightness(1);
+      }
+      50% {
+        box-shadow: 0 0 18px rgba(139, 92, 246, 0.75), inset 0 0 10px rgba(255, 255, 255, 0.45);
+        filter: brightness(1.2);
+      }
+    }
+
+    .bar-baseline {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--teal), var(--emerald));
+      border-radius: 999px 0 0 999px;
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: barPulse 2.4s ease-in-out infinite;
+    }
+
+    .bar-overtime {
+      height: 100%;
+      background: linear-gradient(90deg, var(--purple), var(--indigo));
+      border-radius: 0 999px 999px 0;
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: barPulsePurple 2.4s ease-in-out infinite;
+    }
+
+    
   </style>
 </head>
 
@@ -1295,7 +1336,7 @@
           <strong style="color:var(--amber);">⚠️ High-Seal Audit Pending:</strong>
           <div id="unevaluatedBannerText" style="color:var(--text-muted); font-size:11px;">1 past day has normal seal but hasn't been evaluated.</div>
         </div>
-        <button onclick="startAuditFromBanner()" style="background:var(--amber); color:#000; border:none; padding:7px 12px; border-radius:12px; font-weight:900; font-size:11.5px; cursor:pointer; white-space:nowrap; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
+        <button onclick="startAuditFromBanner()" style="background:var(--amber); color:#000; border:none; padding:7px 12px; border-radius:12px; font-weight:900; font-size:11.5px; cursor:pointer; white-space:nowrap;;">
           Review Now →
         </button>
       </div>
@@ -1820,10 +1861,14 @@
       <div class="drawer-section-title">Time Machine / Simulation</div>
       <div style="background:var(--card-inner); border:1px solid var(--card-border); padding:12px; border-radius:16px; display:flex; flex-direction:column; gap:8px;">
         <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
-          <span style="color:var(--text-dim);">Sim Date:</span>
-          <strong id="drawerSimDateText" style="color:var(--cyan);">--/--/----</strong>
+          <span style="color:var(--text-dim);">Selected Date (DD/MM/YYYY):</span>
+          <strong id="drawerSimDateText" style="color:var(--cyan); font-size:13px;">--/--/----</strong>
         </div>
-        <input type="date" id="drawerDateInput" onchange="handleSimDateInput(this.value)" class="form-input" style="padding:8px 10px; font-size:13px;">
+        
+        <!-- Wrapper ensures DD/MM/YYYY is explicitly surfaced alongside the date picker -->
+        <div style="position:relative;">
+          <input type="date" id="drawerDateInput" onchange="handleSimDateInput(this.value)" class="form-input" style="padding:8px 10px; font-size:13px; width:100%;">
+        </div>
         
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
           <button class="drawer-btn" style="justify-content:center; padding:8px; font-size:12px;" onclick="resetToRealDate()">↺ Real Today</button>
@@ -2977,15 +3022,6 @@
       document.getElementById('metricCalibLabel').textContent = `Calibration (Day ${m.calibDayNumber})`;
       document.getElementById('metricCalib').textContent = toDDMMYYYY(m.calibrationDate);
 
-      // Update dynamic elements in Protocol Principles cards
-      const summaryAnchor = document.getElementById('summaryAnchorDate');
-      if (summaryAnchor) summaryAnchor.textContent = toDDMMYYYY(m.startDate);
-      
-      const summaryBaseline = document.getElementById('summaryBaselineTag');
-      if (summaryBaseline) summaryBaseline.textContent = `Baseline: ${m.baseline} Days`;
-      
-      const summaryGate = document.getElementById('summaryGateStatus');
-
       const headline = document.getElementById('heroHeadline');
       const sub = document.getElementById('heroSubtext');
       const badgeText = document.getElementById('heroPhaseText');
@@ -3006,11 +3042,11 @@
       const circBase = 301.59;
       const circOt = 345.57;
 
-      // Base progress
+      // Base progress ratio
       const baseRatio = Math.min(1, m.baselineSealed / m.baseline);
       radialProg.style.strokeDashoffset = circBase - (baseRatio * circBase);
 
-      // Dynamic Aura & Overtime UI
+      // Overtime Bar & Radial Display
       if (m.overtimeDays > 0) {
         barBase.style.width = '65%';
         const otW = Math.min(35, (m.overtimeDays / m.baseline) * 35);
@@ -3034,6 +3070,8 @@
       document.getElementById('metricOtBadge').textContent = `+${m.overtimeDays}d OT`;
       document.getElementById('metricBaseSealed').textContent = `${m.highSealedCount} High ❤️ • ${m.normalSealedCount} Normal`;
 
+      const currentDayNumber = Math.max(1, m.daysPassed); // Today's actual active day
+
       if (cycle.status === 'completed') {
         badgeText.textContent = 'SUCCESSFUL CALIBRATION';
         badge.style.background = 'var(--emerald-soft)';
@@ -3045,6 +3083,7 @@
         dialLabel.textContent = 'Status';
         dialNum.textContent = 'DONE';
         dialSub.textContent = `${m.totalSealedDays}d Sealed`;
+
       } else if (cycle.status === 'failed') {
         badgeText.textContent = cycle.isPrematureBreach ? 'PREMATURE BREACH' : 'FAILED SESSION';
         badge.style.background = 'var(--rose-soft)';
@@ -3056,17 +3095,24 @@
         dialLabel.textContent = 'Status';
         dialNum.textContent = 'FAIL';
         dialSub.textContent = 'Terminated';
+
       } else if (cycle.status === 'skipped') {
-        badgeText.textContent = 'SUBLIMED • OVERTIME';
+        // --- APPROVED OVERTIME (SUBLIMED) ---
+        badgeText.textContent = `SUBLIMED • OVERTIME (DAY ${currentDayNumber}/${m.baseline})`;
         badge.style.background = 'var(--purple-soft)';
         badge.style.color = 'var(--purple)';
+        badge.style.border = '1px solid var(--purple-border)';
         if (aura) aura.style.background = 'rgba(139, 92, 246, 0.25)';
-        headline.innerHTML = `Cycle #${cycle.cycleNumber} <span style="color:var(--purple);">+${m.overtimeDays}d OT</span>`;
-        sub.textContent = `Physical session skipped. ${m.totalSealedDays}d sealed in overtime.`;
+
+        // Retains "Containment: Day X of Y Active" format + shows Day In Progress:
+        headline.innerHTML = `Containment: <span style="color:var(--purple);">Day ${currentDayNumber} of ${m.baseline}</span> Active (+${m.overtimeDays}d OT)`;
+        sub.textContent = `Anchor Day 0 is excluded. ${m.totalSealedDays} of ${m.baseline} days sealed (${m.baseline} Base + ${m.overtimeDays} OT). Day ${currentDayNumber} in progress.`;
+
         document.getElementById('metricRemain').textContent = `+${m.overtimeDays}d`;
         dialLabel.textContent = 'Overtime';
         dialNum.textContent = `+${m.overtimeDays}d`;
         dialSub.textContent = `${m.totalSealedDays}d Sealed`;
+
       } else if (m.phase === 'calibration_day') {
         badgeText.textContent = `DAY ${m.calibDayNumber}: GATE OPEN`;
         badge.style.background = 'var(--amber-soft)';
@@ -3079,32 +3125,40 @@
         dialLabel.textContent = 'Gate';
         dialNum.textContent = 'OPEN';
         dialSub.textContent = 'Resolve Today';
+
       } else if (m.phase === 'awaiting_resolution') {
-        badgeText.textContent = `⏳ RESOLUTION GATE DUE (+${m.overtimeDays}D)`;
-        badge.style.background = 'var(--amber-soft)';
-        badge.style.color = 'var(--amber)';
-        badge.style.border = '1px solid var(--amber-border)';
-        if (aura) aura.style.background = 'rgba(245, 158, 11, 0.25)';
-        headline.innerHTML = `⏳ Calibration Due: <span style="color:var(--amber);">Awaiting Formal Resolution</span>`;
-        sub.textContent = `Baseline has elapsed (${m.overtimeDays} days ago). Overtime active: ${m.totalSealedDays} total days sealed.`;
+        badgeText.textContent = `ACTIVE (DAY ${currentDayNumber}/${m.baseline} • +${m.overtimeDays + 1}d OT)`;
+        badge.style.background = 'var(--purple-soft)';
+        badge.style.color = 'var(--purple)';
+        badge.style.border = '1px solid var(--purple-border)';
+        if (aura) aura.style.background = 'rgba(139, 92, 246, 0.25)';
+
+        headline.innerHTML = `Containment: <span style="color:var(--purple);">Day ${currentDayNumber} of ${m.baseline}</span> Active`;
+        // Clean text: removes (+4d OT) and cleanly says Day 14 in progress
+        sub.textContent = `Anchor Day 0 is excluded. ${m.totalSealedDays} days sealed (${m.baseline} Base + ${m.overtimeDays} OT). Day ${currentDayNumber} in progress.`;
+
         document.getElementById('metricRemain').textContent = `+${m.overtimeDays}d Over`;
         dialLabel.textContent = 'Overtime';
         dialNum.textContent = `+${m.overtimeDays}d`;
         dialSub.textContent = `${m.totalSealedDays}d Sealed`;
+
       } else {
-        const currentDayNumber = Math.max(1, Math.min(m.baseline, m.daysPassed));
+        // --- NORMAL BASELINE CONTAINMENT ---
         badgeText.textContent = `ACTIVE (DAY ${currentDayNumber}/${m.baseline})`;
         badge.style.background = 'var(--cyan-soft)';
         badge.style.color = 'var(--cyan)';
         badge.style.border = '1px solid var(--cyan-border)';
         if (aura) aura.style.background = 'rgba(6, 182, 212, 0.2)';
+
         headline.innerHTML = `Containment: <span style="color:var(--cyan);">Day ${currentDayNumber} of ${m.baseline}</span> Active`;
-        sub.textContent = `Day 0 excluded. ${m.baselineSealed} of ${m.baseline} days sealed. Day ${currentDayNumber} in progress.`;
+        sub.textContent = `Anchor Day 0 is excluded. ${m.baselineSealed} of ${m.baseline} days sealed. Day ${currentDayNumber} in progress.`;
+
         document.getElementById('metricRemain').textContent = `${m.daysUntilCalib}d`;
         dialLabel.textContent = 'Calibration In';
         dialNum.textContent = `${String(m.daysUntilCalib).padStart(2, '0')}d`;
         dialSub.textContent = `${m.daysUntilCalib * 24}h Left`;
       }
+
       checkAndPromptUnevaluatedAudit();
     }
 
@@ -3133,12 +3187,29 @@
         else if (isCalib) card.classList.add('calib-gate');
 
         let tag = '';
-        if (isAnchor) tag = `<span class="day-tag-badge" style="background:#1e293b; color:#cbd5e1;">DAY 0 (ANCHOR)</span>`;
-        else if (isCalib) tag = `<span class="day-tag-badge" style="background:var(--amber-soft); color:var(--amber); border:1px solid var(--amber-border);">DAY ${m.calibDayNumber} (CALIB GATE)</span>`;
-        else if (isOT) tag = `<span class="day-tag-badge" style="background:var(--purple-soft); color:var(--purple); border:1px solid var(--purple-border);">DAY ${d} (+${d - baseDays}d OT)</span>`;
-        else tag = `<span class="day-tag-badge" style="background:var(--cyan-soft); color:var(--cyan); border:1px solid var(--cyan-border);">DAY ${d}</span>`;
+        let role = '';
 
-        let role = isAnchor ? 'Anchor Session (Excluded)' : (isCalib ? `Day ${m.calibDayNumber} Target Gate` : (isOT ? `Overtime Sublimation +${d - baseDays}d` : `Containment Day ${d}`));
+        if (isAnchor) {
+          tag = `<span class="day-tag-badge" style="background:#1e293b; color:#cbd5e1;">DAY 0 (ANCHOR)</span>`;
+          role = 'Anchor Session (Excluded)';
+        } else if (isCalib) {
+          if (isPast) {
+            // Once elapsed, Calibration Day counts as +1d OT while keeping the Calib Gate label
+            tag = `<span class="day-tag-badge" style="background:var(--amber-soft); color:var(--amber); border:1px solid var(--amber-border);">DAY ${m.calibDayNumber} (CALIB GATE • +1d OT)</span>`;
+            role = `Day ${m.calibDayNumber} Target Gate (Overtime +1d)`;
+          } else {
+            tag = `<span class="day-tag-badge" style="background:var(--amber-soft); color:var(--amber); border:1px solid var(--amber-border);">DAY ${m.calibDayNumber} (CALIB GATE)</span>`;
+            role = `Day ${m.calibDayNumber} Target Gate`;
+          }
+        } else if (isOT) {
+          // Days after calibration increment from +2d OT onward
+          const otCount = d - m.baseline;
+          tag = `<span class="day-tag-badge" style="background:var(--purple-soft); color:var(--purple); border:1px solid var(--purple-border);">DAY ${d} (+${otCount}d OT)</span>`;
+          role = `Overtime Sublimation +${otCount}d`;
+        } else {
+          tag = `<span class="day-tag-badge" style="background:var(--cyan-soft); color:var(--cyan); border:1px solid var(--cyan-border);">DAY ${d}</span>`;
+          role = `Containment Day ${d}`;
+        }
 
         // Eligible to seal only if already past, not anchor, and overtime (if any) is approved
         const canToggleSeal = (isPast && !isAnchor && (!isOT || isApprovedOT));
