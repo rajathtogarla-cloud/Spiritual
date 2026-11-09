@@ -892,7 +892,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2" id="resolutionButtonsGrid">
               
               <!-- 1. Successful Calibration -->
-              <button onclick="openModal('completeSessionModal')" id="btnCalibComplete" class="flex flex-col items-start p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-lg shadow-emerald-600/25 transition transform active:scale-95 text-left group">
+              <button onclick="openSuccessModal()" id="btnCalibComplete" class="flex flex-col items-start p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-lg shadow-emerald-600/25 transition transform active:scale-95 text-left group">
                 <div class="flex items-center space-x-2 font-bold text-sm sm:text-base mb-2">
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                   <span>Successful</span>
@@ -1406,18 +1406,95 @@
     </div>
   </div>
 
+  <!-- Modal: Physiological Readiness Filter (Gate 1) -->
+  <div id="physioGateModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+    <div class="glass-card bg-white dark:bg-slate-900 border border-emerald-500/40 max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-4 shadow-2xl relative">
+      
+      <!-- Top Bar: Badge on Left, 'X' Close Button on Right -->
+      <div class="flex justify-between items-center">
+        <span class="text-[11px] font-mono font-bold px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+          CALIBRATION GATE: STEP 1/2
+        </span>
+        <button onclick="closeModal('physioGateModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 text-base transition">✕</button>
+      </div>
+
+      <!-- Title & Subtitle -->
+      <div>
+        <h3 class="text-lg font-black text-slate-900 dark:text-white flex items-center space-x-2">
+          <span>⚡</span>
+          <span class="text-emerald-600 dark:text-emerald-400">Physiological Readiness Filter</span>
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">Pre-calibration biological verification</p>
+      </div>
+
+      <!-- Proceed Condition Box -->
+      <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border border-emerald-500/30 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2 leading-relaxed">
+        <div class="flex items-center space-x-2 font-bold font-mono text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">
+          <span>🌿</span>
+          <span>Proceed Condition:</span>
+        </div>
+        <p>
+          Action is valid <strong>only under genuine, unmistakable physical vitality</strong>—unforced organic drive, biological fullness, and palpable somatic urgency.
+        </p>
+      </div>
+
+      <!-- Mandatory Abort Notice Box -->
+      <div class="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-xs sm:text-sm text-slate-700 dark:text-slate-300 space-y-1.5 leading-relaxed">
+        <div class="flex items-center space-x-2 font-bold font-mono text-rose-600 dark:text-rose-400 text-xs">
+          <span>🛑</span>
+          <span>Mandatory Abort &amp; Rollover:</span>
+        </div>
+        <p class="text-slate-600 dark:text-slate-400 text-xs leading-normal">
+          If the drive is purely mental, mechanical, habitual, or absent, the release is dropped immediately without guilt or compromise.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-3 pt-1">
+        <!-- Option 1: Genuine Physical Vitality Confirmed -> Advances to Logger -->
+        <button onclick="passPhysioFilterToSuccessModal()" class="w-full flex items-center space-x-3.5 p-4 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-lg shadow-emerald-600/25 transition transform active:scale-95 text-left group">
+          <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-lg font-bold flex-shrink-0 backdrop-blur-sm">
+            ✓
+          </div>
+          <div>
+            <div class="font-bold text-sm leading-tight font-sans">Genuine Physical Vitality Confirmed</div>
+            <div class="text-[11px] text-emerald-100 font-sans leading-tight mt-1">Biological fullness &amp; somatic urgency present. Proceed to execution logger.</div>
+          </div>
+        </button>
+
+        <!-- Option 2: Abort & Rollover -> Directly Triggers Sublimation Overtime -->
+        <button onclick="abortAndRolloverFromGate()" class="w-full flex items-center space-x-3.5 p-4 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 hover:from-purple-500 hover:to-indigo-600 text-white shadow-lg shadow-purple-600/25 transition transform active:scale-95 text-left group">
+          <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-lg font-bold flex-shrink-0 backdrop-blur-sm">
+            ⏭️
+          </div>
+          <div>
+            <div class="font-bold text-sm leading-tight font-sans">Mental / Habitual Drive (Abort &amp; Rollover)</div>
+            <div class="text-[11px] text-purple-100 font-sans leading-tight mt-1">Drop release without guilt. Siphon energy directly into Sublimation Overtime.</div>
+          </div>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Modal: Log Successful Session -->
   <div id="completeSessionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
     <div class="glass-card bg-white dark:bg-slate-900 border border-emerald-500/40 max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl">
-      <div class="flex justify-between items-start">
-        <div class="flex items-center space-x-2.5">
-          <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">✓</div>
-          <div>
-            <h3 class="text-lg font-black text-slate-900 dark:text-white">Successful Calibration</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Validate Operational Boundaries</p>
-          </div>
+      <!-- Top Bar: Badge on Left, 'X' Close Button on Right -->
+      <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+        <span class="text-[11px] font-mono font-bold px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+          CALIBRATION GATE: STEP 2/2
+        </span>
+        <button onclick="closeModal('completeSessionModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 text-base transition">✕</button>
+      </div>
+
+      <!-- Title & Subtitle -->
+      <div class="flex items-center space-x-2.5">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold flex-shrink-0">✓</div>
+        <div>
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">Successful Calibration</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">Validate Operational Boundaries</p>
         </div>
-        <button onclick="closeModal('completeSessionModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">✕</button>
       </div>
 
       <div class="space-y-4">
@@ -3177,7 +3254,7 @@
           return;
         }
         document.getElementById('inputDurationMinutes').value = elapsedMins;
-        openModal('completeSessionModal');
+        openSuccessModal(); // Routes through Gate 1 filter first
       } else {
         const failInput = document.getElementById('inputFailDurationMinutes');
         failInput.value = elapsedMins;
@@ -3199,6 +3276,32 @@
         durationInput.min = "1";
         hint.classList.add('hidden');
       }
+    }
+
+    /* -------------------------------------------------------------
+       PHYSIOLOGICAL READINESS FILTER (GATE 1 WORKFLOW)
+       ------------------------------------------------------------- */
+    function openSuccessModal() {
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      const metrics = calculateMetrics(cycle);
+      if (metrics.isPreCalibration) {
+        showToast('⚠️ Pre-Calibration Lock: Cannot log as successful prior to Day 11.');
+        return;
+      }
+      openModal('physioGateModal');
+    }
+
+    function passPhysioFilterToSuccessModal() {
+      closeModal('physioGateModal');
+      playTone('click');
+      openModal('completeSessionModal');
+    }
+
+    function abortAndRolloverFromGate() {
+      closeModal('physioGateModal');
+      confirmSkipSession();
+      showToast('⏭️ Release aborted without compromise. Rolled over into Sublimation!');
     }
 
     function submitCompleteSession() {
@@ -4048,6 +4151,9 @@
     window.toggleSingleDateSeal = toggleSingleDateSeal;
     window.triggerPendingSealAudit = triggerPendingSealAudit;
     window.batchConfirmRemainingAsNormal = batchConfirmRemainingAsNormal;
+    window.openSuccessModal = openSuccessModal;
+    window.passPhysioFilterToSuccessModal = passPhysioFilterToSuccessModal;
+    window.abortAndRolloverFromGate = abortAndRolloverFromGate;
 
     /* Initialize App */
     loadState();
