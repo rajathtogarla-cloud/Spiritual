@@ -2171,30 +2171,6 @@
     </div>
   </div>
 
-  <!-- Modal: Mandatory Succession Cycle Creation -->
-  <div id="modalSuccession" class="modal-backdrop">
-    <div class="modal-sheet mono">
-      <div class="sheet-pill-bar"></div>
-      <div class="sheet-title" style="color:var(--emerald);">🎯 Succession Cycle Required</div>
-      <div class="sheet-sub">Prevent containment drift by initializing next cycle</div>
-
-      <div style="background:var(--emerald-soft); border:1px solid var(--emerald-border); padding:14px; border-radius:18px; font-size:13px; margin-bottom:16px;">
-        <div>Next Cycle: <strong id="succCycleNum" style="color:var(--emerald);">Cycle #2</strong></div>
-        <div style="margin-top:4px;">Anchor Date (Today): <strong id="succAnchorDate">--/--/----</strong></div>
-        <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
-          <span>Baseline:</span>
-          <input type="number" id="succBaselineInput" value="10" min="3" max="90" class="form-input" style="width:75px; padding:6px 10px; text-align:center; font-weight:800;">
-          <span>Days</span>
-        </div>
-      </div>
-
-      <div class="sheet-action-row">
-        <button class="btn-sheet-cancel" onclick="abortSuccession()">Discard</button>
-        <button class="btn-sheet-primary" style="background:var(--emerald);" onclick="confirmSuccession()">Accept & Spawn</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Modal: Physiological Readiness Filter (Gate 1) -->
   <div id="modalPhysioGate" class="modal-backdrop" onclick="closeModalOnBackdrop(event, 'modalPhysioGate')">
     <div class="modal-sheet mono">
@@ -2297,6 +2273,10 @@
         <label id="failReasonPrematureWrap" style="display:none; align-items:center; gap:10px; background:var(--rose-soft); border:1px solid var(--rose-border); padding:10px 12px; border-radius:14px;">
           <input type="checkbox" id="failReasonPremature" checked style="transform:scale(1.2);">
           <span style="color:var(--rose); font-weight:800;">⚡ Premature Breach (Prior to Calibration Day)</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; background:var(--card-inner); padding:10px 12px; border-radius:14px;">
+          <input type="checkbox" id="failReasonFocus" style="transform:scale(1.2);">
+          <span>Lack of Biological fullness & Somatic urgency</span>
         </label>
         <label style="display:flex; align-items:center; gap:10px; background:var(--card-inner); padding:10px 12px; border-radius:14px;">
           <input type="checkbox" id="failReasonFantasy" style="transform:scale(1.2);">
@@ -2894,6 +2874,7 @@
 
       eraseSimulationResultsIfAny();
       simulatedDateISO = val;
+      autoResumeSuccessionCycle();
       saveState();
       renderApp();
       showToast(`Simulated to ${toDDMMYYYY(chosen)}`);
@@ -4039,73 +4020,86 @@
         return;
       }
 
+      pushHistory();
       const dur = parseInt(document.getElementById('successDuration').value, 10) || 5;
       const notes = document.getElementById('successNotes').value;
+      const resolvedDateStr = simulatedDateISO ? toISO(m.inspectionDate) : toISO(getTodayReal());
 
-      if (simulatedDateISO) {
-        cycle.status = 'completed';
-        cycle.durationMinutes = dur;
-        cycle.notes = notes;
-        cycle.resolvedDate = toISO(m.inspectionDate);
-        closeModal('modalSuccess');
-        saveState();
-        renderApp();
-        launchConfetti();
-        playTone('victory');
-        showToast('✓ Simulation Validated.');
-      } else {
-        pendingSuccession = {
-          cycleIndex: selectedCycleIndex,
-          duration: dur,
-          notes: notes,
-          date: toISO(getTodayReal())
-        };
-        closeModal('modalSuccess');
-        document.getElementById('succCycleNum').textContent = `Cycle #${cycle.cycleNumber + 1}`;
-        document.getElementById('succAnchorDate').textContent = toDDMMYYYY(getTodayReal());
-        document.getElementById('succBaselineInput').value = cycle.baselineDays || 10;
-        openModal('modalSuccession');
-      }
-    }
+      // 1. Resolve current cycle for today
+      cycle.status = 'completed';
+      cycle.durationMinutes = dur;
+      cycle.notes = notes;
+      cycle.isPrematureBreach = false;
+      cycle.resolvedDate = resolvedDateStr;
 
-    function confirmSuccession() {
-      if (!pendingSuccession) return;
-      pushHistory();
+      closeModal('modalSuccess');
 
-      const c = cycles[pendingSuccession.cycleIndex];
-      c.status = 'completed';
-      c.durationMinutes = pendingSuccession.duration;
-      c.notes = pendingSuccession.notes;
-      c.resolvedDate = pendingSuccession.date;
-
-      const nextBase = parseInt(document.getElementById('succBaselineInput').value, 10) || 10;
-      cycles.push({
-        cycleNumber: c.cycleNumber + 1,
-        startDate: toISO(getTodayReal()),
-        baselineDays: nextBase,
-        status: 'in_progress',
-        durationMinutes: null,
-        failureReasons: [],
-        isPrematureBreach: false,
-        notes: '',
-        resolvedDate: null,
-        dailySeals: {}
-      });
-
-      selectedCycleIndex = cycles.length - 1;
-      pendingSuccession = null;
-      closeModal('modalSuccession');
+      // Do NOT create a new cycle today. It stays in resolved state today.
+      // Tomorrow, autoResumeSuccessionCycle() will automatically start the next cycle.
       saveState();
       renderApp();
       launchConfetti();
       playTone('victory');
-      showToast('✓ Success recorded & next cycle started.');
+      showToast(`✓ Cycle #${cycle.cycleNumber} validated! Next cycle will begin tomorrow.`);
     }
 
-    function abortSuccession() {
-      pendingSuccession = null;
-      closeModal('modalSuccession');
-      showToast('Calibration discarded.');
+    function submitFailCalibration() {
+      const cycle = getSelected();
+      if (!cycle) return;
+      pushHistory();
+
+      const m = getMetrics(cycle);
+      let dur = parseInt(document.getElementById('failDuration')?.value, 10) || 6;
+      const prematureBox = document.getElementById('failReasonPremature');
+      const isPremature = Boolean(m.isPreCalibration && prematureBox && prematureBox.checked);
+
+      const reasons = [];
+      if (isPremature) {
+        reasons.push('Premature Breach (Prior to Day 11)');
+      }
+      if (document.getElementById('failReasonFocus')?.checked) {
+        reasons.push('Lack of Biological Fullness / Urgency');
+      }
+      if (document.getElementById('failReasonFantasy')?.checked) {
+        reasons.push('Erotic Fantasy / Visualization');
+      }
+      if (document.getElementById('failReasonMedia')?.checked) {
+        reasons.push('Arousal Media / Clips');
+      }
+      if (document.getElementById('failReasonCeiling')?.checked) {
+        reasons.push('Breached 10m Ceiling');
+      }
+
+      const inputNotes = document.getElementById('failNotes')?.value?.trim();
+      const resolvedDateStr = toISO(m.inspectionDate);
+
+      // If user typed custom notes, prepend/append the selected checklist reasons
+      let finalNotes = '';
+      if (inputNotes && reasons.length > 0) {
+        finalNotes = `${inputNotes} (${reasons.join(', ')})`;
+      } else if (inputNotes) {
+        finalNotes = inputNotes;
+      } else {
+        finalNotes = reasons.join(', ');
+      }
+
+      cycle.status = 'failed';
+      cycle.durationMinutes = dur;
+      cycle.failureReasons = reasons;
+      cycle.isPrematureBreach = isPremature;
+      cycle.notes = finalNotes;
+      cycle.resolvedDate = resolvedDateStr;
+
+      closeModal('modalFail');
+      saveState();
+      renderApp();
+      playTone('alarm');
+
+      if (isPremature) {
+        showToast('✕ Premature breach logged.');
+      } else {
+        showToast(`✕ Cycle #${cycle.cycleNumber} logged as Failed. Next cycle will begin tomorrow.`);
+      }
     }
 
     function openFailModal() {
@@ -4119,34 +4113,6 @@
       openModal('modalFail');
     }
 
-    function submitFailCalibration() {
-      const cycle = getSelected();
-      if (!cycle) return;
-      pushHistory();
-
-      const m = getMetrics(cycle);
-      let dur = parseInt(document.getElementById('failDuration').value, 10) || 6;
-      const isPremature = (m.isPreCalibration && document.getElementById('failReasonPremature').checked);
-
-      const reasons = [];
-      if (isPremature) reasons.push('Premature Breach');
-      if (document.getElementById('failReasonFantasy').checked) reasons.push('Fantasy');
-      if (document.getElementById('failReasonMedia').checked) reasons.push('Media');
-      if (document.getElementById('failReasonCeiling').checked) reasons.push('Ceiling Breached');
-
-      cycle.status = 'failed';
-      cycle.durationMinutes = dur;
-      cycle.failureReasons = reasons;
-      cycle.isPrematureBreach = isPremature;
-      cycle.notes = document.getElementById('failNotes').value || reasons.join(', ');
-      cycle.resolvedDate = toISO(m.inspectionDate);
-
-      closeModal('modalFail');
-      saveState();
-      renderApp();
-      playTone('alarm');
-      showToast(isPremature ? '✕ Premature breach logged.' : '✕ Session failed.');
-    }
 
     function confirmSkip() {
       const cycle = getSelected();
@@ -4479,6 +4445,40 @@
       }
     }
 
+    function autoResumeSuccessionCycle() {
+      if (!cycles || cycles.length === 0) return;
+      const latest = cycles[cycles.length - 1];
+      const lock = checkPrematureLockout();
+      if (lock.isLocked) return;
+
+      // Only spawn next cycle if latest cycle is resolved AND inspection date is strictly after resolution date (Tomorrow or later)
+      if (latest && (latest.status === 'completed' || (latest.status === 'failed' && !latest.isPrematureBreach))) {
+        if (!latest.resolvedDate) return;
+
+        const resolvedDate = parseISO(latest.resolvedDate);
+        const inspectionDate = getInspectionDate();
+
+        // If at least 1 day has elapsed since the resolution date
+        if (diffDays(inspectionDate, resolvedDate) > 0) {
+          const newCycle = {
+            cycleNumber: latest.cycleNumber + 1,
+            startDate: latest.resolvedDate, // Day 0 anchored to session date
+            baselineDays: latest.baselineDays || 10,
+            status: 'in_progress',
+            durationMinutes: null,
+            failureReasons: [],
+            isPrematureBreach: false,
+            notes: '',
+            resolvedDate: null,
+            dailySeals: {}
+          };
+          cycles.push(newCycle);
+          selectedCycleIndex = cycles.length - 1;
+          saveState();
+        }
+      }
+    }
+
     /* ---------------- STATE LOAD / SAVE ---------------- */
     function loadState() {
       try {
@@ -4506,6 +4506,9 @@
         selectedCycleIndex = cycles.length - 1;
         simulatedDateISO = localStorage.getItem(SIM_KEY) || null;
         applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+
+        autoResumeSuccessionCycle();
+
       } catch (e) {
         console.error(e);
       }
@@ -4550,8 +4553,6 @@
       submitAnchorDate,
       openSuccessModal,
       submitSuccessCalibration,
-      confirmSuccession,
-      abortSuccession,
       openFailModal,
       submitFailCalibration,
       confirmSkip,
