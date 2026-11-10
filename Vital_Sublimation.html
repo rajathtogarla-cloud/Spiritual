@@ -1370,42 +1370,6 @@
     </div>
   </div>
 
-  <!-- Modal: Mandatory Succession Cycle Creation -->
-  <div id="mandatorySuccessionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-    <div class="glass-card bg-white dark:bg-slate-900 border border-emerald-500/50 max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl">
-      <div class="flex justify-between items-start">
-        <div class="flex items-center space-x-2.5">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-500 font-bold">🎯</div>
-          <div>
-            <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">Succession Protocol Required</h3>
-            <p class="text-xs text-emerald-600 dark:text-emerald-400">Initialize Next Cycle to Validate</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-4 text-xs sm:text-sm">
-        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-          Your calibration was recorded. <strong>To prevent containment drift, the successful calibration only becomes valid once you accept and spawn the succeeding cycle anchored to today's date.</strong>
-        </p>
-
-        <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
-          <div>Next Cycle Number: <strong id="succModalCycleNum" class="text-emerald-600 dark:text-emerald-400 font-mono">Cycle #2</strong></div>
-          <div>Anchor Date (Real Today): <strong id="succModalAnchorDate" class="text-slate-900 dark:text-white font-mono">05/11/2026</strong></div>
-          <div class="flex items-center space-x-2 pt-1">
-            <span class="text-slate-600 dark:text-slate-400">Baseline Interval:</span>
-            <input type="number" id="succModalBaselineInput" value="10" min="1" max="90" class="w-16 bg-white dark:bg-slate-800 border border-emerald-500/40 rounded-lg px-2 py-1 text-center font-bold font-mono">
-            <span>Days</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex items-center space-x-3 pt-2">
-        <button onclick="abortSuccessionCycle()" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-bold font-mono transition">Discard</button>
-        <button onclick="confirmSuccessionCycle()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold font-mono transition shadow-md shadow-emerald-600/30">Accept & Spawn Cycle</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Modal: Physiological Readiness Filter (Gate 1) -->
   <div id="physioGateModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
     <div class="glass-card bg-white dark:bg-slate-900 border border-emerald-500/40 max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-4 shadow-2xl relative">
@@ -1527,8 +1491,8 @@
   </div>
 
   <!-- Modal: Log Failed Session / Premature Breach -->
-  <div id="failedSessionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-    <div class="glass-card bg-white dark:bg-slate-900 border border-rose-500/50 max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl">
+  <div id="failedSessionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card bg-white dark:bg-slate-900 border border-rose-500/50 max-w-md w-full rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xl">
       <div class="flex justify-between items-start">
         <div class="flex items-center space-x-2.5">
           <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-600 dark:text-rose-400 font-bold">✕</div>
@@ -1549,10 +1513,14 @@
           <label id="failReasonPrematureContainer" class="flex items-start space-x-2.5 p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 cursor-pointer">
             <input type="checkbox" id="failReasonPremature" class="mt-0.5 rounded text-rose-600">
             <span class="text-rose-800 dark:text-rose-300 font-bold leading-snug">
-              ⚡ Premature Calibration Breach: Executed prior to scheduled Day 11 Calibration Date (Locks new cycle creation until Day 11 elapses)
+              ⚡ Premature Breach (Prior to Calibration Day)
             </span>
           </label>
 
+          <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
+            <input type="checkbox" id="failReasonFocus" class="rounded text-rose-600">
+            <span>Lack of Biological fullness & Somatic urgency</span>
+          </label>
           <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
             <input type="checkbox" id="failReasonFantasy" class="rounded text-rose-600">
             <span>Erotic imagination / Mental visualization</span>
@@ -1560,10 +1528,6 @@
           <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
             <input type="checkbox" id="failReasonMedia" class="rounded text-rose-600">
             <span>Viewed movie scenes / arousal media / clips</span>
-          </label>
-          <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
-            <input type="checkbox" id="failReasonFocus" class="rounded text-rose-600">
-            <span>Lack of physical / somatic focus</span>
           </label>
           <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
             <input type="checkbox" id="failReasonCeiling" onchange="handleCeilingToggleChange(this.checked)" class="rounded text-rose-600">
@@ -1944,6 +1908,40 @@
       playTone('click');
     }
 
+    function autoResumeSuccessionCycle() {
+      if (!cycles || cycles.length === 0) return;
+      const latest = cycles[cycles.length - 1];
+      const lock = getPrematureLockoutState();
+      if (lock.isLocked) return;
+
+      // Only spawn next cycle if the latest cycle is resolved AND the inspection date is strictly after the resolution date (i.e. Tomorrow or later)
+      if (latest && (latest.status === 'completed' || (latest.status === 'failed' && !latest.isPrematureBreach))) {
+        if (!latest.resolvedDate) return;
+
+        const resolvedDate = parseISODate(latest.resolvedDate);
+        const inspectionDate = getActiveInspectionDate();
+
+        // If today is strictly greater than the resolution date (at least 1 day has passed)
+        if (diffDays(inspectionDate, resolvedDate) > 0) {
+          const newCycle = {
+            cycleNumber: latest.cycleNumber + 1,
+            startDate: latest.resolvedDate, // Day 0 is the session date
+            baselineDays: latest.baselineDays || 10,
+            status: 'in_progress',
+            durationMinutes: null,
+            failureReasons: [],
+            isPrematureBreach: false,
+            notes: '',
+            resolvedDate: null,
+            dailySeals: {}
+          };
+          cycles.push(newCycle);
+          selectedCycleIndex = cycles.length - 1;
+          saveState();
+        }
+      }
+    }
+
     /* -------------------------------------------------------------
        STATE MANAGEMENT & CLOUD TRIGGER
        ------------------------------------------------------------- */
@@ -1981,6 +1979,8 @@
 
         const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'dark';
         applyTheme(savedTheme);
+
+        autoResumeSuccessionCycle();
 
       } catch (e) {
         console.error('State load error:', e);
@@ -2223,6 +2223,9 @@
       }
       eraseSimulationResultsIfAny();
       hasAutoPromptedDashboardAudit = false; // <-- ADD THIS
+
+      autoResumeSuccessionCycle();
+
       saveState();
       renderApp();
       updateUndoRedoUI();
@@ -3322,74 +3325,26 @@
         return;
       }
 
-      if (simulatedDateISO) {
-        cycle.status = 'completed';
-        cycle.durationMinutes = dur;
-        cycle.notes = notes;
-        cycle.isPrematureBreach = false;
-        cycle.resolvedDate = formatISODate(metrics.inspectionDate);
-        saveState();
-        closeModal('completeSessionModal');
-        renderApp();
-        launchConfetti();
-        playTone('victory');
-        showToast(`✓ Simulation: Cycle #${cycle.cycleNumber} validated.`);
-      } else {
-        pendingCompletionState = {
-          cycleIndex: selectedCycleIndex,
-          durationMinutes: dur,
-          notes: notes,
-          resolvedDate: formatISODate(getTodayRealDate())
-        };
-        closeModal('completeSessionModal');
-        document.getElementById('succModalCycleNum').textContent = `Cycle #${cycle.cycleNumber + 1}`;
-        document.getElementById('succModalAnchorDate').textContent = formatNumericDate(getTodayRealDate());
-        document.getElementById('succModalBaselineInput').value = cycle.baselineDays || 10;
-        openModal('mandatorySuccessionModal');
-      }
-    }
-
-    function confirmSuccessionCycle() {
-      if (!pendingCompletionState) return;
       pushHistorySnapshot();
+      const resolvedDateStr = simulatedDateISO ? formatISODate(metrics.inspectionDate) : formatISODate(getTodayRealDate());
 
-      const cycle = cycles[pendingCompletionState.cycleIndex];
+      // 1. Resolve current cycle for today
       cycle.status = 'completed';
-      cycle.durationMinutes = pendingCompletionState.durationMinutes;
-      cycle.notes = pendingCompletionState.notes;
+      cycle.durationMinutes = dur;
+      cycle.notes = notes;
       cycle.isPrematureBreach = false;
-      cycle.resolvedDate = pendingCompletionState.resolvedDate;
+      cycle.resolvedDate = resolvedDateStr;
 
-      const nextBaseline = parseInt(document.getElementById('succModalBaselineInput').value, 10) || 10;
-      const newCycle = {
-        cycleNumber: cycle.cycleNumber + 1,
-        startDate: formatISODate(getTodayRealDate()),
-        baselineDays: nextBaseline,
-        status: 'in_progress',
-        durationMinutes: null,
-        failureReasons: [],
-        isPrematureBreach: false,
-        notes: '',
-        resolvedDate: null
-      };
+      closeModal('completeSessionModal');
 
-      cycles.push(newCycle);
-      selectedCycleIndex = cycles.length - 1;
-      pendingCompletionState = null;
-
-      closeModal('mandatorySuccessionModal');
+      // Do NOT create a new cycle today. It stays in the resolved state today.
+      // Tomorrow, autoResumeSuccessionCycle() will automatically instantiate the next cycle.
       saveState();
       renderApp();
       updateUndoRedoUI();
       launchConfetti();
       playTone('victory');
-      showToast(`✓ Cycle #${cycle.cycleNumber} validated! Cycle #${newCycle.cycleNumber} initialized.`);
-    }
-
-    function abortSuccessionCycle() {
-      pendingCompletionState = null;
-      closeModal('mandatorySuccessionModal');
-      showToast('Calibration discarded. Ongoing containment cycle preserved.');
+      showToast(`✓ Cycle #${cycle.cycleNumber} validated! Next cycle will begin tomorrow.`);
     }
 
     function submitFailedSession() {
@@ -3413,15 +3368,18 @@
       if (document.getElementById('failReasonFocus').checked) reasons.push('Lack of Physical/Somatic Focus');
       if (isCeilingBreach) reasons.push('Breached 10m Ceiling');
 
+      const resolvedDateStr = formatISODate(metrics.inspectionDate);
       cycle.status = 'failed';
       cycle.durationMinutes = dur;
       cycle.failureReasons = reasons;
       cycle.isPrematureBreach = isPremature;
       cycle.notes = notes || reasons.join(', ');
-      cycle.resolvedDate = formatISODate(metrics.inspectionDate);
+      cycle.resolvedDate = resolvedDateStr;
 
-      saveState();
       closeModal('failedSessionModal');
+
+      // Save resolved state without immediately spawning a new cycle today
+      saveState();
       renderApp();
       updateUndoRedoUI();
       playTone('alarm');
@@ -3429,7 +3387,7 @@
       if (isPremature) {
         showToast(`✕ Premature Breach logged. Cooldown locked until ${formatNumericDate(metrics.calibrationDate)}.`);
       } else {
-        showToast(`✕ Cycle #${cycle.cycleNumber} logged as Failed Session.`);
+        showToast(`✕ Cycle #${cycle.cycleNumber} logged as Failed. Next cycle will begin tomorrow.`);
       }
     }
 
@@ -3663,7 +3621,7 @@
           prematureContainer.classList.remove('hidden');
           prematureBox.checked = true;
           heading.textContent = "Log Premature Calibration Breach";
-          subtext.textContent = `Date (${formatNumericDate(metrics.inspectionDate)}) is prior to Day 11 Calibration Date (${formatNumericDate(metrics.calibrationDate)}). Logging prior locks new cycle creation until Day 11 has elapsed.`;
+          subtext.textContent = `Logging prior to calibration locks new cycle creation until calibration date has elapsed.`;
         }
       }
 
@@ -4129,8 +4087,6 @@
     window.setModalAnchorToday = setModalAnchorToday;
     window.shiftModalAnchorDays = shiftModalAnchorDays;
     window.submitNewCycle = submitNewCycle;
-    window.confirmSuccessionCycle = confirmSuccessionCycle;
-    window.abortSuccessionCycle = abortSuccessionCycle;
     window.submitCompleteSession = submitCompleteSession;
     window.submitFailedSession = submitFailedSession;
     window.confirmSkipSession = confirmSkipSession;
