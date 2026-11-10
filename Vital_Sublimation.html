@@ -1640,19 +1640,33 @@
         if (docSnap.exists()) {
           const cloudData = docSnap.data();
           if (cloudData.cycles && Array.isArray(cloudData.cycles)) {
+            // STEP 1: Load the authoritative cloud state
             cycles = cloudData.cycles;
             cycles.forEach(c => sanitizeDailySeals(c));
             selectedCycleIndex = (typeof cloudData.selectedCycleIndex === 'number') 
               ? cloudData.selectedCycleIndex 
               : cycles.length - 1;
 
+            // STEP 2: Now that cloud data is loaded, check if a new cycle is due
+            const cycleCountBefore = cycles.length;
+            autoResumeSuccessionCycle();
+
+            // STEP 3: If autoResume created Cycle #2, push the update to Firestore immediately
+            if (cycles.length > cycleCountBefore) {
+              await setDoc(userDocRef, {
+                lastSyncedAt: new Date().toISOString(),
+                cycles: cycles,
+                selectedCycleIndex: cycles.length - 1
+              });
+            }
+
+            // STEP 4: Save to localStorage and re-render
             localStorage.setItem(STORAGE_KEY_CYCLES, JSON.stringify(cycles));
             localStorage.setItem(STORAGE_KEY_SELECTED_INDEX, selectedCycleIndex.toString());
             renderApp();
-            showToast("☁️ Synced from Cloud Firestore.");
+            showToast("☁️ Synced & verified from Cloud Firestore.");
           }
         } else {
-          // If no cloud document exists yet, initialize it with current local state
           await syncLocalToFirestore();
         }
       } catch (err) {
@@ -1668,10 +1682,13 @@
       if (user) {
         currentUser = user;
         renderAuthUI();
-        await loadFromFirestore(user);
+        await loadFromFirestore(user); // Handles succession after cloud fetch
       } else {
         currentUser = null;
         renderAuthUI();
+        // In local/offline mode, run succession directly
+        autoResumeSuccessionCycle();
+        renderApp();
       }
     });
 
@@ -1793,8 +1810,11 @@
         const dDate = addDays(sDate, d);
         const dISO = formatISODate(dDate);
 
-        // CORE FIX: Prevent future simulation evaluations from bleeding back into real time.
-        // We only retain seals for days that are STRICTLY IN THE PAST relative to the current inspection date.
+        // Strip out any seal on resolvedDate
+        if (cycle.resolvedDate && dISO === cycle.resolvedDate) {
+          continue;
+        }
+
         if (diffDays(dDate, m.inspectionDate) < 0) {
           if (cycle.dailySeals[dISO]) {
             cleanSeals[dISO] = cycle.dailySeals[dISO];
@@ -1945,8 +1965,6 @@
 
         const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'dark';
         applyTheme(savedTheme);
-
-        autoResumeSuccessionCycle();
 
       } catch (e) {
         console.error('State load error:', e);
@@ -3074,10 +3092,15 @@
 
         const sealTier = (cycle.dailySeals && cycle.dailySeals[dayISO]) ? cycle.dailySeals[dayISO] : 'normal';
         let footerLabel = '';
-        const canToggleSeal = (isPast && !isAnchorDay && (!isOvertimeDay || isOvertimeApproved));
+        // Replace this block inside the renderTimeline day loop:
+        const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
+        const canToggleSeal = (isPast && !isAnchorDay && !isResolvedDate && (!isOvertimeDay || isOvertimeApproved));
 
         if (isInspectionDate) {
           footerLabel = '<span class="text-cyan-600 dark:text-cyan-400 font-black">INSPECTION</span>';
+        } else if (isResolvedDate) {
+          // Explicitly tag the resolution date without any seal options
+          footerLabel = `<span class="text-xs font-mono font-bold ${cycle.status === 'completed' ? 'text-emerald-500' : 'text-rose-500'}">Resolution Session</span>`;
         } else if (canToggleSeal) {
           if (sealTier === 'high') {
             footerLabel = `
@@ -3907,15 +3930,12 @@
       for (let day = 1; day <= totalDays; day++) {
         const dayDate = addDays(metrics.startDate, day);
         const dayISO = formatISODate(dayDate);
-        // Past day relative to current inspection date
         const isPast = diffDays(dayDate, metrics.inspectionDate) < 0;
         const isOvertime = (day > baseDays);
+        const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
 
-        // A day is eligible if:
-        // 1. It is strictly in the past (before inspection date)
-        // 2. If it's an overtime day, overtime must be approved (cycle skipped)
-        if (isPast && (!isOvertime || isOvertimeApproved)) {
-          // If the day hasn't been explicitly classified as 'high' or 'normal' in dailySeals
+        // Exclude resolvedDate from ever entering the audit queue
+        if (isPast && !isResolvedDate && (!isOvertime || isOvertimeApproved)) {
           if (!cycle.dailySeals[dayISO]) {
             queue.push({
               dayNumber: day,
@@ -4000,11 +4020,15 @@
 
       for (let day = 1; day <= totalDays; day++) {
         const dayDate = addDays(metrics.startDate, day);
-        if (diffDays(dayDate, metrics.inspectionDate) <= 0) {
+        const dayISO = formatISODate(dayDate);
+        const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
+
+        // Skip the resolution date from review queue
+        if (!isResolvedDate && diffDays(dayDate, metrics.inspectionDate) <= 0) {
           queue.push({
             dayNumber: day,
             date: dayDate,
-            dateISO: formatISODate(dayDate),
+            dateISO: dayISO,
             isOvertime: (day > metrics.baseline)
           });
         }
@@ -4319,7 +4343,7 @@
           Skip / Next Day →
         </button>
       </div>
-      <!-- Quick Batch Normal Seal Option. -->
+      <!-- Quick Batch Normal Seal Option -->
       <div class="pt-2 text-center">
         <button onclick="batchConfirmRemainingAsNormal()" class="text-[11px] font-mono text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 underline transition">
           Confirm remaining unevaluated days as Normal Seal
