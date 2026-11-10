@@ -2405,8 +2405,16 @@
       let effectiveEndDate = inspectionDate;
       if (cycle.resolvedDate) effectiveEndDate = parseISODate(cycle.resolvedDate);
 
+      // In calculateMetrics(cycle):
       let overtimeDays = 0;
-      if (cycle.status === 'completed' || cycle.status === 'skipped' || cycle.status === 'failed') {
+      if (cycle.status === 'completed' || cycle.status === 'failed') {
+        // Resolved cycle: exclude resolvedDate itself from overtime
+        const diffFromCalib = diffDays(effectiveEndDate, calibrationDate);
+        if (diffFromCalib > 1) {
+          overtimeDays = diffFromCalib - 1;
+        }
+      } else if (cycle.status === 'skipped') {
+        // Overtime actively in progress (skipped session)
         const diffFromCalib = diffDays(effectiveEndDate, calibrationDate);
         if (diffFromCalib > 0) overtimeDays = diffFromCalib;
       } else {
@@ -3027,6 +3035,8 @@
       for (let day = 0; day <= totalTimelineDays; day++) {
         const dayDate = addDays(metrics.startDate, day);
         const dayFormatted = formatNumericDate(dayDate);
+        const dayISO = formatISODate(dayDate);
+        const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
         const isInspectionDate = diffDays(dayDate, metrics.inspectionDate) === 0;
         const isPast = diffDays(dayDate, metrics.inspectionDate) < 0;
         const isFuture = diffDays(dayDate, metrics.inspectionDate) > 0;
@@ -3035,7 +3045,6 @@
         const isOvertimeDay = (day > baseDays);
 
         const card = document.createElement('div');
-        const dayISO = formatISODate(dayDate);
         card.id = `timeline-card-${dayISO}`;
 
         if (isInspectionDate) {
@@ -3054,14 +3063,12 @@
         if (isAnchorDay) {
           dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">DAY 0 (ANCHOR)</span>`;
         } else if (isCalibrationDay) {
-          if (isPast) {
-            // Once elapsed, Calibration Day counts as Overtime Day 1 (+1d OT)
+          if (isPast && !isResolvedDate && isOvertimeApproved) {
             dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">DAY ${metrics.calibDayNumber} (CALIB • +1d OT) 🎯</span>`;
           } else {
             dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">DAY ${metrics.calibDayNumber} (CALIB) 🎯</span>`;
           }
         } else if (isOvertimeDay) {
-          // Days following Calibration Day calculate from Day - Baseline (e.g. Day 12 - 10 = +2d OT)
           const otCount = day - metrics.baseline;
           dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30">DAY ${day} (+${otCount}d OT) ⚡</span>`;
         } else if (isInspectionDate) {
@@ -3092,14 +3099,11 @@
 
         const sealTier = (cycle.dailySeals && cycle.dailySeals[dayISO]) ? cycle.dailySeals[dayISO] : 'normal';
         let footerLabel = '';
-        // Replace this block inside the renderTimeline day loop:
-        const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
         const canToggleSeal = (isPast && !isAnchorDay && !isResolvedDate && (!isOvertimeDay || isOvertimeApproved));
 
         if (isInspectionDate) {
           footerLabel = '<span class="text-cyan-600 dark:text-cyan-400 font-black">INSPECTION</span>';
         } else if (isResolvedDate) {
-          // Explicitly tag the resolution date without any seal options
           footerLabel = `<span class="text-xs font-mono font-bold ${cycle.status === 'completed' ? 'text-emerald-500' : 'text-rose-500'}">Resolution Session</span>`;
         } else if (canToggleSeal) {
           if (sealTier === 'high') {
@@ -4343,7 +4347,7 @@
           Skip / Next Day →
         </button>
       </div>
-      <!-- Quick Batch Normal Seal Option. -->
+      <!-- Quick Batch Normal Seal Option -->
       <div class="pt-2 text-center">
         <button onclick="batchConfirmRemainingAsNormal()" class="text-[11px] font-mono text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 underline transition">
           Confirm remaining unevaluated days as Normal Seal
