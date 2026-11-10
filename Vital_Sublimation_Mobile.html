@@ -2445,6 +2445,12 @@
       for (let d = 1; d <= maxDay; d++) {
         const dDate = addDays(sDate, d);
         const dISO = toISO(dDate);
+
+        // Do not attach or retain seals on the resolution date
+        if (cycle.resolvedDate && dISO === cycle.resolvedDate) {
+          continue;
+        }
+
         if (diffDays(dDate, m.inspectionDate) < 0) {
           if (cycle.dailySeals[dISO]) {
             cleanSeals[dISO] = cycle.dailySeals[dISO];
@@ -2515,20 +2521,19 @@
 
     /* ---------------- AUTO-RESUMPTION ---------------- */
     function autoResumeSuccessionCycle() {
-      // CRITICAL: Do not spawn new persistent cycles if currently simulating time
       if (simulatedDateISO) return;
       if (!cycles || cycles.length === 0) return;
 
       const latest = cycles[cycles.length - 1];
-      const insp = getActiveInspectionDate(); // or getInspectionDate() on mobile
+      const insp = getInspectionDate();
 
       // Premature breach lockout check
       if (latest && latest.status === 'failed' && latest.isPrematureBreach) {
-        const m = calculateMetrics(latest);
+        const m = getMetrics(latest);
         if (diffDays(insp, m.calibrationDate) > 0) {
           cycles.push({
             cycleNumber: latest.cycleNumber + 1,
-            startDate: formatISODate(m.calibrationDate),
+            startDate: toISO(m.calibrationDate),
             baselineDays: latest.baselineDays || 10,
             status: 'in_progress',
             durationMinutes: null,
@@ -2547,9 +2552,9 @@
       // Normal completed or failed session
       if (latest && (latest.status === 'completed' || latest.status === 'failed')) {
         if (!latest.resolvedDate) return;
-        const resolvedDate = parseISODate(latest.resolvedDate);
+        const resolvedDate = parseISO(latest.resolvedDate);
 
-        // Strictly spawn ONLY if real calendar has advanced past resolution day (Tomorrow or later)
+        // Strictly spawn ONLY if real calendar has advanced past resolution day
         if (diffDays(insp, resolvedDate) > 0) {
           cycles.push({
             cycleNumber: latest.cycleNumber + 1,
@@ -2775,15 +2780,30 @@
         if (docSnap.exists()) {
           const cloudData = docSnap.data();
           if (cloudData.cycles && Array.isArray(cloudData.cycles)) {
+            // STEP 1: Load the authoritative cloud state
             cycles = cloudData.cycles;
             cycles.forEach(c => sanitizeDailySeals(c));
             selectedCycleIndex = (typeof cloudData.selectedCycleIndex === 'number') 
               ? cloudData.selectedCycleIndex 
               : cycles.length - 1;
 
+            // STEP 2: Now that cloud data is loaded, check if a new cycle is due
+            const cycleCountBefore = cycles.length;
+            autoResumeSuccessionCycle();
+
+            // STEP 3: If autoResume created Cycle #2, push the update to Firestore immediately
+            if (cycles.length > cycleCountBefore) {
+              await setDoc(userDocRef, {
+                lastSyncedAt: new Date().toISOString(),
+                cycles: cycles,
+                selectedCycleIndex: cycles.length - 1
+              });
+            }
+
+            // STEP 4: Save to localStorage and re-render
             localStorage.setItem(STORAGE_KEY, JSON.stringify(cycles));
             renderApp();
-            showToast("☁️ Synced from Cloud Firestore.");
+            showToast("☁️ Synced & verified from Cloud Firestore.");
           }
         } else {
           await syncLocalToFirestore();
@@ -2800,10 +2820,13 @@
       if (user) {
         currentUser = user;
         renderAuthUI();
-        await loadFromFirestore(user);
+        await loadFromFirestore(user); // Handles succession after cloud fetch
       } else {
         currentUser = null;
         renderAuthUI();
+        // In local/offline mode, run succession directly
+        autoResumeSuccessionCycle();
+        renderApp();
       }
     });
 
@@ -3049,14 +3072,15 @@
         const dayISO = toISO(dayDate);
         const isPast = diffDays(dayDate, m.inspectionDate) < 0;
         const isOvertime = (day > baseDays);
+        const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
 
-        if (isPast && (!isOvertime || isOvertimeApproved)) {
+        if (isPast && !isResolvedDate && (!isOvertime || isOvertimeApproved)) {
           if (!cycle.dailySeals[dayISO]) {
             unevaluated.push(day);
           }
         }
       }
-      return unevaluated.sort((a, b) => b - a); // Newest to oldest
+      return unevaluated.sort((a, b) => b - a);
     }
 
     function checkAndPromptUnevaluatedAudit() {
@@ -3831,16 +3855,19 @@
         }
 
         // Eligible to seal only if already past, not anchor, and overtime (if any) is approved
-        const canToggleSeal = (isPast && !isAnchor && (!isOT || isApprovedOT));
+        // Inside renderTimeline(cycle, m) loop:
+        const dISO = toISO(dDate);
+        const isResolvedDate = Boolean(cycle.resolvedDate && dISO === cycle.resolvedDate);
+        const canToggleSeal = (isPast && !isAnchor && !isResolvedDate && (!isOT || isApprovedOT));
 
         let statusHtml = '';
         if (isAnchor) {
           statusHtml = '<span style="color:var(--text-dim); font-size:12px;">Anchor Session</span>';
         } else if (isInsp) {
-          // Priority 1: Current inspection day strictly displays INSPECTION
           statusHtml = '<span style="color:var(--cyan); font-weight:900; font-size:12px;">INSPECTION</span>';
+        } else if (isResolvedDate) {
+          statusHtml = `<span style="color:${cycle.status === 'completed' ? 'var(--emerald)' : 'var(--rose)'}; font-weight:800; font-size:12px;">Resolution Session</span>`;
         } else if (canToggleSeal) {
-          // Priority 2: Past elapsed days (including passed calibration day) display seal toggle pill
           const sealTier = getSealTierForDay(cycle, d, dDate);
           const isHigh = (sealTier === 'high');
           statusHtml = `
@@ -4666,8 +4693,6 @@
         selectedCycleIndex = cycles.length - 1;
         simulatedDateISO = localStorage.getItem(SIM_KEY) || null;
         applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
-
-        autoResumeSuccessionCycle();
 
       } catch (e) {
         console.error(e);
