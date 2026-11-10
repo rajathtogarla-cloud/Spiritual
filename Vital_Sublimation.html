@@ -1908,40 +1908,6 @@
       playTone('click');
     }
 
-    function autoResumeSuccessionCycle() {
-      if (!cycles || cycles.length === 0) return;
-      const latest = cycles[cycles.length - 1];
-      const lock = getPrematureLockoutState();
-      if (lock.isLocked) return;
-
-      // Only spawn next cycle if the latest cycle is resolved AND the inspection date is strictly after the resolution date (i.e. Tomorrow or later)
-      if (latest && (latest.status === 'completed' || (latest.status === 'failed' && !latest.isPrematureBreach))) {
-        if (!latest.resolvedDate) return;
-
-        const resolvedDate = parseISODate(latest.resolvedDate);
-        const inspectionDate = getActiveInspectionDate();
-
-        // If today is strictly greater than the resolution date (at least 1 day has passed)
-        if (diffDays(inspectionDate, resolvedDate) > 0) {
-          const newCycle = {
-            cycleNumber: latest.cycleNumber + 1,
-            startDate: latest.resolvedDate, // Day 0 is the session date
-            baselineDays: latest.baselineDays || 10,
-            status: 'in_progress',
-            durationMinutes: null,
-            failureReasons: [],
-            isPrematureBreach: false,
-            notes: '',
-            resolvedDate: null,
-            dailySeals: {}
-          };
-          cycles.push(newCycle);
-          selectedCycleIndex = cycles.length - 1;
-          saveState();
-        }
-      }
-    }
-
     /* -------------------------------------------------------------
        STATE MANAGEMENT & CLOUD TRIGGER
        ------------------------------------------------------------- */
@@ -2010,33 +1976,167 @@
       }
     }
 
-    function getPrematureLockoutState() {
+    /* ---------------- NEW CYCLE LOCK GOVERNOR ---------------- */
+    function getNewCycleLockStatus() {
       if (!cycles || cycles.length === 0) return { isLocked: false };
       const latest = cycles[cycles.length - 1];
-      if (latest && latest.status === 'failed' && latest.isPrematureBreach) {
-        const m = calculateMetrics(latest);
-        const inspectionDate = getActiveInspectionDate();
-        const daysRemaining = diffDays(m.calibrationDate, inspectionDate);
-        if (daysRemaining > 0) {
+      const insp = getActiveInspectionDate();
+      const m = calculateMetrics(latest);
+
+      // 1. Premature breach lockout
+      if (latest.status === 'failed' && latest.isPrematureBreach) {
+        const elapsedDiff = diffDays(insp, m.calibrationDate);
+        if (elapsedDiff <= 0) {
+          const daysRemaining = Math.max(1, diffDays(m.calibrationDate, insp) + 1);
           return {
             isLocked: true,
-            cycleNumber: latest.cycleNumber,
+            reason: 'premature_breach',
             calibrationDate: m.calibrationDate,
-            daysRemaining: daysRemaining
+            daysRemaining: daysRemaining,
+            message: `🔒 Locked: Calibration day (${formatNumericDate(m.calibrationDate)}) has not elapsed yet.`
           };
         }
+        return { isLocked: false };
       }
+
+      // 2. Active cycle
+      if (latest.status === 'in_progress' || latest.status === 'skipped') {
+        return {
+          isLocked: true,
+          reason: 'cycle_active',
+          status: latest.status,
+          message: `🔒 Cycle #${latest.cycleNumber} is currently active. Calibration execution must be logged and elapsed first.`
+        };
+      }
+
+      // 3. Calibration logged today
+      if (latest.status === 'completed' || latest.status === 'failed') {
+        if (latest.resolvedDate) {
+          const resolvedDate = parseISODate(latest.resolvedDate);
+          const elapsedDiff = diffDays(insp, resolvedDate);
+          if (elapsedDiff <= 0) {
+            return {
+              isLocked: true,
+              reason: 'execution_day_active',
+              resolvedDate: resolvedDate,
+              message: `🔒 Calibration logged for ${formatNumericDate(resolvedDate)}. The new cycle unlocks tomorrow once this day has elapsed.`
+            };
+          }
+        }
+      }
+
       return { isLocked: false };
     }
 
+    function getPrematureLockoutState() {
+      return getNewCycleLockStatus();
+    }
+
+    /* ---------------- AUTO-RESUMPTION ---------------- */
+    function autoResumeSuccessionCycle() {
+      // Never spawn new persistent cycles while fast-forwarding or simulating dates
+      if (simulatedDateISO) return;
+      if (!cycles || cycles.length === 0) return;
+
+      const latest = cycles[cycles.length - 1];
+      const insp = getActiveInspectionDate();
+
+      // Premature breach lockout check
+      if (latest && latest.status === 'failed' && latest.isPrematureBreach) {
+        const m = calculateMetrics(latest);
+        if (diffDays(insp, m.calibrationDate) > 0) {
+          cycles.push({
+            cycleNumber: latest.cycleNumber + 1,
+            startDate: formatISODate(m.calibrationDate),
+            baselineDays: latest.baselineDays || 10,
+            status: 'in_progress',
+            durationMinutes: null,
+            failureReasons: [],
+            isPrematureBreach: false,
+            notes: '',
+            resolvedDate: null,
+            dailySeals: {}
+          });
+          selectedCycleIndex = cycles.length - 1;
+          saveState();
+        }
+        return;
+      }
+
+      // Normal completed or failed session
+      if (latest && (latest.status === 'completed' || latest.status === 'failed')) {
+        if (!latest.resolvedDate) return;
+        const resolvedDate = parseISODate(latest.resolvedDate);
+
+        // Strictly spawn ONLY if real calendar has advanced past resolution day (Tomorrow or later)
+        if (diffDays(insp, resolvedDate) > 0) {
+          cycles.push({
+            cycleNumber: latest.cycleNumber + 1,
+            startDate: latest.resolvedDate, // Day 0 anchored to execution date
+            baselineDays: latest.baselineDays || 10,
+            status: 'in_progress',
+            durationMinutes: null,
+            failureReasons: [],
+            isPrematureBreach: false,
+            notes: '',
+            resolvedDate: null,
+            dailySeals: {}
+          });
+          selectedCycleIndex = cycles.length - 1;
+          saveState();
+        }
+      }
+    }
+
+    /* ---------------- MANUAL ACTIONS ---------------- */
     function handleNewCycleButtonClick() {
-      const lock = getPrematureLockoutState();
+      const lock = getNewCycleLockStatus();
       if (lock.isLocked) {
         playTone('alarm');
-        showToast(`🔒 New Cycle Locked until Day 11 (${formatNumericDate(lock.calibrationDate)}).`);
+        showToast(lock.message);
         return;
       }
       openModal('newCycleModal');
+    }
+
+    function submitNewCycle() {
+      const lock = getNewCycleLockStatus();
+      if (lock.isLocked) {
+        playTone('alarm');
+        showToast(lock.message);
+        closeModal('newCycleModal');
+        return;
+      }
+
+      const startVal = document.getElementById('modalInputStartDate').value;
+      const baseVal = parseInt(document.getElementById('modalInputBaseline').value, 10) || 10;
+      if (!startVal) return;
+
+      pushHistorySnapshot();
+      const newCycleNum = cycles.length > 0 ? (cycles[cycles.length - 1].cycleNumber + 1) : 1;
+      const newCycle = {
+        cycleNumber: newCycleNum,
+        startDate: startVal,
+        baselineDays: baseVal,
+        status: 'in_progress',
+        durationMinutes: null,
+        failureReasons: [],
+        isPrematureBreach: false,
+        notes: '',
+        resolvedDate: null,
+        dailySeals: {}
+      };
+
+      cycles.push(newCycle);
+      selectedCycleIndex = cycles.length - 1;
+
+      saveState();
+      closeModal('newCycleModal');
+      renderApp();
+      updateUndoRedoUI();
+      switchTab('dashboard');
+      playTone('start');
+      showToast(`Initialized Cycle #${newCycle.cycleNumber}`);
     }
 
     function openSimulationDatePicker() {
@@ -2065,6 +2165,12 @@
       const prev = JSON.parse(historyUndoStack.pop());
       cycles = prev.cycles;
       selectedCycleIndex = prev.selectedCycleIndex;
+
+      // GUARD: If restored cycle is in_progress, drop any cycles following it
+      if (selectedCycleIndex < cycles.length - 1 && cycles[selectedCycleIndex].status === 'in_progress') {
+        cycles.splice(selectedCycleIndex + 1);
+      }
+
       saveState();
       renderApp();
       updateUndoRedoUI();
@@ -2325,6 +2431,16 @@
        DISPATCHER & TAB RENDERERS
        ------------------------------------------------------------- */
     function renderApp() {
+      // PURGE ORPHAN SUCCESSORS: If any cycle is unresolved, no successor can exist after it
+      for (let i = 0; i < cycles.length - 1; i++) {
+        if (cycles[i].status === 'in_progress') {
+          cycles.splice(i + 1);
+          if (selectedCycleIndex >= cycles.length) selectedCycleIndex = cycles.length - 1;
+          saveState();
+          break;
+        }
+      }
+
       const cycle = getSelectedCycle();
       if (!cycle) return;
 
@@ -2391,7 +2507,7 @@
         selectorSub.textContent = "Overtime • Active";
       }
 
-      const lockout = getPrematureLockoutState();
+      const lockout = getNewCycleLockStatus();
       const headerNewBtn = document.getElementById('btnHeaderNewCycle');
       const headerNewIcon = document.getElementById('btnHeaderNewCycleIcon');
       const headerNewText = document.getElementById('btnHeaderNewCycleText');
@@ -2400,11 +2516,19 @@
       if (lockout.isLocked) {
         headerNewBtn.className = "flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-bold transition border border-rose-500/40 cursor-not-allowed shadow-none";
         headerNewIcon.innerHTML = `<span class="text-sm">🔒</span>`;
-        headerNewText.textContent = "Locked (Cooldown)";
-        if (lockoutBanner) {
-          lockoutBanner.classList.remove('hidden');
-          document.getElementById('lockoutBadgeDaysRemaining').textContent = `${lockout.daysRemaining}d Cooldown Remaining`;
-          document.getElementById('lockoutTargetCalibDateText').textContent = formatNumericDate(lockout.calibrationDate);
+        if (lockout.reason === 'premature_breach') {
+          headerNewText.textContent = "Locked (Cooldown)";
+          if (lockoutBanner) {
+            lockoutBanner.classList.remove('hidden');
+            document.getElementById('lockoutBadgeDaysRemaining').textContent = `${lockout.daysRemaining}d Cooldown Remaining`;
+            document.getElementById('lockoutTargetCalibDateText').textContent = formatNumericDate(lockout.calibrationDate);
+          }
+        } else if (lockout.reason === 'execution_day_active') {
+          headerNewText.textContent = "Locked (Tomorrow)";
+          if (lockoutBanner) lockoutBanner.classList.add('hidden');
+        } else {
+          headerNewText.textContent = "Locked (Cycle Active)";
+          if (lockoutBanner) lockoutBanner.classList.add('hidden');
         }
       } else {
         headerNewBtn.className = "flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 via-teal-500 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-bold transition shadow-md shadow-cyan-500/25 active:scale-95 whitespace-nowrap";
@@ -2704,7 +2828,7 @@
       const dialNum = document.getElementById('dialNum');
       const dialSub = document.getElementById('dialSub');
 
-      const currentDayNumber = Math.max(1, metrics.daysPassed);
+      const currentDayNumber = metrics.daysPassed;
       const completedDays = metrics.baselineSealed;
       const displayTotalSealed = metrics.totalSealedDays;
       const displayPercentage = metrics.baseline > 0 ? Math.round((displayTotalSealed / metrics.baseline) * 100) : 0;
@@ -2841,9 +2965,17 @@
 
       } else {
         badge.className = "inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border border-cyan-400 dark:border-cyan-500/40";
-        badgeText.textContent = `🔒 ACTIVE CONTAINMENT (DAY ${currentDayNumber}/${metrics.baseline})`;
-        headline.innerHTML = `Containment: <span class="text-cyan-600 dark:text-cyan-400">Day ${currentDayNumber} of ${metrics.baseline}</span> Active`;
-        subtext.textContent = `Anchor Day 0 is excluded. ${completedDays} of ${metrics.baseline} containment days fully sealed. Day ${currentDayNumber} is actively underway.`;
+        
+        if (currentDayNumber === 0) {
+          badgeText.textContent = `⚓ ANCHOR SESSION (DAY 0)`;
+          headline.innerHTML = `Cycle #${cycle.cycleNumber}: <span class="text-cyan-600 dark:text-cyan-400">Anchor Day 0</span>`;
+          subtext.textContent = `Physical session completed today. Containment Day 1 begins tomorrow.`;
+        } else {
+          badgeText.textContent = `🔒 ACTIVE CONTAINMENT (DAY ${currentDayNumber}/${metrics.baseline})`;
+          headline.innerHTML = `Containment: <span class="text-cyan-600 dark:text-cyan-400">Day ${currentDayNumber} of ${metrics.baseline}</span> Active`;
+          subtext.textContent = `Anchor Day 0 is excluded. ${completedDays} of ${metrics.baseline} days sealed. Day ${currentDayNumber} underway.`;
+        }
+
         aura.className = "absolute -top-32 -right-32 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none transition-all duration-700";
         remainingDays.textContent = `${metrics.daysUntilCalibration} Days`;
         remainingDays.className = "text-sm sm:text-base font-bold font-mono text-cyan-600 dark:text-cyan-300";
@@ -3416,15 +3548,30 @@
     function reopenSelectedCyclePrompt() {
       const cycle = getSelectedCycle();
       if (!cycle) return;
+      if (cycle.status === 'in_progress') {
+        showToast('ℹ️ Cycle is already in progress.');
+        return;
+      }
+      if (!confirm(`Re-open Cycle #${cycle.cycleNumber} back to In-Progress status? Any successor cycle will be removed.`)) return;
+
       pushHistorySnapshot();
       cycle.status = 'in_progress';
       cycle.resolvedDate = null;
+      cycle.durationMinutes = null;
+      cycle.failureReasons = [];
       cycle.isPrematureBreach = false;
+      cycle.notes = '';
+
+      // CRITICAL: Immediately remove any successor cycle spawned by this cycle
+      if (selectedCycleIndex < cycles.length - 1) {
+        cycles.splice(selectedCycleIndex + 1);
+      }
+
       saveState();
       renderApp();
       updateUndoRedoUI();
       playTone('click');
-      showToast(`Cycle #${cycle.cycleNumber} re-opened to In-Progress.`);
+      showToast(`✓ Cycle #${cycle.cycleNumber} re-opened to Active. Successor cycle removed.`);
     }
 
     function syncAnchorFieldsFromPicker(isoStr) {
@@ -3498,45 +3645,6 @@
         return formatISODate(lastMetrics.calibrationDate);
       }
       return formatISODate(getTodayRealDate());
-    }
-
-    function submitNewCycle() {
-      const lock = getPrematureLockoutState();
-      if (lock.isLocked) {
-        playTone('alarm');
-        showToast(`🔒 New Cycle Locked: Day 11 (${formatNumericDate(lock.calibrationDate)}) has not elapsed.`);
-        closeModal('newCycleModal');
-        return;
-      }
-
-      const startVal = document.getElementById('modalInputStartDate').value;
-      const baseVal = parseInt(document.getElementById('modalInputBaseline').value, 10) || 10;
-      if (!startVal) return;
-
-      pushHistorySnapshot();
-      const newCycleNum = cycles.length > 0 ? (cycles[cycles.length - 1].cycleNumber + 1) : 1;
-      const newCycle = {
-        cycleNumber: newCycleNum,
-        startDate: startVal,
-        baselineDays: baseVal,
-        status: 'in_progress',
-        durationMinutes: null,
-        failureReasons: [],
-        isPrematureBreach: false,
-        notes: '',
-        resolvedDate: null
-      };
-
-      cycles.push(newCycle);
-      selectedCycleIndex = cycles.length - 1;
-
-      saveState();
-      closeModal('newCycleModal');
-      renderApp();
-      updateUndoRedoUI();
-      switchTab('dashboard');
-      playTone('start');
-      showToast(`Initialized Cycle #${newCycle.cycleNumber}`);
     }
 
     function updateModalPreview() {
