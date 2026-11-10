@@ -309,31 +309,59 @@
       color: var(--cyan);
     }
 
+    /* Header State Button (Variant 2: Semantic Tinted Halo) */
     .btn-new-cycle {
-      background: linear-gradient(135deg, var(--cyan), var(--teal), var(--indigo));
-      color: #fff;
-      border: none;
-      font-size: 12.5px;
-      font-weight: 800;
-      padding: 0 13px;
       height: 38px;
+      min-width: 74px;
       border-radius: 12px;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 5px;
-      cursor: pointer;
-      /* box-shadow: 0 3px 12px rgba(6, 182, 212, 0.35); */
+      font-size: 12px;
+      font-weight: 800;
       white-space: nowrap;
-      transition: transform 0.15s, opacity 0.15s;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .btn-new-cycle:active {
       transform: scale(0.95);
     }
-    .btn-new-cycle.locked {
-      background: #334155;
-      color: #94a3b8;
-      border: 1px solid rgba(244, 63, 94, 0.5);
-      box-shadow: none;
+
+    /* STATE 1: Ready / Unlocked (+ New) */
+    .btn-new-cycle.state-new {
+      background: linear-gradient(135deg, var(--cyan), var(--teal), var(--indigo));
+      color: #ffffff;
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+    }
+
+    /* STATE 2: Active Cycle Running (⚡ Live) */
+    .btn-new-cycle.state-live {
+      background: #0f172a;
+      color: #38bdf8;
+      border: 1.2px solid rgba(56, 189, 248, 0.55);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.18);
+      cursor: not-allowed;
+    }
+
+    /* STATE 3: Premature Breach Cooldown (🔒 Lock) */
+    .btn-new-cycle.state-lock {
+      background: #0f172a;
+      color: #fda4af;
+      border: 1.2px solid rgba(244, 63, 94, 0.65);
+      box-shadow: 0 0 12px rgba(244, 63, 94, 0.2);
+      cursor: not-allowed;
+    }
+
+    /* STATE 4: Session Logged Today (🛡️ Tmrw) */
+    .btn-new-cycle.state-tmrw {
+      background: #0f172a;
+      color: #6ee7b7;
+      border: 1.2px solid rgba(16, 185, 129, 0.55);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.18);
+      cursor: not-allowed;
     }
 
     /* Sub-header Cycle Navigator */
@@ -3264,30 +3292,44 @@
       document.getElementById('drawerSimDateText').textContent = toDDMMYYYY(m.inspectionDate);
       document.getElementById('drawerDateInput').value = toISO(m.inspectionDate);
 
-      // Lockout check
+      // Lockout & Header Button State Governor
       const lock = getNewCycleLockStatus();
       const lockBanner = document.getElementById('lockoutBanner');
       const newBtn = document.getElementById('btnHeaderNewCycle');
+      const newBtnIcon = document.getElementById('btnHeaderNewIcon');
       const newBtnText = document.getElementById('btnHeaderNewText');
 
+      // Reset base class
+      newBtn.className = 'btn-new-cycle mono';
+
       if (lock.isLocked) {
-        newBtn.classList.add('locked');
         if (lock.reason === 'premature_breach') {
           lockBanner.style.display = 'block';
           document.getElementById('lockoutDaysTag').textContent = `${lock.daysRemaining}d Cooldown`;
           document.getElementById('lockoutTargetDate').textContent = toDDMMYYYY(lock.calibrationDate);
-          newBtnText.textContent = 'Locked';
+          newBtn.classList.add('state-lock');
+          if (newBtnIcon) newBtnIcon.textContent = '🔒';
+          if (newBtnText) newBtnText.textContent = 'Lock';
+
         } else if (lock.reason === 'execution_day_active') {
           lockBanner.style.display = 'none';
-          newBtnText.textContent = 'Tomorrow';
+          newBtn.classList.add('state-tmrw');
+          if (newBtnIcon) newBtnIcon.textContent = '🛡️';
+          if (newBtnText) newBtnText.textContent = 'Tmrw';
+
         } else {
+          // --- ACTIVE CYCLE ---
           lockBanner.style.display = 'none';
-          newBtnText.textContent = 'Active';
+          newBtn.classList.add('state-live');
+          if (newBtnIcon) newBtnIcon.textContent = '⚡';
+          if (newBtnText) newBtnText.textContent = 'Live';
         }
       } else {
+        // --- UNLOCKED / READY (+ New) ---
         lockBanner.style.display = 'none';
-        newBtn.classList.remove('locked');
-        newBtnText.textContent = 'New';
+        newBtn.classList.add('state-new');
+        if (newBtnIcon) newBtnIcon.textContent = '+';
+        if (newBtnText) newBtnText.textContent = 'New';
       }
 
       renderDashboard(cycle, m);
