@@ -2429,24 +2429,116 @@
       return cleanSeals;
     }
 
-    /* ---------------- PREMATURE LOCKOUT ---------------- */
-    function checkPrematureLockout() {
-      if (!cycles.length) return { isLocked: false };
+    /* ---------------- NEW CYCLE LOCK GOVERNOR ---------------- */
+    function getNewCycleLockStatus() {
+      if (!cycles || cycles.length === 0) return { isLocked: false };
       const latest = cycles[cycles.length - 1];
-      if (latest && latest.status === 'failed' && latest.isPrematureBreach) {
-        const m = getMetrics(latest);
-        const insp = getInspectionDate();
-        const rem = diffDays(m.calibrationDate, insp);
-        if (rem > 0) {
+      const insp = getInspectionDate();
+      const m = getMetrics(latest);
+
+      // 1. Premature breach lockout: locked until original calibration day has fully elapsed
+      if (latest.status === 'failed' && latest.isPrematureBreach) {
+        const elapsedDiff = diffDays(insp, m.calibrationDate);
+        if (elapsedDiff <= 0) {
+          const daysRemaining = Math.max(1, diffDays(m.calibrationDate, insp) + 1);
           return {
             isLocked: true,
-            cycleNumber: latest.cycleNumber,
+            reason: 'premature_breach',
             calibrationDate: m.calibrationDate,
-            daysRemaining: rem
+            daysRemaining: daysRemaining,
+            message: `🔒 Locked: Calibration day (${toDDMMYYYY(m.calibrationDate)}) has not elapsed yet.`
           };
         }
+        return { isLocked: false };
       }
+
+      // 2. Active cycle: in progress or overtime pending execution
+      if (latest.status === 'in_progress' || latest.status === 'skipped') {
+        return {
+          isLocked: true,
+          reason: 'cycle_active',
+          status: latest.status,
+          message: `🔒 Cycle #${latest.cycleNumber} is active. Calibration execution must be logged and that day must elapse before creating a new cycle.`
+        };
+      }
+
+      // 3. Calibration logged today (calibration day or overtime day): must elapse first
+      if (latest.status === 'completed' || latest.status === 'failed') {
+        if (latest.resolvedDate) {
+          const resolvedDate = parseISO(latest.resolvedDate);
+          const elapsedDiff = diffDays(insp, resolvedDate);
+          if (elapsedDiff <= 0) {
+            return {
+              isLocked: true,
+              reason: 'execution_day_active',
+              resolvedDate: resolvedDate,
+              message: `🔒 Calibration was logged for ${toDDMMYYYY(resolvedDate)}. The new cycle unlocks tomorrow once this day has fully elapsed.`
+            };
+          }
+        }
+      }
+
       return { isLocked: false };
+    }
+
+    function checkPrematureLockout() {
+      return getNewCycleLockStatus();
+    }
+
+    /* ---------------- AUTO-RESUMPTION ---------------- */
+    function autoResumeSuccessionCycle() {
+      // CRITICAL: Do not spawn new persistent cycles if currently simulating time
+      if (simulatedDateISO) return;
+      if (!cycles || cycles.length === 0) return;
+
+      const latest = cycles[cycles.length - 1];
+      const insp = getActiveInspectionDate(); // or getInspectionDate() on mobile
+
+      // Premature breach lockout check
+      if (latest && latest.status === 'failed' && latest.isPrematureBreach) {
+        const m = calculateMetrics(latest);
+        if (diffDays(insp, m.calibrationDate) > 0) {
+          cycles.push({
+            cycleNumber: latest.cycleNumber + 1,
+            startDate: formatISODate(m.calibrationDate),
+            baselineDays: latest.baselineDays || 10,
+            status: 'in_progress',
+            durationMinutes: null,
+            failureReasons: [],
+            isPrematureBreach: false,
+            notes: '',
+            resolvedDate: null,
+            dailySeals: {}
+          });
+          selectedCycleIndex = cycles.length - 1;
+          saveState();
+        }
+        return;
+      }
+
+      // Normal completed or failed session
+      if (latest && (latest.status === 'completed' || latest.status === 'failed')) {
+        if (!latest.resolvedDate) return;
+        const resolvedDate = parseISODate(latest.resolvedDate);
+
+        // Strictly spawn ONLY if real calendar has advanced past resolution day (Tomorrow or later)
+        if (diffDays(insp, resolvedDate) > 0) {
+          cycles.push({
+            cycleNumber: latest.cycleNumber + 1,
+            startDate: latest.resolvedDate, // Day 0 anchored to execution date
+            baselineDays: latest.baselineDays || 10,
+            status: 'in_progress',
+            durationMinutes: null,
+            failureReasons: [],
+            isPrematureBreach: false,
+            notes: '',
+            resolvedDate: null,
+            dailySeals: {}
+          });
+          selectedCycleIndex = cycles.length - 1;
+          saveState();
+        }
+      }
     }
 
     /* ---------------- SEAL DATA BRIDGE ---------------- */
@@ -2558,6 +2650,12 @@
       const prev = JSON.parse(undoStack.pop());
       cycles = prev.cycles;
       selectedCycleIndex = prev.selectedCycleIndex;
+
+      // GUARD: If the active or restored cycle is in_progress, ensure no orphan successors exist after it
+      if (selectedCycleIndex < cycles.length - 1 && cycles[selectedCycleIndex].status === 'in_progress') {
+        cycles.splice(selectedCycleIndex + 1);
+      }
+
       saveState();
       renderApp();
       updateUndoRedoBtns();
@@ -3118,6 +3216,16 @@
 
     /* ---------------- RENDER DISPATCHER ---------------- */
     function renderApp() {
+      // PURGE ORPHAN SUCCESSORS: If any cycle is unresolved, no successor can exist after it
+      for (let i = 0; i < cycles.length - 1; i++) {
+        if (cycles[i].status === 'in_progress') {
+          cycles.splice(i + 1);
+          if (selectedCycleIndex >= cycles.length) selectedCycleIndex = cycles.length - 1;
+          saveState();
+          break;
+        }
+      }
+
       const cycle = getSelected();
       if (!cycle) return;
       const m = getMetrics(cycle);
@@ -3157,19 +3265,29 @@
       document.getElementById('drawerDateInput').value = toISO(m.inspectionDate);
 
       // Lockout check
-      const lock = checkPrematureLockout();
+      const lock = getNewCycleLockStatus();
       const lockBanner = document.getElementById('lockoutBanner');
       const newBtn = document.getElementById('btnHeaderNewCycle');
+      const newBtnText = document.getElementById('btnHeaderNewText');
+
       if (lock.isLocked) {
-        lockBanner.style.display = 'block';
-        document.getElementById('lockoutDaysTag').textContent = `${lock.daysRemaining}d Cooldown`;
-        document.getElementById('lockoutTargetDate').textContent = toDDMMYYYY(lock.calibrationDate);
         newBtn.classList.add('locked');
-        document.getElementById('btnHeaderNewText').textContent = 'Locked';
+        if (lock.reason === 'premature_breach') {
+          lockBanner.style.display = 'block';
+          document.getElementById('lockoutDaysTag').textContent = `${lock.daysRemaining}d Cooldown`;
+          document.getElementById('lockoutTargetDate').textContent = toDDMMYYYY(lock.calibrationDate);
+          newBtnText.textContent = 'Locked';
+        } else if (lock.reason === 'execution_day_active') {
+          lockBanner.style.display = 'none';
+          newBtnText.textContent = 'Tomorrow';
+        } else {
+          lockBanner.style.display = 'none';
+          newBtnText.textContent = 'Active';
+        }
       } else {
         lockBanner.style.display = 'none';
         newBtn.classList.remove('locked');
-        document.getElementById('btnHeaderNewText').textContent = 'New';
+        newBtnText.textContent = 'New';
       }
 
       renderDashboard(cycle, m);
@@ -3494,7 +3612,7 @@
       document.getElementById('metricOtBadge').textContent = `+${m.overtimeDays}d OT`;
       document.getElementById('metricBaseSealed').textContent = `${m.highSealedCount} High ❤️ • ${m.normalSealedCount} Normal`;
 
-      const currentDayNumber = Math.max(1, m.daysPassed); // Today's actual active day
+      const currentDayNumber = m.daysPassed;
 
       if (cycle.status === 'completed') {
         badgeText.textContent = 'SUCCESSFUL CALIBRATION';
@@ -3504,9 +3622,13 @@
         headline.innerHTML = `Cycle #${cycle.cycleNumber} <span style="color:var(--emerald);">Validated</span>`;
         sub.textContent = `Session executed cleanly within parameters (${cycle.durationMinutes || 5}m). Total ${m.totalSealedDays}d sealed (${m.highSealedCount} High).`;
         document.getElementById('metricRemain').textContent = 'Done';
+        
+        // --- DIAL COLORS: EMERALD GREEN ---
         dialLabel.textContent = 'Status';
         dialNum.textContent = 'DONE';
+        dialNum.style.color = 'var(--emerald)';
         dialSub.textContent = `${m.totalSealedDays}d Sealed`;
+        dialSub.style.color = 'var(--emerald)';
 
       } else if (cycle.status === 'failed') {
         badgeText.textContent = cycle.isPrematureBreach ? 'PREMATURE BREACH' : 'FAILED SESSION';
@@ -3516,9 +3638,13 @@
         headline.innerHTML = `Cycle #${cycle.cycleNumber} <span style="color:var(--rose);">Breached</span>`;
         sub.textContent = cycle.isPrematureBreach ? 'Logged prior to Calibration Day.' : 'Boundary violated.';
         document.getElementById('metricRemain').textContent = 'Breach';
+        
+        // --- DIAL COLORS: ROSE RED ---
         dialLabel.textContent = 'Status';
         dialNum.textContent = 'FAIL';
+        dialNum.style.color = 'var(--rose)';
         dialSub.textContent = 'Terminated';
+        dialSub.style.color = 'var(--rose)';
 
       } else if (cycle.status === 'skipped') {
         // --- APPROVED OVERTIME (SUBLIMED) ---
@@ -3528,14 +3654,17 @@
         badge.style.border = '1px solid var(--purple-border)';
         if (aura) aura.style.background = 'rgba(139, 92, 246, 0.25)';
 
-        // Retains "Containment: Day X of Y Active" format + shows Day In Progress:
         headline.innerHTML = `Containment: <span style="color:var(--purple);">Day ${currentDayNumber} of ${m.baseline}</span> Active (+${m.overtimeDays}d OT)`;
         sub.textContent = `Anchor Day 0 is excluded. ${m.totalSealedDays} of ${m.baseline} days sealed (${m.baseline} Base + ${m.overtimeDays} OT). Day ${currentDayNumber} in progress.`;
 
         document.getElementById('metricRemain').textContent = `+${m.overtimeDays}d`;
+        
+        // --- DIAL COLORS: PURPLE ---
         dialLabel.textContent = 'Overtime';
         dialNum.textContent = `+${m.overtimeDays}d`;
+        dialNum.style.color = 'var(--purple)';
         dialSub.textContent = `${m.totalSealedDays}d Sealed`;
+        dialSub.style.color = 'var(--purple)';
 
       } else if (m.phase === 'calibration_day') {
         badgeText.textContent = `DAY ${m.calibDayNumber}: GATE OPEN`;
@@ -3546,9 +3675,13 @@
         headline.innerHTML = `Target Reached: <span style="color:var(--amber);">Day ${m.calibDayNumber} Open</span>`;
         sub.textContent = `Baseline completed. Session permitted today under strict 3–7m somatic rules.`;
         document.getElementById('metricRemain').textContent = 'TODAY';
+        
+        // --- DIAL COLORS: AMBER / YELLOW ---
         dialLabel.textContent = 'Gate';
         dialNum.textContent = 'OPEN';
+        dialNum.style.color = 'var(--amber)';
         dialSub.textContent = 'Resolve Today';
+        dialSub.style.color = 'var(--amber)';
 
       } else if (m.phase === 'awaiting_resolution') {
         // --- PRE-APPROVAL OVERTIME (AWAITING SKIP / SUBLIME) ---
@@ -3562,25 +3695,39 @@
         sub.textContent = `Baseline has elapsed (${m.overtimeDays} day${m.overtimeDays > 1 ? 's' : ''} ago). Overtime active: ${m.totalSealedDays} total days sealed.`;
 
         document.getElementById('metricRemain').textContent = `+${m.overtimeDays}d Over`;
+        
+        // --- DIAL COLORS: AMBER ---
         dialLabel.textContent = 'OVERTIME';
         dialNum.textContent = `+${m.overtimeDays}d`;
+        dialNum.style.color = 'var(--amber)';
         dialSub.textContent = `${m.totalSealedDays}d Sealed`;
+        dialSub.style.color = 'var(--amber)';
 
       } else {
         // --- NORMAL BASELINE CONTAINMENT ---
-        badgeText.textContent = `ACTIVE (DAY ${currentDayNumber}/${m.baseline})`;
         badge.style.background = 'var(--cyan-soft)';
         badge.style.color = 'var(--cyan)';
         badge.style.border = '1px solid var(--cyan-border)';
         if (aura) aura.style.background = 'rgba(6, 182, 212, 0.2)';
 
-        headline.innerHTML = `Containment: <span style="color:var(--cyan);">Day ${currentDayNumber} of ${m.baseline}</span> Active`;
-        sub.textContent = `Anchor Day 0 is excluded. ${m.baselineSealed} of ${m.baseline} days sealed. Day ${currentDayNumber} in progress.`;
+        if (currentDayNumber === 0) {
+          badgeText.textContent = `ANCHOR SESSION (DAY 0)`;
+          headline.innerHTML = `Cycle #${cycle.cycleNumber}: <span style="color:var(--cyan);">Anchor Day 0</span>`;
+          sub.textContent = `Physical session completed today. Containment Day 1 begins tomorrow.`;
+        } else {
+          badgeText.textContent = `ACTIVE (DAY ${currentDayNumber}/${m.baseline})`;
+          headline.innerHTML = `Containment: <span style="color:var(--cyan);">Day ${currentDayNumber} of ${m.baseline}</span> Active`;
+          sub.textContent = `Anchor Day 0 is excluded. ${m.baselineSealed} of ${m.baseline} days sealed. Day ${currentDayNumber} in progress.`;
+        }
 
         document.getElementById('metricRemain').textContent = `${m.daysUntilCalib}d`;
+        
+        // --- DIAL COLORS: DEFAULT CYAN / TEXT ---
         dialLabel.textContent = 'Calibration In';
         dialNum.textContent = `${String(m.daysUntilCalib).padStart(2, '0')}d`;
+        dialNum.style.color = 'var(--text)';
         dialSub.textContent = `${m.daysUntilCalib * 24}h Left`;
+        dialSub.style.color = 'var(--cyan)';
       }
 
       // INSERT HERE: Toggle visibility of the console link
@@ -4141,7 +4288,7 @@
         showToast('ℹ️ Cycle is already in progress.');
         return;
       }
-      if (!confirm(`Re-open Cycle #${cycle.cycleNumber} back to In-Progress status?`)) return;
+      if (!confirm(`Re-open Cycle #${cycle.cycleNumber} back to In-Progress status? Any successor cycle will be removed.`)) return;
 
       pushHistory();
       cycle.status = 'in_progress';
@@ -4151,10 +4298,15 @@
       cycle.isPrematureBreach = false;
       cycle.notes = '';
 
+      // CRITICAL: Slice off any subsequent cycles that were created from this cycle's resolution
+      if (selectedCycleIndex < cycles.length - 1) {
+        cycles.splice(selectedCycleIndex + 1);
+      }
+
       saveState();
       renderApp();
       playTone('click');
-      showToast(`✓ Cycle #${cycle.cycleNumber} re-opened to Active status.`);
+      showToast(`✓ Cycle #${cycle.cycleNumber} re-opened to Active. Successor cycle removed.`);
     }
 
     function reopenCurrentCycle() {
@@ -4442,40 +4594,6 @@
         cancelAnimationFrame(confettiRaf);
         confettiRaf = null;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    }
-
-    function autoResumeSuccessionCycle() {
-      if (!cycles || cycles.length === 0) return;
-      const latest = cycles[cycles.length - 1];
-      const lock = checkPrematureLockout();
-      if (lock.isLocked) return;
-
-      // Only spawn next cycle if latest cycle is resolved AND inspection date is strictly after resolution date (Tomorrow or later)
-      if (latest && (latest.status === 'completed' || (latest.status === 'failed' && !latest.isPrematureBreach))) {
-        if (!latest.resolvedDate) return;
-
-        const resolvedDate = parseISO(latest.resolvedDate);
-        const inspectionDate = getInspectionDate();
-
-        // If at least 1 day has elapsed since the resolution date
-        if (diffDays(inspectionDate, resolvedDate) > 0) {
-          const newCycle = {
-            cycleNumber: latest.cycleNumber + 1,
-            startDate: latest.resolvedDate, // Day 0 anchored to session date
-            baselineDays: latest.baselineDays || 10,
-            status: 'in_progress',
-            durationMinutes: null,
-            failureReasons: [],
-            isPrematureBreach: false,
-            notes: '',
-            resolvedDate: null,
-            dailySeals: {}
-          };
-          cycles.push(newCycle);
-          selectedCycleIndex = cycles.length - 1;
-          saveState();
-        }
       }
     }
 
