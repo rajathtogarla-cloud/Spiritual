@@ -4255,6 +4255,7 @@
 
     /* Initialize App */
     loadState();
+    autoResumeSuccessionCycle(); // Evaluates local calendar succession immediately on boot
     resizeCometTrack();
     renderApp();
     switchTab('dashboard');
