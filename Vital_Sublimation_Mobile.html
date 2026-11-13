@@ -3965,7 +3965,7 @@
         } else if (isCalib) {
           if (isPast && !isResolvedDate && isApprovedOT && !isPostBreachLocked) {
             tag = `<span class="day-tag-badge" style="background:var(--amber-soft); color:var(--amber); border:1px solid var(--amber-border);">DAY ${m.calibDayNumber} (CALIB • +1d OT)</span>`;
-            role = `Day ${m.calibDayNumber} Target Gate (Overtime +1d)`;
+            role = `Day ${m.calibDayNumber} Target Gate<br>(Overtime +1d)`;
           } else {
             tag = `<span class="day-tag-badge" style="background:var(--amber-soft); color:var(--amber); border:1px solid var(--amber-border);">DAY ${m.calibDayNumber} (CALIB GATE)</span>`;
             role = `Day ${m.calibDayNumber} Target Gate`;
@@ -4000,9 +4000,9 @@
           if (cycle.status === 'completed' && cycle.isHighSuccess) {
             statusHtml = `<span style="color:#a78bfa; font-weight:900; font-size:12px;">✦ High Success</span>`;
           } else if (cycle.status === 'completed') {
-            statusHtml = `<span style="color:var(--emerald); font-weight:900; font-size:12px;">✓ Successful Resl.</span>`;
+            statusHtml = `<span style="color:var(--emerald); font-weight:900; font-size:12px;">✓ Successful Resolution</span>`;
           } else {
-            statusHtml = `<span style="color:var(--rose); font-weight:900; font-size:12px;">✕ Failed Resl.</span>`;
+            statusHtml = `<span style="color:var(--rose); font-weight:900; font-size:12px;">✕ Failed Resolution</span>`;
           }
         } else if (isInsp) {
           statusHtml = '<span style="color:var(--cyan); font-weight:900; font-size:12px;">INSPECTION</span>';
