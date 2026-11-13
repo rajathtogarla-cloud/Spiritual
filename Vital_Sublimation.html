@@ -891,6 +891,17 @@
             <!-- Resolution Actions -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2" id="resolutionButtonsGrid">
               
+              <!-- 0. High Success (Overtime Active Only) -->
+              <button onclick="openHighSuccessModal()" id="btnCalibHighSuccess" class="hidden flex flex-col items-start p-4 sm:p-5 rounded-2xl bg-[linear-gradient(135deg,#7c3aed,#0891b2)] hover:brightness-110 border-[1.5px] border-[#a78bfa]/65 shadow-[0_0_24px_rgba(124,58,237,0.35)] text-white transition transform active:scale-95 text-left group">
+                <div class="flex items-center space-x-2 font-bold text-sm sm:text-base mb-2">
+                  <span class="text-base leading-none">✦</span>
+                  <span>High Success</span>
+                </div>
+                <span class="text-xs text-violet-100 leading-tight">
+                  Deliberately resolve current cycle without physical indulgence.
+                </span>
+              </button>
+
               <!-- 1. Successful Calibration -->
               <button onclick="openSuccessModal()" id="btnCalibComplete" class="flex flex-col items-start p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-lg shadow-emerald-600/25 transition transform active:scale-95 text-left group">
                 <div class="flex items-center space-x-2 font-bold text-sm sm:text-base mb-2">
@@ -1490,6 +1501,40 @@
     </div>
   </div>
 
+  <!-- Modal: High Success Resolution (Overtime Only) -->
+  <div id="highSuccessSessionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card bg-white dark:bg-slate-900 border-[1.5px] border-[#a78bfa]/65 shadow-[0_0_24px_rgba(124,58,237,0.35)] max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-5">
+      <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+        <span class="text-[11px] font-mono font-bold px-2.5 py-1 rounded-md bg-violet-500/15 text-violet-700 dark:text-violet-300 border border-[#a78bfa]/50 uppercase tracking-wider">
+          OVERTIME RESOLUTION
+        </span>
+        <button onclick="closeModal('highSuccessSessionModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 text-base transition">✕</button>
+      </div>
+
+      <div class="flex items-center space-x-2.5">
+        <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-[#a78bfa]/50 flex items-center justify-center text-violet-600 dark:text-violet-300 font-bold flex-shrink-0">✦</div>
+        <div>
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">High Success</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">Deliberate Resolution Without Physical Indulgence</p>
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-violet-500/10 border border-[#a78bfa]/40 text-xs sm:text-sm text-violet-950 dark:text-violet-200 leading-relaxed">
+        <strong>Zero Physical Indulgence:</strong> Concludes the active overtime cycle as a validated success without physical release.
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono font-bold text-slate-700 dark:text-slate-300 mb-1.5">Observations / Reflection (Optional)</label>
+        <input type="text" id="inputHighSuccessNotes" placeholder="Deliberately resolved in overtime without physical indulgence." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-violet-500 transition">
+      </div>
+
+      <div class="flex items-center space-x-3 pt-2">
+        <button onclick="closeModal('highSuccessSessionModal')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-bold font-mono transition">Cancel</button>
+        <button onclick="submitHighSuccessSession()" class="flex-1 py-2.5 rounded-xl bg-[linear-gradient(135deg,#7c3aed,#0891b2)] hover:brightness-110 border-[1.5px] border-[#a78bfa]/65 shadow-[0_0_24px_rgba(124,58,237,0.35)] text-white text-xs sm:text-sm font-bold font-mono transition">Confirm High Success</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal: Log Failed Session / Premature Breach -->
   <div id="failedSessionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-black/70 backdrop-blur-sm">
     <div class="glass-card bg-white dark:bg-slate-900 border border-rose-500/50 max-w-md w-full rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xl">
@@ -1817,7 +1862,8 @@
       const m = calculateMetrics(cycle);
       const maxDay = baseline + (m && m.overtimeDays ? m.overtimeDays : 0);
       const isPremature = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
-      const resolvedObj = cycle.resolvedDate ? parseISODate(cycle.resolvedDate) : null;
+      const isFinalResolved = (cycle.status === 'completed' || cycle.status === 'failed');
+      const resolvedObj = (isFinalResolved && cycle.resolvedDate) ? parseISODate(cycle.resolvedDate) : null;
 
       for (let d = 1; d <= maxDay; d++) {
         const dDate = addDays(sDate, d);
@@ -1881,6 +1927,7 @@
           durationMinutes: c.durationMinutes ?? null,
           failureReasons: c.failureReasons || [],
           isPrematureBreach: Boolean(c.isPrematureBreach),
+          isHighSuccess: Boolean(c.isHighSuccess),
           notes: c.notes || "",
           resolvedDate: c.resolvedDate ?? null,
           dailySeals: c.dailySeals || {}
@@ -2359,6 +2406,7 @@
         cycle.durationMinutes = null;
         cycle.failureReasons = [];
         cycle.isPrematureBreach = false;
+        cycle.isHighSuccess = false;
         cycle.notes = '';
       }
     }
@@ -2434,16 +2482,19 @@
       const daysPassed = diffDays(inspectionDate, startDate); 
       const daysUntilCalibration = diffDays(calibrationDate, inspectionDate); 
 
+      const isFinalResolved = (cycle.status === 'completed' || cycle.status === 'failed');
       let effectiveEndDate = inspectionDate;
-      if (cycle.resolvedDate) effectiveEndDate = parseISODate(cycle.resolvedDate);
+      if (isFinalResolved && cycle.resolvedDate) {
+        effectiveEndDate = parseISODate(cycle.resolvedDate);
+      }
 
-      // In calculateMetrics(cycle):
       let overtimeDays = 0;
-      if (cycle.status === 'completed' || cycle.status === 'failed') {
-        // Resolved cycle: exclude resolvedDate itself from overtime
+      if (isFinalResolved) {
         const diffFromCalib = diffDays(effectiveEndDate, calibrationDate);
-        if (diffFromCalib > 1) {
-          overtimeDays = diffFromCalib - 1;
+        if (diffFromCalib >= 0) {
+          overtimeDays = (cycle.status === 'completed' && cycle.isHighSuccess)
+            ? diffFromCalib + 1
+            : diffFromCalib;
         }
       } else if (cycle.status === 'skipped') {
         // Overtime actively in progress (skipped session)
@@ -2958,10 +3009,17 @@
       }
 
       if (cycle.status === 'completed') {
-        badge.className = "inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-400 dark:border-emerald-500/40";
-        badgeText.textContent = "SUCCESSFUL CALIBRATION";
-        headline.innerHTML = `✓ Cycle #${cycle.cycleNumber} <span class="text-emerald-600 dark:text-emerald-400">Validated</span>`;
-        subtext.textContent = `Session executed cleanly within parameters (${cycle.durationMinutes || 5} mins). Total sealed: ${metrics.totalSealedDays} days.`;
+        if (cycle.isHighSuccess) {
+          badge.className = "inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-violet-100 dark:bg-violet-950/80 text-violet-800 dark:text-violet-300 border border-[#a78bfa]/60";
+          badgeText.textContent = "HIGH SUCCESS RESOLUTION";
+          headline.innerHTML = `✦ Cycle #${cycle.cycleNumber} <span class="text-violet-600 dark:text-violet-400">High Success</span>`;
+          subtext.textContent = `Deliberately resolved in overtime without physical indulgence. Total sealed: ${metrics.totalSealedDays} days.`;
+        } else {
+          badge.className = "inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black font-mono tracking-wider uppercase bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-400 dark:border-emerald-500/40";
+          badgeText.textContent = "SUCCESSFUL CALIBRATION";
+          headline.innerHTML = `✓ Cycle #${cycle.cycleNumber} <span class="text-emerald-600 dark:text-emerald-400">Validated</span>`;
+          subtext.textContent = `Session executed cleanly within parameters (${cycle.durationMinutes || 5} mins). Total sealed: ${metrics.totalSealedDays} days.`;
+        }
         aura.className = "absolute -top-32 -right-32 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-emerald-500/25 blur-3xl pointer-events-none transition-all duration-700";
         remainingDays.textContent = "Completed";
         remainingDays.className = "text-sm sm:text-base font-bold font-mono text-emerald-600 dark:text-emerald-400";
@@ -3066,16 +3124,24 @@
       container.innerHTML = '';
       const baseDays = metrics.baseline + 1;
       const overtimeToRender = metrics.overtimeDays > 0 ? metrics.overtimeDays : 0;
-      const totalTimelineDays = baseDays + overtimeToRender;
-      const isOvertimeApproved = (cycle.status === 'skipped');
+      const isFinalResolved = (cycle.status === 'completed' || cycle.status === 'failed');
       const isPrematureCycle = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
-      const resolvedDateObj = cycle.resolvedDate ? parseISODate(cycle.resolvedDate) : null;
+      const resolvedDateObj = (isFinalResolved && cycle.resolvedDate) ? parseISODate(cycle.resolvedDate) : null;
+      const resolvedDayIndex = resolvedDateObj ? diffDays(resolvedDateObj, metrics.startDate) : 0;
+      const totalTimelineDays = isFinalResolved
+        ? Math.max(baseDays, resolvedDayIndex)
+        : (baseDays + overtimeToRender);
+      const isOvertimeApproved = Boolean(
+        cycle.status === 'skipped' ||
+        cycle.isHighSuccess ||
+        (cycle.status === 'completed' && metrics.overtimeDays > 0)
+      );
 
       for (let day = 0; day <= totalTimelineDays; day++) {
         const dayDate = addDays(metrics.startDate, day);
         const dayFormatted = formatNumericDate(dayDate);
         const dayISO = formatISODate(dayDate);
-        const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
+        const isResolvedDate = Boolean(isFinalResolved && cycle.resolvedDate && dayISO === cycle.resolvedDate);
         const isPostBreachLocked = Boolean(isPrematureCycle && resolvedDateObj && diffDays(dayDate, resolvedDateObj) > 0);
         const isInspectionDate = diffDays(dayDate, metrics.inspectionDate) === 0;
         const isPast = diffDays(dayDate, metrics.inspectionDate) < 0;
@@ -3157,10 +3223,16 @@
           footerLabel = isCalibrationDay
             ? '<span class="text-amber-600/80 dark:text-amber-400/80 font-bold">🔒 Locked (Target Gate)</span>'
             : '<span class="text-slate-400 font-bold">🔒 Locked</span>';
+        } else if (isResolvedDate) {
+          if (cycle.status === 'completed' && cycle.isHighSuccess) {
+            footerLabel = `<span class="text-xs font-mono font-black text-violet-600 dark:text-violet-400">✦ High Success</span>`;
+          } else if (cycle.status === 'completed') {
+            footerLabel = `<span class="text-xs font-mono font-black text-emerald-600 dark:text-emerald-400">✓ Successful Resolution</span>`;
+          } else {
+            footerLabel = `<span class="text-xs font-mono font-black text-rose-600 dark:text-rose-400">✕ Failed Resolution</span>`;
+          }
         } else if (isInspectionDate) {
           footerLabel = '<span class="text-cyan-600 dark:text-cyan-400 font-black">INSPECTION</span>';
-        } else if (isResolvedDate) {
-          footerLabel = `<span class="text-xs font-mono font-bold ${cycle.status === 'completed' ? 'text-emerald-500' : 'text-rose-500'}">Resolution Session</span>`;
         } else if (canToggleSeal) {
           if (sealTier === 'high') {
             footerLabel = `
@@ -3221,6 +3293,7 @@
 
       const calibBadge = document.getElementById('calibGateBadge');
       const calibExp = document.getElementById('calibGateExplanation');
+      const btnHighSuccess = document.getElementById('btnCalibHighSuccess');
       const btnComplete = document.getElementById('btnCalibComplete');
       const btnSkip = document.getElementById('btnCalibSkip');
       const btnFailed = document.getElementById('btnCalibFailed');
@@ -3242,6 +3315,7 @@
         calibBadge.className = "text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-500/30";
         calibExp.textContent = `Skip triggered (+${metrics.overtimeDays}d). Settle session when completed.`;
         btnSkip.classList.add('hidden');
+        if (btnHighSuccess) btnHighSuccess.classList.remove('hidden');
         btnComplete.classList.remove('hidden');
         btnFailed.classList.remove('hidden');
         preDateAlert.classList.add('hidden');
@@ -3258,15 +3332,29 @@
         calibExp.textContent = `Cycle #${cycle.cycleNumber} calibration validated.`;
         if (buttonsGrid) buttonsGrid.classList.add('hidden');
         if (resolvedCard) {
-          resolvedCard.className = "rounded-2xl p-5 border border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200 space-y-2 block shadow-md";
-          resolvedCard.innerHTML = `
-            <div class="flex items-center space-x-2.5 font-bold font-mono text-emerald-600 dark:text-emerald-400">
-              <span class="text-xl">✓</span>
-              <span>Calibration Resolved: Succeeded</span>
-            </div>
-            <p class="text-xs sm:text-sm">Target window met. Duration: <strong>${cycle.durationMinutes || 5} min</strong>.</p>
-            ${cycle.notes ? `<p class="text-xs font-mono border-t border-emerald-500/20 pt-2 mt-2">Notes: ${cycle.notes}</p>` : ''}
-          `;
+          if (cycle.isHighSuccess) {
+            calibBadge.textContent = "Resolved (High Success)";
+            calibBadge.className = "text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-950 text-violet-800 dark:text-violet-300 border border-[#a78bfa]/60";
+            resolvedCard.className = "rounded-2xl p-5 border-[1.5px] border-[#a78bfa]/65 bg-violet-500/10 text-violet-900 dark:text-violet-200 space-y-2 block shadow-[0_0_24px_rgba(124,58,237,0.2)]";
+            resolvedCard.innerHTML = `
+              <div class="flex items-center space-x-2.5 font-bold font-mono text-violet-600 dark:text-violet-300">
+                <span class="text-xl">✦</span>
+                <span>Calibration Resolved: High Success</span>
+              </div>
+              <p class="text-xs sm:text-sm">Deliberately resolved in overtime without physical indulgence.</p>
+              ${cycle.notes ? `<p class="text-xs font-mono border-t border-violet-500/20 pt-2 mt-2">Notes: ${cycle.notes}</p>` : ''}
+            `;
+          } else {
+            resolvedCard.className = "rounded-2xl p-5 border border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200 space-y-2 block shadow-md";
+            resolvedCard.innerHTML = `
+              <div class="flex items-center space-x-2.5 font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                <span class="text-xl">✓</span>
+                <span>Calibration Resolved: Succeeded</span>
+              </div>
+              <p class="text-xs sm:text-sm">Target window met. Duration: <strong>${cycle.durationMinutes || 5} min</strong>.</p>
+              ${cycle.notes ? `<p class="text-xs font-mono border-t border-emerald-500/20 pt-2 mt-2">Notes: ${cycle.notes}</p>` : ''}
+            `;
+          }
         }
         preDateAlert.classList.add('hidden');
         timerTransferSuccess.classList.add('hidden');
@@ -3298,6 +3386,7 @@
 
       if (metrics.isPreCalibration) {
         btnComplete.classList.add('hidden');
+        if (btnHighSuccess) btnHighSuccess.classList.add('hidden');
         btnSkip.classList.add('hidden');
         btnFailed.classList.remove('hidden');
         preDateAlert.classList.remove('hidden');
@@ -3310,6 +3399,7 @@
         calibExp.textContent = `Gate is locked until Day 11 (${formatNumericDate(metrics.calibrationDate)}).`;
       } else if (metrics.isCalibrationDay) {
         btnComplete.classList.remove('hidden');
+        if (btnHighSuccess) btnHighSuccess.classList.add('hidden');
         btnFailed.classList.remove('hidden');
         btnSkip.classList.add('hidden');
         preDateAlert.classList.add('hidden');
@@ -3323,6 +3413,7 @@
       } else {
         btnSkip.classList.remove('hidden');
         btnComplete.classList.add('hidden');
+        if (btnHighSuccess) btnHighSuccess.classList.add('hidden');
         btnFailed.classList.add('hidden');
         preDateAlert.classList.add('hidden');
         timerTransferSuccess.classList.add('hidden');
@@ -3367,7 +3458,10 @@
         const row = document.createElement('tr');
         row.className = `cursor-pointer transition ${actualIdx === selectedCycleIndex ? 'bg-cyan-50/70 dark:bg-cyan-950/30 font-bold' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'}`;
         
-        let badge = c.status === 'completed' ? `<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">✓ Done</span>` :
+        let badge = c.status === 'completed'
+          ? (c.isHighSuccess
+              ? `<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-violet-100 dark:bg-violet-950 text-violet-800 dark:text-violet-300 border border-[#a78bfa]/50">✦ High Done</span>`
+              : `<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">✓ Done</span>`) :
           c.status === 'failed' ? `<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-500/30">${c.isPrematureBreach ? '⚡ Premature' : '✕ Failed'}</span>` :
           c.status === 'skipped' ? `<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-500/30">⏭️ Overtime</span>` :
           `<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30">⚡ Day ${m.baselineSealed}/${c.baselineDays}</span>`;
@@ -3384,7 +3478,7 @@
           <td class="py-3.5 px-4 text-cyan-600 dark:text-cyan-300 font-bold">${c.baselineDays} Days</td>
           <td class="py-3.5 px-4 text-emerald-600 dark:text-emerald-400 font-bold">${sealedDisplay}</td>
           <td class="py-3.5 px-4">${badge}</td>
-          <td class="py-3.5 px-4 text-slate-500">${c.durationMinutes ? `${c.durationMinutes} min` : (c.status === 'skipped' ? 'Sublimed' : '--')}</td>
+          <td class="py-3.5 px-4 text-slate-500">${c.isHighSuccess ? 'No Release' : (c.durationMinutes ? `${c.durationMinutes} min` : (c.status === 'skipped' ? 'Sublimed' : '--'))}</td>
           <td class="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
             <button onclick="event.stopPropagation(); selectCycleByIndex(${actualIdx})" class="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition text-xs font-bold">Load</button>
             <button onclick="deleteCycleByIndex(${actualIdx}, event)" title="Delete Cycle #${c.cycleNumber}" class="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500 text-rose-600 hover:text-white transition text-xs font-bold">🗑️</button>
@@ -3568,6 +3662,41 @@
       showToast(`✓ Cycle #${cycle.cycleNumber} validated! Next cycle will begin tomorrow.`);
     }
 
+    function openHighSuccessModal() {
+      const cycle = getSelectedCycle();
+      if (!cycle || cycle.status !== 'skipped') {
+        showToast('⚠️ High Success is only available during active overtime.');
+        return;
+      }
+      document.getElementById('inputHighSuccessNotes').value = '';
+      openModal('highSuccessSessionModal');
+    }
+
+    function submitHighSuccessSession() {
+      const cycle = getSelectedCycle();
+      if (!cycle || cycle.status !== 'skipped') return;
+      const metrics = calculateMetrics(cycle);
+
+      pushHistorySnapshot();
+      const notes = document.getElementById('inputHighSuccessNotes').value.trim();
+      const resolvedDateStr = simulatedDateISO ? formatISODate(metrics.inspectionDate) : formatISODate(getTodayRealDate());
+
+      cycle.status = 'completed';
+      cycle.isHighSuccess = true;
+      cycle.durationMinutes = 0;
+      cycle.notes = notes || 'Deliberately resolved in overtime without physical indulgence.';
+      cycle.isPrematureBreach = false;
+      cycle.resolvedDate = resolvedDateStr;
+
+      closeModal('highSuccessSessionModal');
+      saveState();
+      renderApp();
+      updateUndoRedoUI();
+      launchConfetti();
+      playTone('victory');
+      showToast(`✦ Cycle #${cycle.cycleNumber} resolved via High Success! Next cycle begins tomorrow.`);
+    }
+
     function submitFailedSession() {
       const cycle = getSelectedCycle();
       if (!cycle) return;
@@ -3649,6 +3778,7 @@
       cycle.durationMinutes = null;
       cycle.failureReasons = [];
       cycle.isPrematureBreach = false;
+      cycle.isHighSuccess = false;
       cycle.notes = '';
 
       // CRITICAL: Immediately remove any successor cycle spawned by this cycle
@@ -3984,10 +4114,15 @@
       const metrics = calculateMetrics(cycle);
       const queue = [];
       const baseDays = metrics.baseline;
-      const isOvertimeApproved = (cycle.status === 'skipped');
+      const isOvertimeApproved = Boolean(
+        cycle.status === 'skipped' ||
+        cycle.isHighSuccess ||
+        (cycle.status === 'completed' && metrics.overtimeDays > 0)
+      );
       const totalDays = baseDays + (metrics.overtimeDays || 0);
       const isPremature = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
-      const resolvedObj = cycle.resolvedDate ? parseISODate(cycle.resolvedDate) : null;
+      const isFinalResolved = (cycle.status === 'completed' || cycle.status === 'failed');
+      const resolvedObj = (isFinalResolved && cycle.resolvedDate) ? parseISODate(cycle.resolvedDate) : null;
 
       for (let day = 1; day <= totalDays; day++) {
         const dayDate = addDays(metrics.startDate, day);
@@ -4310,6 +4445,8 @@
     window.triggerPendingSealAudit = triggerPendingSealAudit;
     window.batchConfirmRemainingAsNormal = batchConfirmRemainingAsNormal;
     window.openSuccessModal = openSuccessModal;
+    window.openHighSuccessModal = openHighSuccessModal;
+    window.submitHighSuccessSession = submitHighSuccessSession;
     window.passPhysioFilterToSuccessModal = passPhysioFilterToSuccessModal;
     window.abortAndRolloverFromGate = abortAndRolloverFromGate;
 
