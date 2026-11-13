@@ -4000,9 +4000,9 @@
           if (cycle.status === 'completed' && cycle.isHighSuccess) {
             statusHtml = `<span style="color:#a78bfa; font-weight:900; font-size:12px;">✦ High Success</span>`;
           } else if (cycle.status === 'completed') {
-            statusHtml = `<span style="color:var(--emerald); font-weight:900; font-size:12px;">✓ Successful Resolution</span>`;
+            statusHtml = `<span style="color:var(--emerald); font-weight:900; font-size:12px;">✓ Successful&nbsp;<br>Resolution</span>`;
           } else {
-            statusHtml = `<span style="color:var(--rose); font-weight:900; font-size:12px;">✕ Failed Resolution</span>`;
+            statusHtml = `<span style="color:var(--rose); font-weight:900; font-size:12px;">✕ Failed&nbsp;<br>Resolution&nbsp;</span>`;
           }
         } else if (isInsp) {
           statusHtml = '<span style="color:var(--cyan); font-weight:900; font-size:12px;">INSPECTION</span>';
