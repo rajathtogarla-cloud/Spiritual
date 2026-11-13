@@ -2374,6 +2374,7 @@
     const STORAGE_KEY_INDEX = 'containment_mobile_selected_idx_v3';
     const THEME_KEY = 'containment_mobile_theme_v3';
     const SIM_KEY = 'containment_mobile_sim_v3';
+    const SIM_SANDBOX_KEY = 'containment_mobile_sim_sandbox_v3';
 
     let currentTab = 'dashboard';
     let cycles = [];
@@ -2442,14 +2443,19 @@
       const baseline = parseInt(cycle.baselineDays, 10) || 10;
       const m = getMetrics(cycle);
       const maxDay = baseline + 1 + (m && m.overtimeDays ? m.overtimeDays : 0);
+      const isPremature = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
+      const resolvedObj = cycle.resolvedDate ? parseISO(cycle.resolvedDate) : null;
 
       for (let d = 1; d <= maxDay; d++) {
         const dDate = addDays(sDate, d);
         const dISO = toISO(dDate);
 
-        // Do not attach or retain seals on the resolution date
-        if (cycle.resolvedDate && dISO === cycle.resolvedDate) {
-          continue;
+        // Strip seals on resolvedDate, and on days after resolvedDate if premature breach
+        if (resolvedObj) {
+          const rel = diffDays(dDate, resolvedObj);
+          if (rel === 0 || (isPremature && rel > 0)) {
+            continue;
+          }
         }
 
         if (diffDays(dDate, m.inspectionDate) < 0) {
@@ -2630,6 +2636,11 @@
       let baselineSealed = effDays;
       if (baselineSealed < 0) baselineSealed = 0;
       if (baselineSealed > baseline) baselineSealed = baseline;
+
+      if (cycle.status === 'failed' && cycle.isPrematureBreach) {
+        baselineSealed = Math.max(0, Math.min(baseline, diffDays(effectiveEnd, startDate) - 1));
+        overtimeDays = 0;
+      }
 
       const totalSealedDays = baselineSealed + overtimeDays;
       let percentage = baseline > 0 ? Math.round((totalSealedDays / baseline) * 100) : 0;
@@ -2820,7 +2831,15 @@
               localStorage.setItem(STORAGE_KEY_INDEX, (cycles.length - 1).toString());
             }
 
-            // 5. Re-render UI with latest state
+            // 5. Preserve simulation sandbox if active, otherwise render real cloud data
+            const activeSim = localStorage.getItem(SIM_KEY);
+            const rawSandbox = localStorage.getItem(SIM_SANDBOX_KEY);
+            if (activeSim && rawSandbox) {
+              const sandbox = JSON.parse(rawSandbox);
+              cycles = sandbox.cycles;
+              selectedCycleIndex = sandbox.selectedCycleIndex;
+            }
+
             renderApp();
             showToast("☁️ Synced & verified from Cloud Firestore.");
           }
@@ -3051,10 +3070,11 @@
 
     function resetToRealDate() {
       simulatedDateISO = null;
-      eraseSimulationResultsIfAny();
-      saveState();
+      localStorage.removeItem(SIM_KEY);
+      localStorage.removeItem(SIM_SANDBOX_KEY);
+      loadState(); // Reload untouched real logged cycles
       renderApp();
-      showToast('Returned to Live Real Date');
+      showToast('Returned to Live Real Date. Real data intact.');
     }
 
     function stepDays(d) {
@@ -3086,15 +3106,17 @@
       const baseDays = m.baseline;
       const isOvertimeApproved = (cycle.status === 'skipped');
       const totalDays = baseDays + (m.overtimeDays || 0);
+      const isPremature = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
+      const resolvedObj = cycle.resolvedDate ? parseISO(cycle.resolvedDate) : null;
 
       for (let day = 1; day <= totalDays; day++) {
         const dayDate = addDays(m.startDate, day);
         const dayISO = toISO(dayDate);
         const isPast = diffDays(dayDate, m.inspectionDate) < 0;
         const isOvertime = (day > baseDays);
-        const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
+        const isBlockedByResolution = Boolean(resolvedObj && (dayISO === cycle.resolvedDate || (isPremature && diffDays(dayDate, resolvedObj) > 0)));
 
-        if (isPast && !isResolvedDate && (!isOvertime || isOvertimeApproved)) {
+        if (isPast && !isBlockedByResolution && (!isOvertime || isOvertimeApproved)) {
           if (!cycle.dailySeals[dayISO]) {
             unevaluated.push(day);
           }
@@ -3834,11 +3856,14 @@
       const baseDays = m.baseline + 1;
       const total = baseDays + (m.overtimeDays > 0 ? m.overtimeDays : 0);
       const isApprovedOT = (cycle.status === 'skipped');
+      const isPrematureCycle = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
+      const resolvedDateObj = cycle.resolvedDate ? parseISO(cycle.resolvedDate) : null;
 
       for (let d = 0; d <= total; d++) {
         const dDate = addDays(m.startDate, d);
         const dISO = toISO(dDate);
         const isResolvedDate = Boolean(cycle.resolvedDate && dISO === cycle.resolvedDate);
+        const isPostBreachLocked = Boolean(isPrematureCycle && resolvedDateObj && diffDays(dDate, resolvedDateObj) > 0);
         const isInsp = diffDays(dDate, m.inspectionDate) === 0;
         const isPast = diffDays(dDate, m.inspectionDate) < 0;
         const isAnchor = (d === 0);
@@ -3847,9 +3872,18 @@
 
         const card = document.createElement('div');
         card.className = 'day-row-card';
-        if (isInsp) card.classList.add('inspected');
-        else if (isOT) card.classList.add('ot-day');
-        else if (isCalib) card.classList.add('calib-gate');
+        if (isPrematureCycle && isResolvedDate) {
+          card.style.border = '1.5px solid var(--rose)';
+          card.style.background = 'var(--rose-soft)';
+        } else if (isPostBreachLocked) {
+          card.style.opacity = '0.6';
+        } else if (isInsp) {
+          card.classList.add('inspected');
+        } else if (isOT) {
+          card.classList.add('ot-day');
+        } else if (isCalib) {
+          card.classList.add('calib-gate');
+        }
 
         let tag = '';
         let role = '';
@@ -3858,7 +3892,7 @@
           tag = `<span class="day-tag-badge" style="background:#1e293b; color:#cbd5e1;">DAY 0 (ANCHOR)</span>`;
           role = 'Anchor Session (Excluded)';
         } else if (isCalib) {
-          if (isPast && !isResolvedDate && isApprovedOT) {
+          if (isPast && !isResolvedDate && isApprovedOT && !isPostBreachLocked) {
             tag = `<span class="day-tag-badge" style="background:var(--amber-soft); color:var(--amber); border:1px solid var(--amber-border);">DAY ${m.calibDayNumber} (CALIB GATE • +1d OT)</span>`;
             role = `Day ${m.calibDayNumber} Target Gate (Overtime +1d)`;
           } else {
@@ -3869,15 +3903,27 @@
           const otCount = d - m.baseline;
           tag = `<span class="day-tag-badge" style="background:var(--purple-soft); color:var(--purple); border:1px solid var(--purple-border);">DAY ${d} (+${otCount}d OT)</span>`;
           role = `Overtime Sublimation +${otCount}d`;
+        } else if (isPrematureCycle && isResolvedDate) {
+          tag = `<span class="day-tag-badge" style="background:var(--rose-soft); color:var(--rose); border:1px solid var(--rose-border);">DAY ${d} (BREACH)</span>`;
+          role = `Containment Day ${d}`;
+        } else if (isPostBreachLocked) {
+          tag = `<span class="day-tag-badge" style="background:var(--card-inner); color:var(--text-dim);">DAY ${d} (LOCKED)</span>`;
+          role = `Containment Day ${d}`;
         } else {
           tag = `<span class="day-tag-badge" style="background:var(--cyan-soft); color:var(--cyan); border:1px solid var(--cyan-border);">DAY ${d}</span>`;
           role = `Containment Day ${d}`;
         }
 
-        const canToggleSeal = (isPast && !isAnchor && !isResolvedDate && (!isOT || isApprovedOT));
+        const canToggleSeal = (!isPostBreachLocked && isPast && !isAnchor && !isResolvedDate && (!isOT || isApprovedOT));
 
         let statusHtml = '';
-        if (isAnchor) {
+        if (isPrematureCycle && isResolvedDate) {
+          statusHtml = '<span style="color:var(--rose); font-weight:900; font-size:12px;">⚡ Premature Breach</span>';
+        } else if (isPostBreachLocked) {
+          statusHtml = isCalib
+            ? '<span style="color:var(--amber); font-weight:800; font-size:12px;">🔒 Locked (Gate)</span>'
+            : '<span style="color:var(--text-dim); font-weight:800; font-size:12px;">🔒 Locked</span>';
+        } else if (isAnchor) {
           statusHtml = '<span style="color:var(--text-dim); font-size:12px;">Anchor Session</span>';
         } else if (isInsp) {
           statusHtml = '<span style="color:var(--cyan); font-weight:900; font-size:12px;">INSPECTION</span>';
@@ -4714,6 +4760,18 @@
           selectedCycleIndex = cycles.length - 1;
         }
 
+        // Load isolated simulation sandbox if simulation mode is active
+        if (simulatedDateISO) {
+          const savedSandbox = localStorage.getItem(SIM_SANDBOX_KEY);
+          if (savedSandbox) {
+            const parsedSandbox = JSON.parse(savedSandbox);
+            cycles = parsedSandbox.cycles || cycles;
+            selectedCycleIndex = (typeof parsedSandbox.selectedCycleIndex === 'number')
+              ? parsedSandbox.selectedCycleIndex
+              : selectedCycleIndex;
+          }
+        }
+
         applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
       } catch (e) {
         console.error('Error loading state from localStorage:', e);
@@ -4723,19 +4781,24 @@
     function saveState() {
       try {
         cycles.forEach(c => sanitizeDailySeals(c));
-        
-        // Immediate local storage write
+
+        // SIMULATION SANDBOX: Never write to real storage or Firestore while simulating
+        if (simulatedDateISO) {
+          localStorage.setItem(SIM_KEY, simulatedDateISO);
+          localStorage.setItem(SIM_SANDBOX_KEY, JSON.stringify({
+            cycles: cycles,
+            selectedCycleIndex: selectedCycleIndex
+          }));
+          return;
+        }
+
+        localStorage.removeItem(SIM_KEY);
+        localStorage.removeItem(SIM_SANDBOX_KEY);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(cycles));
         localStorage.setItem(STORAGE_KEY_INDEX, selectedCycleIndex.toString());
 
-        if (simulatedDateISO) {
-          localStorage.setItem(SIM_KEY, simulatedDateISO);
-        } else {
-          localStorage.removeItem(SIM_KEY);
-        }
-
         // Trigger async Cloud Firestore write
-        if (currentUser && !simulatedDateISO) {
+        if (currentUser) {
           syncLocalToFirestore();
         }
       } catch (e) {
