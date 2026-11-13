@@ -1601,6 +1601,7 @@
     const STORAGE_KEY_SELECTED_INDEX = 'containment_selected_cycle_index_v10';
     const STORAGE_KEY_THEME = 'containment_theme_mode_v10';
     const STORAGE_KEY_SIM_DATE = 'containment_simulated_date_v10';
+    const STORAGE_KEY_SIM_SANDBOX = 'containment_sim_sandbox_v10';
 
     let currentTab = 'dashboard';
     let cycles = [];
@@ -1660,9 +1661,19 @@
               });
             }
 
-            // STEP 4: Save to localStorage and re-render
+            // STEP 4: Save authoritative real data to localStorage
             localStorage.setItem(STORAGE_KEY_CYCLES, JSON.stringify(cycles));
             localStorage.setItem(STORAGE_KEY_SELECTED_INDEX, selectedCycleIndex.toString());
+
+            // If currently in simulation mode, restore the sandbox view instead of overwriting it
+            const activeSim = localStorage.getItem(STORAGE_KEY_SIM_DATE);
+            const rawSandbox = localStorage.getItem(STORAGE_KEY_SIM_SANDBOX);
+            if (activeSim && rawSandbox) {
+              const sandbox = JSON.parse(rawSandbox);
+              cycles = sandbox.cycles;
+              selectedCycleIndex = sandbox.selectedCycleIndex;
+            }
+
             renderApp();
             showToast("☁️ Synced & verified from Cloud Firestore.");
           }
@@ -1805,14 +1816,19 @@
       const baseline = parseInt(cycle.baselineDays, 10) || 10;
       const m = calculateMetrics(cycle);
       const maxDay = baseline + (m && m.overtimeDays ? m.overtimeDays : 0);
+      const isPremature = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
+      const resolvedObj = cycle.resolvedDate ? parseISODate(cycle.resolvedDate) : null;
 
       for (let d = 1; d <= maxDay; d++) {
         const dDate = addDays(sDate, d);
         const dISO = formatISODate(dDate);
 
-        // Strip out any seal on resolvedDate
-        if (cycle.resolvedDate && dISO === cycle.resolvedDate) {
-          continue;
+        // Strip seals on resolvedDate, and on days after resolvedDate if premature breach
+        if (resolvedObj) {
+          const rel = diffDays(dDate, resolvedObj);
+          if (rel === 0 || (isPremature && rel > 0)) {
+            continue;
+          }
         }
 
         if (diffDays(dDate, m.inspectionDate) < 0) {
@@ -1961,7 +1977,17 @@
         }
 
         const savedSim = localStorage.getItem(STORAGE_KEY_SIM_DATE);
-        if (savedSim) simulatedDateISO = savedSim;
+        if (savedSim) {
+          simulatedDateISO = savedSim;
+          const savedSandbox = localStorage.getItem(STORAGE_KEY_SIM_SANDBOX);
+          if (savedSandbox) {
+            const parsedSandbox = JSON.parse(savedSandbox);
+            cycles = parsedSandbox.cycles || cycles;
+            selectedCycleIndex = (typeof parsedSandbox.selectedCycleIndex === 'number')
+              ? parsedSandbox.selectedCycleIndex
+              : selectedCycleIndex;
+          }
+        }
 
         const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'dark';
         applyTheme(savedTheme);
@@ -1973,20 +1999,25 @@
 
     function saveState() {
       try {
-        // CORE FIX: Ensure daily seals are actively sanitized locally before saving, 
-        // instantly wiping out any phantom future seals caused by reversing time.
         cycles.forEach(c => sanitizeDailySeals(c));
 
-        localStorage.setItem(STORAGE_KEY_CYCLES, JSON.stringify(cycles));
-        localStorage.setItem(STORAGE_KEY_SELECTED_INDEX, selectedCycleIndex.toString());
+        // SIMULATION SANDBOX: Never write to real storage or Firestore while simulating
         if (simulatedDateISO) {
           localStorage.setItem(STORAGE_KEY_SIM_DATE, simulatedDateISO);
-        } else {
-          localStorage.removeItem(STORAGE_KEY_SIM_DATE);
+          localStorage.setItem(STORAGE_KEY_SIM_SANDBOX, JSON.stringify({
+            cycles: cycles,
+            selectedCycleIndex: selectedCycleIndex
+          }));
+          return;
         }
 
+        localStorage.removeItem(STORAGE_KEY_SIM_DATE);
+        localStorage.removeItem(STORAGE_KEY_SIM_SANDBOX);
+        localStorage.setItem(STORAGE_KEY_CYCLES, JSON.stringify(cycles));
+        localStorage.setItem(STORAGE_KEY_SELECTED_INDEX, selectedCycleIndex.toString());
+
         // Auto-save mutation to Cloud Firestore if signed in
-        if (currentUser && !simulatedDateISO) {
+        if (currentUser) {
           syncLocalToFirestore();
         }
       } catch (e) {
@@ -2360,14 +2391,15 @@
 
     function resetToRealDate() {
       simulatedDateISO = null;
-      eraseSimulationResultsIfAny();
-      hasAutoPromptedDashboardAudit = false; // <-- ADD THIS
-      saveState();
+      localStorage.removeItem(STORAGE_KEY_SIM_DATE);
+      localStorage.removeItem(STORAGE_KEY_SIM_SANDBOX);
+      hasAutoPromptedDashboardAudit = false;
+      loadState(); // Reload untouched real logged cycles
       renderApp();
       updateUndoRedoUI();
       playTone('click');
-      showToast('Returned to Live Real Date.');
-      checkDashboardUnevaluatedSeals(true); // <-- FORCE CHECK ON RESET
+      showToast('Returned to Live Real Date. Real data intact.');
+      checkDashboardUnevaluatedSeals(true);
     }
 
     function stepSimulatedDays(delta) {
@@ -2431,6 +2463,11 @@
       let baselineSealed = effectiveDaysForBaseline;
       if (baselineSealed < 0) baselineSealed = 0;
       if (baselineSealed > baseline) baselineSealed = baseline;
+
+      if (cycle.status === 'failed' && cycle.isPrematureBreach) {
+        baselineSealed = Math.max(0, Math.min(baseline, diffDays(effectiveEndDate, startDate) - 1));
+        overtimeDays = 0;
+      }
 
       const totalSealedDays = baselineSealed + overtimeDays;
       let percentage = baseline > 0 ? Math.round((totalSealedDays / baseline) * 100) : 0;
@@ -3031,12 +3068,15 @@
       const overtimeToRender = metrics.overtimeDays > 0 ? metrics.overtimeDays : 0;
       const totalTimelineDays = baseDays + overtimeToRender;
       const isOvertimeApproved = (cycle.status === 'skipped');
+      const isPrematureCycle = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
+      const resolvedDateObj = cycle.resolvedDate ? parseISODate(cycle.resolvedDate) : null;
 
       for (let day = 0; day <= totalTimelineDays; day++) {
         const dayDate = addDays(metrics.startDate, day);
         const dayFormatted = formatNumericDate(dayDate);
         const dayISO = formatISODate(dayDate);
         const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
+        const isPostBreachLocked = Boolean(isPrematureCycle && resolvedDateObj && diffDays(dayDate, resolvedDateObj) > 0);
         const isInspectionDate = diffDays(dayDate, metrics.inspectionDate) === 0;
         const isPast = diffDays(dayDate, metrics.inspectionDate) < 0;
         const isFuture = diffDays(dayDate, metrics.inspectionDate) > 0;
@@ -3047,7 +3087,11 @@
         const card = document.createElement('div');
         card.id = `timeline-card-${dayISO}`;
 
-        if (isInspectionDate) {
+        if (isPrematureCycle && isResolvedDate) {
+          card.className = "relative rounded-2xl p-4 sm:p-5 glass-card border-2 border-rose-500 bg-rose-50/80 dark:bg-rose-950/35 shadow-lg shadow-rose-500/15 flex flex-col justify-between";
+        } else if (isPostBreachLocked) {
+          card.className = "relative rounded-2xl p-4 sm:p-5 glass-card border border-slate-200/50 dark:border-slate-800/40 flex flex-col justify-between opacity-55";
+        } else if (isInspectionDate) {
           card.className = "relative rounded-2xl p-4 sm:p-5 glass-interactive border-2 border-cyan-500 bg-cyan-50/80 dark:bg-cyan-950/40 shadow-lg shadow-cyan-500/20 flex flex-col justify-between transition-all scale-[1.02] z-10";
         } else if (isOvertimeDay) {
           card.className = "relative rounded-2xl p-4 sm:p-5 glass-interactive border border-purple-500/50 bg-purple-50/50 dark:bg-purple-950/30 flex flex-col justify-between";
@@ -3071,6 +3115,10 @@
         } else if (isOvertimeDay) {
           const otCount = day - metrics.baseline;
           dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30">DAY ${day} (+${otCount}d OT) ⚡</span>`;
+        } else if (isPrematureCycle && isResolvedDate) {
+          dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40">DAY ${day} (BREACH)</span>`;
+        } else if (isPostBreachLocked) {
+          dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500">DAY ${day} (LOCKED)</span>`;
         } else if (isInspectionDate) {
           dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 border border-cyan-500/40">DAY ${day} (ACTIVE)</span>`;
         } else if (isPast) {
@@ -3079,7 +3127,9 @@
           dayTag = `<span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500">DAY ${day} (UPCOMING)</span>`;
         }
 
-        let statusIcon = isInspectionDate ? `<span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span></span>` :
+        let statusIcon = (isPrematureCycle && isResolvedDate) ? `<span class="text-rose-500 font-bold text-sm">⚡</span>` :
+          isPostBreachLocked ? `<span class="text-slate-400 dark:text-slate-600 text-sm">🔒</span>` :
+          isInspectionDate ? `<span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span></span>` :
           (isPast && isOvertimeDay && isOvertimeApproved) ? `<span class="text-purple-500 font-bold text-sm">✓</span>` :
           (isPast && !isAnchorDay && !isOvertimeDay) ? `<span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm">✓</span>` :
           isOvertimeDay ? `<span class="text-purple-500 font-bold text-sm">⏳</span>` :
@@ -3090,7 +3140,7 @@
         if (isAnchorDay) {
           roleText = 'Anchor Session (Excluded)';
         } else if (isCalibrationDay) {
-          roleText = isPast ? `Day ${metrics.calibDayNumber} Target Gate (Overtime +1d)` : `Day ${metrics.calibDayNumber} Calibration Gate`;
+          roleText = (isPast && !isPostBreachLocked) ? `Day ${metrics.calibDayNumber} Target Gate (Overtime +1d)` : `Day ${metrics.calibDayNumber} Calibration Gate`;
         } else if (isOvertimeDay) {
           roleText = `Overtime Sublimation +${day - metrics.baseline}d`;
         } else {
@@ -3099,9 +3149,15 @@
 
         const sealTier = (cycle.dailySeals && cycle.dailySeals[dayISO]) ? cycle.dailySeals[dayISO] : 'normal';
         let footerLabel = '';
-        const canToggleSeal = (isPast && !isAnchorDay && !isResolvedDate && (!isOvertimeDay || isOvertimeApproved));
+        const canToggleSeal = (!isPostBreachLocked && isPast && !isAnchorDay && !isResolvedDate && (!isOvertimeDay || isOvertimeApproved));
 
-        if (isInspectionDate) {
+        if (isPrematureCycle && isResolvedDate) {
+          footerLabel = '<span class="text-xs font-mono font-black text-rose-600 dark:text-rose-400">⚡ Premature Breach</span>';
+        } else if (isPostBreachLocked) {
+          footerLabel = isCalibrationDay
+            ? '<span class="text-amber-600/80 dark:text-amber-400/80 font-bold">🔒 Locked (Target Gate)</span>'
+            : '<span class="text-slate-400 font-bold">🔒 Locked</span>';
+        } else if (isInspectionDate) {
           footerLabel = '<span class="text-cyan-600 dark:text-cyan-400 font-black">INSPECTION</span>';
         } else if (isResolvedDate) {
           footerLabel = `<span class="text-xs font-mono font-bold ${cycle.status === 'completed' ? 'text-emerald-500' : 'text-rose-500'}">Resolution Session</span>`;
@@ -3930,16 +3986,18 @@
       const baseDays = metrics.baseline;
       const isOvertimeApproved = (cycle.status === 'skipped');
       const totalDays = baseDays + (metrics.overtimeDays || 0);
+      const isPremature = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
+      const resolvedObj = cycle.resolvedDate ? parseISODate(cycle.resolvedDate) : null;
 
       for (let day = 1; day <= totalDays; day++) {
         const dayDate = addDays(metrics.startDate, day);
         const dayISO = formatISODate(dayDate);
         const isPast = diffDays(dayDate, metrics.inspectionDate) < 0;
         const isOvertime = (day > baseDays);
-        const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
+        const isBlockedByResolution = Boolean(resolvedObj && (dayISO === cycle.resolvedDate || (isPremature && diffDays(dayDate, resolvedObj) > 0)));
 
-        // Exclude resolvedDate from ever entering the audit queue
-        if (isPast && !isResolvedDate && (!isOvertime || isOvertimeApproved)) {
+        // Exclude resolvedDate (and post-breach days) from entering the audit queue
+        if (isPast && !isBlockedByResolution && (!isOvertime || isOvertimeApproved)) {
           if (!cycle.dailySeals[dayISO]) {
             queue.push({
               dayNumber: day,
@@ -4021,14 +4079,16 @@
       const metrics = calculateMetrics(cycle);
       const queue = [];
       const totalDays = metrics.baseline + (metrics.overtimeDays || 0);
+      const isPremature = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
+      const resolvedObj = cycle.resolvedDate ? parseISODate(cycle.resolvedDate) : null;
 
       for (let day = 1; day <= totalDays; day++) {
         const dayDate = addDays(metrics.startDate, day);
         const dayISO = formatISODate(dayDate);
-        const isResolvedDate = Boolean(cycle.resolvedDate && dayISO === cycle.resolvedDate);
+        const isBlockedByResolution = Boolean(resolvedObj && (dayISO === cycle.resolvedDate || (isPremature && diffDays(dayDate, resolvedObj) > 0)));
 
-        // Skip the resolution date from review queue
-        if (!isResolvedDate && diffDays(dayDate, metrics.inspectionDate) <= 0) {
+        // Skip resolution date and post-breach locked days from review queue
+        if (!isBlockedByResolution && diffDays(dayDate, metrics.inspectionDate) <= 0) {
           queue.push({
             dayNumber: day,
             date: dayDate,
