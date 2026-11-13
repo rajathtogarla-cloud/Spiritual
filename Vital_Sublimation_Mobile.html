@@ -763,6 +763,13 @@
       /* box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35); */
     }
 
+    .calib-btn-high {
+      background: linear-gradient(135deg, #7c3aed, #0891b2);
+      border: 1.5px solid rgba(167, 139, 250, 0.65);
+      box-shadow: 0 0 24px rgba(124, 58, 237, 0.35);
+      color: #ffffff;
+    }
+
     .btn-icon-circle {
       width: 42px;
       height: 42px;
@@ -1707,6 +1714,15 @@
           </div>
         </div>
 
+        <!-- Dynamic Action 0: High Success (Overtime Active Only) -->
+        <button class="calib-btn calib-btn-high" id="btnCalibHighSuccess" onclick="openHighSuccessModal()" style="display:none;">
+          <div class="btn-icon-circle">✦</div>
+          <div>
+            <div class="calib-btn-title">High Success</div>
+            <div class="calib-btn-desc">Deliberately resolve current cycle without physical indulgence.</div>
+          </div>
+        </button>
+
         <!-- Dynamic Action 1: Successful Calibration -->
         <button class="calib-btn calib-btn-win" id="btnCalibSuccess" onclick="openSuccessModal()">
           <div class="btn-icon-circle">✓</div>
@@ -2290,6 +2306,35 @@
     </div>
   </div>
 
+  <!-- Modal: High Success Resolution (Overtime Only) -->
+  <div id="modalHighSuccess" class="modal-backdrop" onclick="closeModalOnBackdrop(event, 'modalHighSuccess')">
+    <div class="modal-sheet mono">
+      <div class="sheet-pill-bar"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span style="font-size:11px; font-weight:800; background:rgba(124,58,237,0.18); color:#c4b5fd; border:1px solid rgba(167,139,250,0.5); padding:3px 8px; border-radius:6px;">
+          OVERTIME RESOLUTION
+        </span>
+        <button class="btn-icon" style="width:30px; height:30px; font-size:13px;" onclick="closeModal('modalHighSuccess')">✕</button>
+      </div>
+      <div class="sheet-title" style="color:#a78bfa;">✦ High Success</div>
+      <div class="sheet-sub">Deliberately resolve cycle without physical indulgence</div>
+
+      <div style="background:rgba(124,58,237,0.12); border:1px solid rgba(167,139,250,0.45); padding:12px 14px; border-radius:16px; font-size:12px; line-height:1.45; margin-bottom:14px;">
+        <strong>Zero Physical Indulgence:</strong> Concludes the active overtime cycle as a validated success with zero physical release.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Observations / Reflection (Optional)</label>
+        <input type="text" id="highSuccessNotes" placeholder="Deliberately resolved in overtime without physical indulgence." class="form-input">
+      </div>
+
+      <div class="sheet-action-row">
+        <button class="btn-sheet-cancel" onclick="closeModal('modalHighSuccess')">Cancel</button>
+        <button class="btn-sheet-primary" style="background:linear-gradient(135deg, #7c3aed, #0891b2); border:1px solid rgba(167,139,250,0.65); box-shadow:0 0 20px rgba(124,58,237,0.35);" onclick="submitHighSuccessCalibration()">Confirm High Success</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal: Failed / Premature Breach -->
   <div id="modalFail" class="modal-backdrop" onclick="closeModalOnBackdrop(event, 'modalFail')">
     <div class="modal-sheet mono">
@@ -2444,7 +2489,8 @@
       const m = getMetrics(cycle);
       const maxDay = baseline + 1 + (m && m.overtimeDays ? m.overtimeDays : 0);
       const isPremature = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
-      const resolvedObj = cycle.resolvedDate ? parseISO(cycle.resolvedDate) : null;
+      const isFinalResolved = (cycle.status === 'completed' || cycle.status === 'failed');
+      const resolvedObj = (isFinalResolved && cycle.resolvedDate) ? parseISO(cycle.resolvedDate) : null;
 
       for (let d = 1; d <= maxDay; d++) {
         const dDate = addDays(sDate, d);
@@ -2606,18 +2652,19 @@
       const daysPassed = diffDays(inspectionDate, startDate);
       const daysUntilCalib = diffDays(calibrationDate, inspectionDate);
 
+      const isFinalResolved = (cycle.status === 'completed' || cycle.status === 'failed');
       let effectiveEnd = inspectionDate;
-      if (cycle.resolvedDate) {
+      if (isFinalResolved && cycle.resolvedDate) {
         effectiveEnd = parseISO(cycle.resolvedDate);
       }
 
-      // In getMetrics(cycle):
       let overtimeDays = 0;
-      if (cycle.status === 'completed' || cycle.status === 'failed') {
-        // Resolved cycle: exclude resolvedDate itself from overtime
+      if (isFinalResolved) {
         const diff = diffDays(effectiveEnd, calibrationDate);
-        if (diff > 1) {
-          overtimeDays = diff - 1;
+        if (diff >= 0) {
+          overtimeDays = (cycle.status === 'completed' && cycle.isHighSuccess)
+            ? diff + 1
+            : diff;
         }
       } else if (cycle.status === 'skipped') {
         // Overtime actively in progress (skipped session)
@@ -2951,6 +2998,7 @@
         durationMinutes: c.durationMinutes ?? null,
         failureReasons: c.failureReasons || [],
         isPrematureBreach: Boolean(c.isPrematureBreach),
+        isHighSuccess: Boolean(c.isHighSuccess),
         notes: c.notes || "",
         resolvedDate: c.resolvedDate ?? null,
         dailySeals: c.dailySeals || {}
@@ -3044,6 +3092,7 @@
         cycle.durationMinutes = null;
         cycle.failureReasons = [];
         cycle.isPrematureBreach = false;
+        cycle.isHighSuccess = false;
         cycle.notes = '';
       }
     }
@@ -3104,10 +3153,15 @@
       if (!cycle.dailySeals) cycle.dailySeals = {};
       const unevaluated = [];
       const baseDays = m.baseline;
-      const isOvertimeApproved = (cycle.status === 'skipped');
+      const isOvertimeApproved = Boolean(
+        cycle.status === 'skipped' ||
+        cycle.isHighSuccess ||
+        (cycle.status === 'completed' && m.overtimeDays > 0)
+      );
       const totalDays = baseDays + (m.overtimeDays || 0);
       const isPremature = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
-      const resolvedObj = cycle.resolvedDate ? parseISO(cycle.resolvedDate) : null;
+      const isFinalResolved = (cycle.status === 'completed' || cycle.status === 'failed');
+      const resolvedObj = (isFinalResolved && cycle.resolvedDate) ? parseISO(cycle.resolvedDate) : null;
 
       for (let day = 1; day <= totalDays; day++) {
         const dayDate = addDays(m.startDate, day);
@@ -3723,12 +3777,21 @@
       const currentDayNumber = m.daysPassed;
 
       if (cycle.status === 'completed') {
-        badgeText.textContent = 'SUCCESSFUL CALIBRATION';
-        badge.style.background = 'var(--emerald-soft)';
-        badge.style.color = 'var(--emerald)';
-        if (aura) aura.style.background = 'rgba(16, 185, 129, 0.25)';
-        headline.innerHTML = `Cycle #${cycle.cycleNumber} <span style="color:var(--emerald);">Validated</span>`;
-        sub.textContent = `Session executed cleanly within parameters (${cycle.durationMinutes || 5}m). Total ${m.totalSealedDays}d sealed (${m.highSealedCount} High).`;
+        if (cycle.isHighSuccess) {
+          badgeText.textContent = 'HIGH SUCCESS RESOLUTION';
+          badge.style.background = 'rgba(124, 58, 237, 0.18)';
+          badge.style.color = '#c4b5fd';
+          if (aura) aura.style.background = 'rgba(124, 58, 237, 0.25)';
+          headline.innerHTML = `Cycle #${cycle.cycleNumber} <span style="color:#a78bfa;">High Success</span>`;
+          sub.textContent = `Deliberately resolved in overtime without physical indulgence. Total ${m.totalSealedDays}d sealed (${m.highSealedCount} High).`;
+        } else {
+          badgeText.textContent = 'SUCCESSFUL CALIBRATION';
+          badge.style.background = 'var(--emerald-soft)';
+          badge.style.color = 'var(--emerald)';
+          if (aura) aura.style.background = 'rgba(16, 185, 129, 0.25)';
+          headline.innerHTML = `Cycle #${cycle.cycleNumber} <span style="color:var(--emerald);">Validated</span>`;
+          sub.textContent = `Session executed cleanly within parameters (${cycle.durationMinutes || 5}m). Total ${m.totalSealedDays}d sealed (${m.highSealedCount} High).`;
+        }
         document.getElementById('metricRemain').textContent = 'Done';
         
         // --- DIAL COLORS: EMERALD GREEN ---
@@ -3854,15 +3917,23 @@
       document.getElementById('timelineTitle').textContent = `${cycle.baselineDays}-Day Breakdown & Overtime`;
 
       const baseDays = m.baseline + 1;
-      const total = baseDays + (m.overtimeDays > 0 ? m.overtimeDays : 0);
-      const isApprovedOT = (cycle.status === 'skipped');
+      const isFinalResolved = (cycle.status === 'completed' || cycle.status === 'failed');
       const isPrematureCycle = Boolean(cycle.status === 'failed' && cycle.isPrematureBreach);
-      const resolvedDateObj = cycle.resolvedDate ? parseISO(cycle.resolvedDate) : null;
+      const resolvedDateObj = (isFinalResolved && cycle.resolvedDate) ? parseISO(cycle.resolvedDate) : null;
+      const resolvedDayIndex = resolvedDateObj ? diffDays(resolvedDateObj, m.startDate) : 0;
+      const total = isFinalResolved
+        ? Math.max(baseDays, resolvedDayIndex)
+        : (baseDays + (m.overtimeDays > 0 ? m.overtimeDays : 0));
+      const isApprovedOT = Boolean(
+        cycle.status === 'skipped' ||
+        cycle.isHighSuccess ||
+        (cycle.status === 'completed' && m.overtimeDays > 0)
+      );
 
       for (let d = 0; d <= total; d++) {
         const dDate = addDays(m.startDate, d);
         const dISO = toISO(dDate);
-        const isResolvedDate = Boolean(cycle.resolvedDate && dISO === cycle.resolvedDate);
+        const isResolvedDate = Boolean(isFinalResolved && cycle.resolvedDate && dISO === cycle.resolvedDate);
         const isPostBreachLocked = Boolean(isPrematureCycle && resolvedDateObj && diffDays(dDate, resolvedDateObj) > 0);
         const isInsp = diffDays(dDate, m.inspectionDate) === 0;
         const isPast = diffDays(dDate, m.inspectionDate) < 0;
@@ -3925,10 +3996,16 @@
             : '<span style="color:var(--text-dim); font-weight:800; font-size:12px;">🔒 Locked</span>';
         } else if (isAnchor) {
           statusHtml = '<span style="color:var(--text-dim); font-size:12px;">Anchor Session</span>';
+        } else if (isResolvedDate) {
+          if (cycle.status === 'completed' && cycle.isHighSuccess) {
+            statusHtml = `<span style="color:#a78bfa; font-weight:900; font-size:12px;">✦ High Success</span>`;
+          } else if (cycle.status === 'completed') {
+            statusHtml = `<span style="color:var(--emerald); font-weight:900; font-size:12px;">✓ Successful Resolution</span>`;
+          } else {
+            statusHtml = `<span style="color:var(--rose); font-weight:900; font-size:12px;">✕ Failed Resolution</span>`;
+          }
         } else if (isInsp) {
           statusHtml = '<span style="color:var(--cyan); font-weight:900; font-size:12px;">INSPECTION</span>';
-        } else if (isResolvedDate) {
-          statusHtml = `<span style="color:${cycle.status === 'completed' ? 'var(--emerald)' : 'var(--rose)'}; font-weight:800; font-size:12px;">Resolution Session</span>`;
         } else if (canToggleSeal) {
           const sealTier = getSealTierForDay(cycle, d, dDate);
           const isHigh = (sealTier === 'high');
@@ -3976,6 +4053,7 @@
       const resolvedDateText = document.getElementById('calibResolvedDateText');
 
       const btnSuccess = document.getElementById('btnCalibSuccess');
+      const btnHighSuccess = document.getElementById('btnCalibHighSuccess');
       const btnSkip = document.getElementById('btnCalibSkip');
       const btnFail = document.getElementById('btnCalibFail');
       const btnFailLabel = document.getElementById('btnFailLabel');
@@ -3998,6 +4076,7 @@
         otNotice.style.display = 'none';
 
         btnSuccess.style.display = 'none';
+        if (btnHighSuccess) btnHighSuccess.style.display = 'none';
         btnSkip.style.display = 'none';
         btnFail.style.display = 'none';
 
@@ -4010,13 +4089,25 @@
           resolvedDateText.textContent = `Logged: ${resDate}`;
 
           if (cycle.status === 'completed') {
-            resolvedBanner.style.background = 'var(--emerald-soft)';
-            resolvedBanner.style.borderColor = 'var(--emerald-border)';
-            resolvedTag.style.background = 'rgba(16, 185, 129, 0.25)';
-            resolvedTag.style.color = 'var(--emerald)';
-            resolvedTag.textContent = '✓ SUCCEEDED';
-            resolvedHeading.innerHTML = 'Calibration Resolved as <span style="color:var(--emerald);">Succeeded</span>';
-            resolvedDetails.textContent = `Session completed cleanly within ${cycle.durationMinutes || 5} minutes under 100% somatic focus.`;
+            if (cycle.isHighSuccess) {
+              resolvedBanner.style.background = 'rgba(124, 58, 237, 0.14)';
+              resolvedBanner.style.borderColor = 'rgba(167, 139, 250, 0.65)';
+              resolvedTag.style.background = 'rgba(124, 58, 237, 0.25)';
+              resolvedTag.style.color = '#c4b5fd';
+              resolvedTag.textContent = '✦ HIGH SUCCESS';
+              resolvedHeading.innerHTML = 'Calibration Resolved as <span style="color:#a78bfa;">High Success</span>';
+              resolvedDetails.textContent = cycle.notes
+                ? `Deliberately resolved without physical indulgence. Notes: ${cycle.notes}`
+                : 'Deliberately resolved in overtime without physical indulgence.';
+            } else {
+              resolvedBanner.style.background = 'var(--emerald-soft)';
+              resolvedBanner.style.borderColor = 'var(--emerald-border)';
+              resolvedTag.style.background = 'rgba(16, 185, 129, 0.25)';
+              resolvedTag.style.color = 'var(--emerald)';
+              resolvedTag.textContent = '✓ SUCCEEDED';
+              resolvedHeading.innerHTML = 'Calibration Resolved as <span style="color:var(--emerald);">Succeeded</span>';
+              resolvedDetails.textContent = `Session completed cleanly within ${cycle.durationMinutes || 5} minutes under 100% somatic focus.`;
+            }
           } else {
             resolvedBanner.style.background = 'var(--rose-soft)';
             resolvedBanner.style.borderColor = 'var(--rose-border)';
@@ -4037,6 +4128,7 @@
         otNotice.style.display = 'none';
 
         btnSkip.style.display = 'none';
+        if (btnHighSuccess) btnHighSuccess.style.display = 'flex';
         btnSuccess.style.display = 'flex';
         btnFail.style.display = 'flex';
         btnFailLabel.textContent = 'Log Failed Session';
@@ -4052,6 +4144,7 @@
         otNotice.style.display = 'none';
         document.getElementById('warnTargetDate').textContent = toDDMMYYYY(m.calibrationDate);
         btnSuccess.style.display = 'none';
+        if (btnHighSuccess) btnHighSuccess.style.display = 'none';
         btnSkip.style.display = 'none';
         btnFail.style.display = 'flex';
         btnFailLabel.textContent = 'Log Premature Breach';
@@ -4063,6 +4156,7 @@
         preWarn.style.display = 'none';
         otNotice.style.display = 'none';
         btnSuccess.style.display = 'flex';
+        if (btnHighSuccess) btnHighSuccess.style.display = 'none';
         btnFail.style.display = 'flex';
         btnSkip.style.display = 'none';
         btnFailLabel.textContent = 'Log Failed Session';
@@ -4075,6 +4169,7 @@
         otNotice.style.display = 'block';
         btnSkip.style.display = 'flex';
         btnSuccess.style.display = 'none';
+        if (btnHighSuccess) btnHighSuccess.style.display = 'none';
         btnFail.style.display = 'none';
         transferSuccessLink.style.display = 'none';
         transferDivider.style.display = 'none';
@@ -4117,7 +4212,7 @@
         item.onclick = () => selectCycle(actualIdx);
 
         let badge = '';
-        if (c.status === 'completed') badge = '<span style="color:var(--emerald);">✓ Done</span>';
+        if (c.status === 'completed') badge = c.isHighSuccess ? '<span style="color:#a78bfa;">✦ High Done</span>' : '<span style="color:var(--emerald);">✓ Done</span>';
         else if (c.status === 'failed') badge = `<span style="color:var(--rose);">${c.isPrematureBreach ? '⚡ Premature' : '✕ Failed'}</span>`;
         else if (c.status === 'skipped') badge = '<span style="color:var(--purple);">⏭️ Overtime</span>';
         else badge = `<span style="color:var(--cyan);">⚡ Day ${m.baselineSealed}/${c.baselineDays}</span>`;
@@ -4320,6 +4415,40 @@
       showToast(`✓ Cycle #${cycle.cycleNumber} validated! Next cycle will begin tomorrow.`);
     }
 
+    function openHighSuccessModal() {
+      const cycle = getSelected();
+      if (!cycle || cycle.status !== 'skipped') {
+        showToast('⚠️ High Success is only available during active overtime.');
+        return;
+      }
+      document.getElementById('highSuccessNotes').value = '';
+      openModal('modalHighSuccess');
+    }
+
+    function submitHighSuccessCalibration() {
+      const cycle = getSelected();
+      if (!cycle || cycle.status !== 'skipped') return;
+      const m = getMetrics(cycle);
+
+      pushHistory();
+      const notes = document.getElementById('highSuccessNotes').value.trim();
+      const resolvedDateStr = simulatedDateISO ? toISO(m.inspectionDate) : toISO(getTodayReal());
+
+      cycle.status = 'completed';
+      cycle.isHighSuccess = true;
+      cycle.durationMinutes = 0;
+      cycle.notes = notes || 'Deliberately resolved in overtime without physical indulgence.';
+      cycle.isPrematureBreach = false;
+      cycle.resolvedDate = resolvedDateStr;
+
+      closeModal('modalHighSuccess');
+      saveState();
+      renderApp();
+      launchConfetti();
+      playTone('victory');
+      showToast(`✦ Cycle #${cycle.cycleNumber} resolved via High Success! Next cycle will begin tomorrow.`);
+    }
+
     function submitFailCalibration() {
       const cycle = getSelected();
       if (!cycle) return;
@@ -4426,6 +4555,7 @@
       cycle.durationMinutes = null;
       cycle.failureReasons = [];
       cycle.isPrematureBreach = false;
+      cycle.isHighSuccess = false;
       cycle.notes = '';
 
       // CRITICAL: Slice off any subsequent cycles that were created from this cycle's resolution
@@ -4827,6 +4957,8 @@
       submitAnchorDate,
       openSuccessModal,
       submitSuccessCalibration,
+      openHighSuccessModal,
+      submitHighSuccessCalibration,
       openFailModal,
       submitFailCalibration,
       confirmSkip,
