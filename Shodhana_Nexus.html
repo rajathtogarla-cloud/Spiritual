@@ -24,7 +24,6 @@
  --input-bg: #000000;
  --chip-bg: #18181b;
  --nav-btn-bg: #27272a;
- --link-glow: rgba(56, 189, 248, 0.35);
  --modal-overlay: rgba(0, 0, 0, 0.85);
  --item-hover: rgba(255, 255, 255, 0.04);
  }
@@ -47,7 +46,6 @@
  --input-bg: #ffffff;
  --chip-bg: #f1f5f9;
  --nav-btn-bg: #e2e8f0;
- --link-glow: rgba(2, 132, 199, 0.25);
  --modal-overlay: rgba(15, 23, 42, 0.55);
  --item-hover: rgba(0, 0, 0, 0.03);
  }
@@ -377,6 +375,121 @@
  opacity: 0.7;
  }
 
+ input[type="search"]::-webkit-search-cancel-button,
+ input[type="search"]::-webkit-search-decoration {
+ -webkit-appearance: none;
+ appearance: none;
+ }
+
+ .search-clear-btn {
+ display: none;
+ align-items: center;
+ justify-content: center;
+ background: transparent;
+ border: none;
+ color: var(--text-sub);
+ font-size: 1.15rem;
+ line-height: 1;
+ cursor: pointer;
+ padding: 2px 4px;
+ border-radius: 50%;
+ flex-shrink: 0;
+ transition: color 0.15s ease, background 0.15s ease;
+ }
+
+ .search-clear-btn.visible {
+ display: inline-flex;
+ }
+
+ .search-clear-btn:hover {
+ color: var(--text-main);
+ background: var(--nav-btn-bg);
+ }
+
+ .frequent-bar-home {
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ max-width: 580px;
+ margin: 12px auto 0 auto;
+ }
+
+ .frequent-toggle-btn {
+ background: var(--card-bg);
+ color: var(--text-main);
+ border: 1px solid var(--border);
+ border-radius: 10px;
+ padding: 8px 16px;
+ font-size: 0.88rem;
+ font-weight: 600;
+ cursor: pointer;
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ gap: 8px;
+ transition: all 0.2s ease;
+ }
+
+ .frequent-toggle-btn:hover {
+ border-color: var(--accent-gold);
+ color: var(--accent-gold);
+ background: var(--card-sub-bg);
+ }
+
+ .frequent-toggle-btn.active {
+ border-color: var(--accent-gold);
+ color: var(--accent-gold);
+ background: var(--card-sub-bg);
+ box-shadow: 0 2px 10px rgba(251, 191, 36, 0.15);
+ }
+
+ .frequent-tags-row {
+ display: flex;
+ flex-wrap: wrap;
+ align-items: center;
+ gap: 6px;
+ margin-top: 6px;
+ }
+
+ .domain-tag-chip {
+ display: inline-flex;
+ align-items: center;
+ gap: 4px;
+ font-size: 0.72rem;
+ font-weight: 700;
+ padding: 2px 8px;
+ border-radius: 5px;
+ border: 1px solid currentColor;
+ line-height: 1.3;
+ }
+
+ .group-tag-chip {
+ display: inline-flex;
+ align-items: center;
+ gap: 4px;
+ font-size: 0.72rem;
+ font-weight: 600;
+ padding: 2px 8px;
+ border-radius: 5px;
+ background: var(--card-sub-bg);
+ border: 1px solid var(--border);
+ color: var(--text-sub);
+ line-height: 1.3;
+ }
+
+ .freq-session-chip {
+ display: inline-flex;
+ align-items: center;
+ font-size: 0.7rem;
+ font-weight: 700;
+ padding: 2px 7px;
+ border-radius: 5px;
+ background: rgba(251, 191, 36, 0.12);
+ border: 1px solid rgba(251, 191, 36, 0.35);
+ color: var(--accent-gold);
+ line-height: 1.3;
+ }
+
  .hub-grid {
  display: grid;
  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -510,10 +623,6 @@
  }
  .practice-item:last-child { border-bottom: none; }
 
- .practice-item.sync-highlight {
- background: var(--item-glow-color, var(--link-glow)) !important;
- box-shadow: inset 0 0 12px var(--item-domain-color, var(--accent-jnan)) !important;
- }
  
  .practice-main {
  display: flex;
@@ -544,32 +653,6 @@
  align-items: center;
  gap: 6px;
  flex-shrink: 0;
- }
-
- .link-badge {
- font-size: 0.8rem;
- padding: 3px 8px;
- border-radius: 6px;
- background: var(--card-sub-bg);
- border: 1px solid var(--border);
- color: var(--text-sub);
- cursor: pointer;
- display: inline-flex;
- align-items: center;
- justify-content: center;
- gap: 4px;
- user-select: none;
- transition: all 0.2s ease;
- }
- .link-badge.is-linked {
- border-color: var(--item-domain-color, var(--accent-jnan));
- color: var(--item-domain-color, var(--accent-jnan));
- background: var(--item-glow-color, rgba(56, 189, 248, 0.12));
- font-weight: bold;
- }
- .link-badge:hover {
- border-color: var(--accent-gold);
- color: var(--accent-gold);
  }
 
  .delete-btn {
@@ -1668,51 +1751,6 @@
   filter: brightness(1.05);
 }
 
-/* Link Direction Toggle Segmented Control */
-.link-dir-toggle-container {
-  display: flex;
-  background: var(--card-sub-bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 3px;
-  gap: 4px;
-}
-
-.link-dir-btn {
-  flex: 1;
-  padding: 8px 12px;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  color: var(--text-sub);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.link-dir-btn:hover {
-  color: var(--text-main);
-}
-
-.link-dir-btn.active {
-  background: var(--card-bg);
-  color: var(--accent-gold);
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.link-practice-desc {
-  font-size: 0.76rem;
-  color: var(--text-sub);
-  margin-top: 4px;
-  line-height: 1.35;
-  opacity: 0.85;
-}
  </style>
 </head>
 <body onclick="handleBodyClick(event)">
@@ -1778,7 +1816,14 @@
  <div class="search-box-home">
  <span class="search-icon">🔍</span>
  <input type="search" id="homeSearchInput" placeholder="Search across all practices..." oninput="handleSearch(this.value)">
+ <button type="button" id="clear-homeSearchInput" class="search-clear-btn" onclick="clearSearchInput('homeSearchInput')" title="Clear search" aria-label="Clear search">&times;</button>
  <button class="date-nav-btn" id="filter-btn-home" onclick="toggleCompletionFilter('home')" style="margin-left: 6px; white-space: nowrap;" title="Filter Practices">🔄 All</button>
+ </div>
+
+ <div class="frequent-bar-home">
+ <button type="button" id="frequentPracticesBtn" class="frequent-toggle-btn" onclick="toggleFrequentPractices()">
+ <span>⚡ Frequent Practices (Last 7 Sessions)</span>
+ </button>
  </div>
 
  <div id="search-results-container" style="display: none; margin-top: 25px;"></div>
@@ -2058,6 +2103,7 @@
  <div style="display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px;">
    <span style="font-size: 0.85rem; opacity: 0.7;">🔍</span>
    <input type="search" id="ledgerSearchInput" placeholder="Search ledger by practice name..." style="background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.85rem; width: 100%;" oninput="handleLedgerSearch(this.value)">
+   <button type="button" id="clear-ledgerSearchInput" class="search-clear-btn" onclick="clearSearchInput('ledgerSearchInput')" title="Clear search" aria-label="Clear search">&times;</button>
  </div>
 
  <div class="ledger-scroll-frame">
@@ -2140,41 +2186,6 @@
  </div>
 </div>
 
-<div class="link-modal-overlay" id="linkModalOverlay" onclick="closeLinkModal(event)">
-  <div class="link-modal-card" onclick="event.stopPropagation()">
-    <div class="link-modal-header">
-      <span id="modalTargetTitle">🔗 Connect Practices</span>
-      <button class="add-duration-btn" onclick="closeLinkModal()">&times;</button>
-    </div>
-
-    <!-- Direction Toggle -->
-    <div class="link-dir-toggle-container">
-      <button type="button" id="linkDirToBtn" class="link-dir-btn active" onclick="setLinkModalDirection('to')">
-        ➔ Link to (Outgoing)
-      </button>
-      <button type="button" id="linkDirFromBtn" class="link-dir-btn" onclick="setLinkModalDirection('from')">
-        ⬅ Link from (Incoming)
-      </button>
-    </div>
-
-    <!-- Direction Description Helper -->
-    <p id="linkModalDirDesc" style="font-size: 0.8rem; color: var(--text-sub); margin-top: -6px; line-height: 1.4;">
-      <!-- Populated dynamically -->
-    </p>
-    
-    <div style="display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px;">
-      <span style="font-size: 0.9rem; opacity: 0.7;">🔍</span>
-      <input type="search" id="linkModalSearchInput" placeholder="Search practices by name, group, or domain..." style="background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.85rem; width: 100%;" oninput="handleLinkModalSearch(this.value)">
-    </div>
-
-    <div class="target-list" id="modalTargetList"></div>
-
-    <div style="text-align: right; margin-top: 10px;">
-      <button class="auth-btn" style="width: auto; padding: 6px 18px; margin: 0;" onclick="closeLinkModal()">Done</button>
-    </div>
-  </div>
-</div>
-
 <div class="link-modal-overlay" id="modifyItemModalOverlay" onclick="closeModifyItemModal(event)">
  <div class="link-modal-card" onclick="event.stopPropagation()" style="max-width: 720px; min-height: 520px; display: flex; flex-direction: column;">
    
@@ -2188,6 +2199,7 @@
    <div style="display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px;">
      <span style="font-size: 0.9rem; opacity: 0.7;">🔍</span>
      <input type="search" id="modifyModalSearchInput" placeholder="Search domains, groups, or practices..." style="background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.85rem; width: 100%;" oninput="handleModifyModalSearch(this.value)">
+     <button type="button" id="clear-modifyModalSearchInput" class="search-clear-btn" onclick="clearSearchInput('modifyModalSearchInput')" title="Clear search" aria-label="Clear search">&times;</button>
    </div>
 
    <div id="modifyBreadcrumb" class="breadcrumb-bar" style="display: flex;"></div>
@@ -2365,7 +2377,6 @@
      authWrapper.classList.remove("hidden");
      appWrapper.classList.add("hidden");
      if (window.setLogs) window.setLogs({});
-     if (window.setLinkGraph) window.setLinkGraph({});
      if (unsubscribeStructure) { unsubscribeStructure(); unsubscribeStructure = null; }
      if (unsubscribeCurrentMonth) { unsubscribeCurrentMonth(); unsubscribeCurrentMonth = null; }
      currentListeningMonth = null;
@@ -2400,11 +2411,10 @@
      if (!legacySnap.exists()) return;
 
      const data = legacySnap.data();
-     if (data.dataset || data.linkGraph) {
+     if (data.dataset) {
        const structRef = doc(db, "userLogs", uid, "config", "structure");
        await setDoc(structRef, {
          dataset: data.dataset || window.dataset,
-         linkGraph: data.linkGraph || window.linkGraph,
          updatedAt: new Date().toISOString()
        }, { merge: true });
      }
@@ -2460,7 +2470,6 @@
      if (snap.exists()) {
        const data = snap.data();
        if (data.dataset && window.setDataset) window.setDataset(data.dataset);
-       if (data.linkGraph && window.setLinkGraph) window.setLinkGraph(data.linkGraph);
        if (window.saveLogsToLocal) window.saveLogsToLocal();
        if (window.renderUI) window.renderUI();
        if (window.updateAnalyticsDisplay) window.updateAnalyticsDisplay();
@@ -2534,7 +2543,6 @@
    try {
      await setDoc(structRef, {
        dataset: window.dataset,
-       linkGraph: window.linkGraph,
        updatedAt: new Date().toISOString()
      }, { merge: true });
    } catch (error) {
@@ -2787,17 +2795,11 @@ window.setLogs = function(l) {
   window.logs = l;
 };
 
-let linkGraph = {};
-window.linkGraph = linkGraph;
-window.setLinkGraph = function(lg) {
-  linkGraph = lg;
-  window.linkGraph = lg;
-};
-
 let activeFilter = { jnan: 'All', karm: 'All', arish: 'All', manas: 'All', identification: 'All' };
 let completionFilter = { home: 'all', jnan: 'all', karm: 'all', arish: 'all', manas: 'all', identification: 'all' };
 let collapsedGroups = {};
 let searchQuery = '';
+let showFrequentPractices = false;
 let ledgerSearchQuery = '';
 let activeChartInstance = null;
 let domainBalanceChartInstance = null;
@@ -2884,9 +2886,6 @@ function calculateDualGatedOPE(arRatio, apeRatio) {
 }
 
 function toggleGroupCollapse(groupKey, headerElement, event) {
-  if (event) {
-    event.preventDefault();
-  }
 
   // 1. Toggle state directly
   collapsedGroups[groupKey] = !collapsedGroups[groupKey];
@@ -2919,8 +2918,7 @@ function toggleGroupCollapse(groupKey, headerElement, event) {
 function pushState() {
   undoStack.push({
     logs: JSON.parse(JSON.stringify(logs)),
-    dataset: JSON.parse(JSON.stringify(dataset)),
-    linkGraph: JSON.parse(JSON.stringify(linkGraph))
+    dataset: JSON.parse(JSON.stringify(dataset))
   });
   if (undoStack.length > 50) undoStack.shift();
   redoStack = [];
@@ -2932,17 +2930,14 @@ function undo() {
   if (undoStack.length === 0) return;
   redoStack.push({
     logs: JSON.parse(JSON.stringify(logs)),
-    dataset: JSON.parse(JSON.stringify(dataset)),
-    linkGraph: JSON.parse(JSON.stringify(linkGraph))
+    dataset: JSON.parse(JSON.stringify(dataset))
   });
   const prevState = undoStack.pop();
   logs = prevState.logs;
   window.logs = logs;
   dataset = prevState.dataset;
   window.dataset = dataset;
-  linkGraph = prevState.linkGraph || {};
-  window.linkGraph = linkGraph;
-  
+
   saveLogsToLocal();
   updateHistoryButtons();
   renderUI();
@@ -2955,17 +2950,14 @@ function redo() {
   if (redoStack.length === 0) return;
   undoStack.push({
     logs: JSON.parse(JSON.stringify(logs)),
-    dataset: JSON.parse(JSON.stringify(dataset)),
-    linkGraph: JSON.parse(JSON.stringify(linkGraph))
+    dataset: JSON.parse(JSON.stringify(dataset))
   });
   const nextState = redoStack.pop();
   logs = nextState.logs;
   window.logs = logs;
   dataset = nextState.dataset;
   window.dataset = dataset;
-  linkGraph = nextState.linkGraph || {};
-  window.linkGraph = linkGraph;
-  
+
   saveLogsToLocal();
   updateHistoryButtons();
   renderUI();
@@ -3087,7 +3079,32 @@ function updateDynamicCounts() {
   }
 }
 
+function updateSearchClearButtons() {
+  ['homeSearchInput', 'ledgerSearchInput', 'modifyModalSearchInput'].forEach(id => {
+    const input = document.getElementById(id);
+    const btn = document.getElementById(`clear-${id}`);
+    if (input && btn) {
+      btn.classList.toggle('visible', input.value.length > 0);
+    }
+  });
+}
+
+function clearSearchInput(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.value = '';
+  updateSearchClearButtons();
+  if (inputId === 'homeSearchInput') {
+    handleSearch('');
+  } else if (inputId === 'ledgerSearchInput') {
+    handleLedgerSearch('');
+  } else if (inputId === 'modifyModalSearchInput') {
+    handleModifyModalSearch('');
+  }
+}
+
 function handleLedgerSearch(val) {
+  updateSearchClearButtons();
   ledgerSearchQuery = (val || '').trim().toLowerCase();
   renderPracticeLedger();
 }
@@ -3098,6 +3115,7 @@ function openModifyItemModal(startingDomainKey = null) {
   modifySearchQuery = '';
   const sInput = document.getElementById('modifyModalSearchInput');
   if (sInput) sInput.value = '';
+  updateSearchClearButtons();
 
   if (startingDomainKey && dataset[startingDomainKey]) {
     modifyTier = 'groups';
@@ -3120,6 +3138,7 @@ function closeModifyItemModal(event) {
 }
 
 function handleModifyModalSearch(val) {
+  updateSearchClearButtons();
   modifySearchQuery = val.trim().toLowerCase();
   renderModifyItemInterface();
 }
@@ -3395,6 +3414,7 @@ function navigateModifyTier(tier, domainKey = null, groupName = null) {
   modifySearchQuery = '';
   const sInput = document.getElementById('modifyModalSearchInput');
   if (sInput) sInput.value = '';
+  updateSearchClearButtons();
   renderModifyItemInterface();
 }
 
@@ -3402,6 +3422,7 @@ function clearModifySearch() {
   modifySearchQuery = '';
   const sInput = document.getElementById('modifyModalSearchInput');
   if (sInput) sInput.value = '';
+  updateSearchClearButtons();
   renderModifyItemInterface();
 }
 
@@ -3454,7 +3475,6 @@ function deleteGroup(domainKey, groupIndex) {
 
   pushState();
   (group.practices || []).forEach(p => {
-    delete linkGraph[p.syncKey];
     Object.keys(logs).forEach(date => {
       if (logs[date] && logs[date][p.syncKey]) delete logs[date][p.syncKey];
     });
@@ -3656,19 +3676,9 @@ function saveBulkJson() {
       throw new Error("Bulk data must be a valid JSON object { ... }.");
     }
 
-    // Helper to purge keys from linkGraph and logs across all dates
+    // Helper to purge keys from logs across all dates
     const purgePractices = (keysToPurge) => {
       keysToPurge.forEach(syncKey => {
-        // 1. Remove from linkGraph
-        delete linkGraph[syncKey];
-        Object.keys(linkGraph).forEach(k => {
-          if (Array.isArray(linkGraph[k])) {
-            linkGraph[k] = linkGraph[k].filter(target => target !== syncKey);
-            if (linkGraph[k].length === 0) delete linkGraph[k];
-          }
-        });
-
-        // 2. Remove from logs across all recorded dates (local memory)
         Object.keys(logs).forEach(date => {
           if (logs[date] && logs[date][syncKey]) {
             delete logs[date][syncKey];
@@ -3831,22 +3841,11 @@ function exportDataToJson() {
     }
   });
 
-  const filteredLinkGraph = {};
-  Object.entries(linkGraph).forEach(([key, linkedKeys]) => {
-    if (validSyncKeys.has(key)) {
-      const validLinks = Array.isArray(linkedKeys)
-        ? linkedKeys.filter(k => validSyncKeys.has(k))
-        : [];
-      filteredLinkGraph[key] = validLinks;
-    }
-  });
-
   const data = {
     version: "2.1",
     exportDate: new Date().toISOString(),
     dataset: dataset,
-    logs: filteredLogs,
-    linkGraph: filteredLinkGraph
+    logs: filteredLogs
   };
 
   const jsonStr = JSON.stringify(data, null, 2);
@@ -3893,10 +3892,6 @@ function handleImportJsonFile(event) {
       if (parsed.logs) {
         logs = parsed.logs;
         window.logs = logs;
-      }
-      if (parsed.linkGraph) {
-        linkGraph = parsed.linkGraph;
-        window.linkGraph = linkGraph;
       }
 
       saveLogsToLocal();
@@ -3951,7 +3946,6 @@ const parentMap = {
 
 window.addEventListener('popstate', (event) => {
  const overlay = document.getElementById('chartModalOverlay');
- const linkModal = document.getElementById('linkModalOverlay');
  const modifyModal = document.getElementById('modifyItemModalOverlay');
  const distModal = document.getElementById('distPracticesModalOverlay');
  const bulkModal = document.getElementById('bulkJsonModalOverlay');
@@ -3995,10 +3989,6 @@ window.addEventListener('popstate', (event) => {
    }
  }
 
- if (linkModal && linkModal.classList.contains('active')) {
-   closeLinkModal();
-   return;
- }
  
  if (overlay && overlay.classList.contains('active')) {
  if (currentChartContext.practiceIndex !== null) {
@@ -4369,230 +4359,16 @@ function getAllPracticesFlat() {
  return list;
 }
 
-let linkModalDirection = 'to'; // 'to' = Outgoing, 'from' = Incoming
-let currentLinkingSyncKey = null;
-let linkModalSearchQuery = '';
-
-// Calculate outgoing ('to') and incoming ('from') link counts
-function getPracticeLinkCounts(syncKey) {
-  const toLinks = (linkGraph[syncKey] || []).filter(k => k && k !== syncKey);
-  const toCount = toLinks.length;
-  
-  let fromCount = 0;
-  Object.entries(linkGraph).forEach(([srcKey, targets]) => {
-    if (srcKey !== syncKey && Array.isArray(targets) && targets.includes(syncKey)) {
-      fromCount++;
-    }
-  });
-
-  return { toCount, fromCount, total: toCount + fromCount };
-}
-
-// Compute all downstream targets reachable from sourceKey (one-way BFS traversal)
-function getOutgoingTargets(sourceKey) {
-  const targets = new Set();
-  const queue = [sourceKey];
-  while (queue.length > 0) {
-    const curr = queue.shift();
-    const directTargets = (linkGraph[curr] || []).filter(k => k && k !== curr);
-    for (const t of directTargets) {
-      if (!targets.has(t) && t !== sourceKey) {
-        targets.add(t);
-        queue.push(t);
-      }
-    }
-  }
-  return Array.from(targets);
-}
-
-function triggerPulse(keys) {
-  keys.forEach(k => {
-    const elements = document.querySelectorAll(`[data-sync-key="${k}"]`);
-    elements.forEach(el => {
-      el.classList.add('sync-highlight');
-      setTimeout(() => el.classList.remove('sync-highlight'), 600);
-    });
-  });
-}
-
-// Toggle a directed, one-way link
-function toggleDirectedLink(sourceKey, targetKey) {
-  pushState();
-  if (!linkGraph[sourceKey]) {
-    linkGraph[sourceKey] = [];
-  }
-  
-  const existingIdx = linkGraph[sourceKey].indexOf(targetKey);
-  if (existingIdx >= 0) {
-    linkGraph[sourceKey].splice(existingIdx, 1);
-    if (linkGraph[sourceKey].length === 0) {
-      delete linkGraph[sourceKey];
-    }
-  } else {
-    linkGraph[sourceKey].push(targetKey);
-    
-    // Retrospectively sync current date's entry one-way from source to target
-    if (logs[currentDate] && logs[currentDate][sourceKey]) {
-      const srcLog = logs[currentDate][sourceKey];
-      if (srcLog.done) {
-        if (!logs[currentDate][targetKey]) {
-          logs[currentDate][targetKey] = { done: false, efficiencies: [] };
-        }
-        logs[currentDate][targetKey].done = true;
-        logs[currentDate][targetKey].efficiencies = [...(srcLog.efficiencies || [])];
-      }
-    }
-  }
-
-  saveLogsToLocal();
-  renderUI();
-  if (currentLinkingSyncKey) {
-    renderLinkModalList(currentLinkingSyncKey);
-  }
-  handleSearch(searchQuery);
-}
-
-function setLinkModalDirection(dir) {
-  linkModalDirection = dir;
-  const toBtn = document.getElementById('linkDirToBtn');
-  const fromBtn = document.getElementById('linkDirFromBtn');
-  const descEl = document.getElementById('linkModalDirDesc');
-
-  if (toBtn) toBtn.classList.toggle('active', dir === 'to');
-  if (fromBtn) fromBtn.classList.toggle('active', dir === 'from');
-
-  const allFlat = getAllPracticesFlat();
-  const current = allFlat.find(p => p.syncKey === currentLinkingSyncKey);
-  const name = current ? current.name : 'this practice';
-
-  if (descEl) {
-    descEl.innerHTML = dir === 'to'
-      ? `<strong>➔ Link to (Outgoing):</strong> Ticking or scoring <em>${name}</em> will auto-populate the selected practices below.`
-      : `<strong>⬅ Link from (Incoming):</strong> Ticking or scoring any selected practice below will auto-populate <em>${name}</em>.`;
-  }
-
-  if (currentLinkingSyncKey) {
-    renderLinkModalList(currentLinkingSyncKey);
-  }
-}
-
-function openLinkModal(syncKey) {
-  const allFlat = getAllPracticesFlat();
-  const current = allFlat.find(p => p.syncKey === syncKey);
-  if (!current) return;
-
-  currentLinkingSyncKey = syncKey;
-  linkModalSearchQuery = '';
-  linkModalDirection = 'to';
-  
-  const searchInput = document.getElementById("linkModalSearchInput");
-  if (searchInput) searchInput.value = '';
-
-  pushModalHistoryState();
-  document.getElementById("modalTargetTitle").innerText = `🔗 Connect: ${current.name}`;
-  setLinkModalDirection('to');
-  document.getElementById("linkModalOverlay").classList.add("active");
-}
-
-function handleLinkModalSearch(query) {
-  linkModalSearchQuery = query.trim().toLowerCase();
-  if (currentLinkingSyncKey) {
-    renderLinkModalList(currentLinkingSyncKey);
-  }
-}
-
-function renderLinkModalList(syncKey) {
-  const allFlat = getAllPracticesFlat();
-  const list = document.getElementById("modalTargetList");
-  if (!list) return;
-  list.innerHTML = "";
-
-  const outgoingTargets = (linkGraph[syncKey] || []).filter(k => k !== syncKey);
-  let otherPractices = allFlat.filter(p => p.syncKey !== syncKey);
-
-  if (linkModalSearchQuery) {
-    otherPractices = otherPractices.filter(p => 
-      p.name.toLowerCase().includes(linkModalSearchQuery) ||
-      (p.desc && p.desc.toLowerCase().includes(linkModalSearchQuery)) ||
-      p.domain.toLowerCase().includes(linkModalSearchQuery) ||
-      p.groupName.toLowerCase().includes(linkModalSearchQuery)
-    );
-  }
-
-  if (otherPractices.length === 0) {
-    list.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-sub); font-size: 0.85rem;">No matching practices found.</div>`;
-    return;
-  }
-
-  otherPractices.sort((a, b) => {
-    const aLinked = linkModalDirection === 'to' 
-      ? outgoingTargets.includes(a.syncKey) 
-      : ((linkGraph[a.syncKey] || []).includes(syncKey));
-    const bLinked = linkModalDirection === 'to' 
-      ? outgoingTargets.includes(b.syncKey) 
-      : ((linkGraph[b.syncKey] || []).includes(syncKey));
-    
-    if (aLinked && !bLinked) return -1;
-    if (!aLinked && bLinked) return 1;
-    return a.name.localeCompare(b.name);
-  });
-
-  otherPractices.forEach(p => {
-    const isLinked = linkModalDirection === 'to'
-      ? outgoingTargets.includes(p.syncKey)
-      : ((linkGraph[p.syncKey] || []).includes(syncKey));
-
-    const dColor = getDomainColorInfo(p.domainKey);
-    const item = document.createElement("label");
-    item.className = "target-item";
-    item.style.alignItems = "flex-start";
-
-    if (isLinked) {
-      item.style.borderColor = dColor.varName;
-      item.style.background = dColor.glow;
-    }
-
-    const onToggle = linkModalDirection === 'to'
-      ? `toggleDirectedLink('${syncKey}', '${p.syncKey}')`
-      : `toggleDirectedLink('${p.syncKey}', '${syncKey}')`;
-
-    item.innerHTML = `
-      <input type="checkbox" ${isLinked ? "checked" : ""} onchange="${onToggle}" style="margin-top: 3px;">
-      <div style="display: flex; flex-direction: column; flex: 1;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-          <span style="font-weight: 600; color: ${isLinked ? dColor.varName : 'inherit'};">${p.name}</span>
-        </div>
-        <span style="font-size: 0.75rem; color: var(--text-sub);">${p.domain} • ${p.groupName}</span>
-        ${p.desc ? `<div class="link-practice-desc">${p.desc}</div>` : ''}
-      </div>
-    `;
-    list.appendChild(item);
-  });
-}
-
-function closeLinkModal(event) {
-  if (!event || event.target === document.getElementById('linkModalOverlay') || event.type === 'click') {
-    document.getElementById("linkModalOverlay").classList.remove("active");
-  }
-}
-
 function deletePractice(syncKey) {
  const allFlat = getAllPracticesFlat();
  const target = allFlat.find(p => p.syncKey === syncKey);
  if (!target) return;
 
- if (!confirm(`Are you sure you want to delete "${target.name}"? This removes its definition, links, and all historical data entries.`)) {
+ if (!confirm(`Are you sure you want to delete "${target.name}"? This removes its definition and all historical data entries.`)) {
  return;
  }
 
  pushState();
- delete linkGraph[syncKey];
- Object.keys(linkGraph).forEach(k => {
-   if (Array.isArray(linkGraph[k])) {
-     linkGraph[k] = linkGraph[k].filter(target => target !== syncKey);
-     if (linkGraph[k].length === 0) delete linkGraph[k];
-   }
- });
 
  DOMAIN_DEFINITIONS.forEach(d => {
  if (dataset[d.key]) {
@@ -4614,11 +4390,187 @@ function deletePractice(syncKey) {
  handleSearch(searchQuery);
 }
 
+function toggleFrequentPractices() {
+ showFrequentPractices = !showFrequentPractices;
+ const btn = document.getElementById('frequentPracticesBtn');
+ if (btn) btn.classList.toggle('active', showFrequentPractices);
+ handleSearch(searchQuery);
+}
+
+function getFrequentPracticesLast7Sessions() {
+ const allFlat = getAllPracticesFlat();
+ const practiceMap = {};
+ allFlat.forEach(p => {
+   practiceMap[p.syncKey] = p;
+ });
+
+ // Find all dates that have at least one valid logged (done) practice
+ const loggedSessionDates = Object.keys(logs)
+   .filter(dateStr => {
+     const dayObj = logs[dateStr];
+     if (!dayObj || typeof dayObj !== 'object') return false;
+     return Object.entries(dayObj).some(([sKey, entry]) => {
+       return practiceMap[sKey] && entry && entry.done;
+     });
+   })
+   .sort((a, b) => b.localeCompare(a));
+
+ const recent7Dates = loggedSessionDates.slice(0, 7);
+ const statsMap = {};
+
+ recent7Dates.forEach(dateStr => {
+   const dayObj = logs[dateStr] || {};
+   Object.entries(dayObj).forEach(([sKey, entry]) => {
+     if (!practiceMap[sKey] || !entry || !entry.done) return;
+     if (!statsMap[sKey]) {
+       statsMap[sKey] = {
+         practice: practiceMap[sKey],
+         sessionCount: 0,
+         effSum: 0,
+         effCount: 0
+       };
+     }
+     statsMap[sKey].sessionCount += 1;
+     const effs = entry.efficiencies || [];
+     if (effs.length > 0) {
+       statsMap[sKey].effSum += effs.reduce((a, b) => a + b, 0) / effs.length;
+       statsMap[sKey].effCount += 1;
+     }
+   });
+ });
+
+ const items = Object.values(statsMap).map(stat => ({
+   ...stat.practice,
+   sessionCount: stat.sessionCount,
+   avgHistoryEff: stat.effCount > 0 ? Math.round(stat.effSum / stat.effCount) : 0
+ }));
+
+ items.sort((a, b) => {
+   if (b.sessionCount !== a.sessionCount) return b.sessionCount - a.sessionCount;
+   if (b.avgHistoryEff !== a.avgHistoryEff) return b.avgHistoryEff - a.avgHistoryEff;
+   return a.name.localeCompare(b.name);
+ });
+
+ return {
+   items,
+   sessionWindowCount: recent7Dates.length
+ };
+}
+
+function renderFrequentPracticesView(resultsContainer, hubGrid, homeFilter) {
+ hubGrid.style.display = 'none';
+ resultsContainer.style.display = 'block';
+ resultsContainer.innerHTML = '';
+
+ const { items, sessionWindowCount } = getFrequentPracticesLast7Sessions();
+
+ const filteredItems = items.filter(p => {
+   const data = getSyncData(p.syncKey);
+   if (homeFilter === 'selected' && !data.done) return false;
+   if (homeFilter === 'unselected' && data.done) return false;
+   return true;
+ });
+
+ const card = document.createElement('div');
+ card.className = 'indriya-card';
+
+ let html = `
+ <div class="indriya-header" style="cursor: default; color: var(--accent-gold); border-bottom-color: var(--border);">
+   <div class="indriya-header-title">
+     <span>⚡ Frequently Visited Practices</span>
+     <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-sub);">(Last ${sessionWindowCount} logged ${sessionWindowCount === 1 ? 'session' : 'sessions'} • ${formatDateDDMMYY(currentDate)})</span>
+   </div>
+   <span class="count-badge" style="border-color: var(--accent-gold); color: var(--accent-gold);">${filteredItems.length}</span>
+ </div>`;
+
+ if (sessionWindowCount === 0) {
+   html += `<div style="text-align: center; padding: 25px; color: var(--text-sub); font-size: 0.9rem;">No logged sessions recorded yet. Complete practices on any date to populate your frequent list.</div>`;
+   card.innerHTML = html;
+   resultsContainer.appendChild(card);
+   return;
+ }
+
+ if (filteredItems.length === 0) {
+   html += `<div style="text-align: center; padding: 25px; color: var(--text-sub); font-size: 0.9rem;">No frequent practices match the current completion filter (${homeFilter}).</div>`;
+   card.innerHTML = html;
+   resultsContainer.appendChild(card);
+   return;
+ }
+
+ html += `<ul class="practice-list">`;
+
+ filteredItems.forEach(p => {
+   const data = getSyncData(p.syncKey);
+   const isDone = data.done;
+   const efficiencies = data.efficiencies || [];
+   const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
+   const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
+   const domainColorInfo = getDomainColorInfo(p.domainKey);
+   const groupEmoji = getGroupEmoji(p.groupName);
+
+   html += `
+   <li class="practice-item" data-sync-key="${p.syncKey}" style="border-left: 4px solid ${domainColorInfo.varName}; --item-domain-color: ${domainColorInfo.varName}; --item-glow-color: ${domainColorInfo.glow};">
+     <div class="practice-main">
+       <label class="checkbox-label">
+         <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
+         <div>
+           <div class="practice-name ${isDone ? 'completed-text' : ''}" style="color: ${domainColorInfo.varName};">${p.name}</div>
+           <div class="practice-desc">${p.desc}</div>
+           <div class="frequent-tags-row">
+             <span class="domain-tag-chip" style="color: ${domainColorInfo.varName}; border-color: ${domainColorInfo.varName}; background: ${domainColorInfo.glow};">
+               <span>${domainColorInfo.emoji}</span>
+               <span>${p.domain}</span>
+             </span>
+             <span class="group-tag-chip">
+               <span>${groupEmoji}</span>
+               <span>${p.groupName}</span>
+             </span>
+             <span class="freq-session-chip" title="Logged in ${p.sessionCount} of the last ${sessionWindowCount} sessions">
+               ${p.sessionCount}/${sessionWindowCount} sessions
+             </span>
+           </div>
+         </div>
+       </label>
+     </div>
+
+     <div class="duration-section ${dimmedClass}">
+       <span style="display:inline-flex; align-items:center;">
+         Practice Efficiency:
+         <span class="info-tooltip-container">
+           <span class="info-icon" onclick="toggleInfoTooltip(event, this)">ⓘ</span>
+           <div class="info-tooltip-content">Post-practice, gauge efficiency solely by objective fulfillment—ignoring time, effort, difficulty, and self-image: how completely did behavior and mind align with the define practice objective?</div>
+         </span>
+       </span>
+       <div class="durations-wrapper">
+         ${efficiencies.map((eff, idx) => `
+           <div class="duration-chip">
+             <span>${eff}%</span>
+             <span class="remove-btn" onclick="removeEfficiency('${p.syncKey}', ${idx})">&times;</span>
+           </div>
+         `).join('')}
+         <button class="add-duration-btn" onclick="addEfficiency('${p.syncKey}')">+ Add</button>
+       </div>
+       ${efficiencies.length > 0 ? `<span class="total-duration">(Avg: ${avgEff}%)</span>` : ''}
+     </div>
+   </li>`;
+ });
+
+ html += `</ul>`;
+ card.innerHTML = html;
+ resultsContainer.appendChild(card);
+}
+
 function handleSearch(query) {
+ updateSearchClearButtons();
  searchQuery = (query || '').trim().toLowerCase();
  const resultsContainer = document.getElementById('search-results-container');
  const hubGrid = document.getElementById('main-hub-grid');
  const homeFilter = completionFilter.home || 'all';
+
+ if (!searchQuery && showFrequentPractices) {
+   renderFrequentPracticesView(resultsContainer, hubGrid, homeFilter);
+   return;
+ }
 
  if (!searchQuery && homeFilter === 'all') {
  resultsContainer.style.display = 'none';
@@ -4661,7 +4613,7 @@ function handleSearch(query) {
  const domainColorInfo = getDomainColorInfo(group.domainKey);
 
  let html = `
- <div class="indriya-header" onpointerdown="if(event.button === 0) toggleGroupCollapse('${groupKey}', this, event)">
+ <div class="indriya-header" onclick="toggleGroupCollapse('${groupKey}', this, event)">
    <div class="indriya-header-title">
      <span class="collapse-indicator">▼</span>
      <span>${group.categoryType} — ${group.name}</span>
@@ -4676,12 +4628,6 @@ function handleSearch(query) {
  const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
  const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
 
- const { toCount, fromCount, total } = getPracticeLinkCounts(p.syncKey);
- const isLinked = total > 0;
- const linkBadgeLabel = isLinked ? `${toCount} | ${fromCount}` : '🔗';
- const linkBadgeTitle = isLinked
-   ? `Link to: ${toCount} | Link from: ${fromCount}`
-   : 'Connect to other practices';
 
  html += `
  <li class="practice-item" data-sync-key="${p.syncKey}" style="--item-domain-color: ${domainColorInfo.varName}; --item-glow-color: ${domainColorInfo.glow};">
@@ -4693,11 +4639,6 @@ function handleSearch(query) {
  <div class="practice-desc">${p.desc}</div>
  </div>
  </label>
- <div class="action-group">
- <span class="link-badge ${isLinked ? 'is-linked' : ''}" onclick="openLinkModal('${p.syncKey}')" title="${linkBadgeTitle}">
-   ${linkBadgeLabel}
- </span>
- </div>
  </div>
  
  <div class="duration-section ${dimmedClass}">
@@ -4836,11 +4777,6 @@ function loadLogsLocal() {
    logs = JSON.parse(data);
    window.logs = logs;
  }
- const lg = localStorage.getItem('indriya_nigraha_link_graph');
- if (lg) {
-   linkGraph = JSON.parse(lg);
-   window.linkGraph = linkGraph;
- }
  const ds = localStorage.getItem('indriya_nigraha_custom_dataset');
  if (ds) {
    dataset = JSON.parse(ds);
@@ -4850,7 +4786,6 @@ function loadLogsLocal() {
 
 function saveLogsToLocal() {
  localStorage.setItem('indriya_nigraha_v2_logs', JSON.stringify(logs));
- localStorage.setItem('indriya_nigraha_link_graph', JSON.stringify(linkGraph));
  localStorage.setItem('indriya_nigraha_custom_dataset', JSON.stringify(dataset));
 }
 
@@ -4985,23 +4920,18 @@ document.addEventListener('keydown', (e) => {
 });
 
 function toggleDone(syncKey) {
-  const downstreamTargets = getOutgoingTargets(syncKey);
-  const affectedKeys = [syncKey, ...downstreamTargets];
   const item = getSyncData(syncKey);
   const isCurrentlyDone = item.done;
   
   if (!isCurrentlyDone) {
     openEfficiencyModal(syncKey, "Rate objective alignment (0–100%)", (eff) => {
       pushState();
-      affectedKeys.forEach(k => {
-        const d = getSyncData(k);
-        d.done = true;
-        d.efficiencies = [eff];
-      });
+      const d = getSyncData(syncKey);
+      d.done = true;
+      d.efficiencies = [eff];
       saveLogsToLocal();
       renderUI();
       handleSearch(searchQuery);
-      triggerPulse(affectedKeys);
 
       if (typeof window.queuePracticeAutoSave === 'function') {
         window.queuePracticeAutoSave();
@@ -5012,15 +4942,12 @@ function toggleDone(syncKey) {
     });
   } else {
     pushState();
-    affectedKeys.forEach(k => {
-      const d = getSyncData(k);
-      d.done = false;
-      d.efficiencies = [];
-    });
+    const d = getSyncData(syncKey);
+    d.done = false;
+    d.efficiencies = [];
     saveLogsToLocal();
     renderUI();
     handleSearch(searchQuery);
-    triggerPulse(affectedKeys);
 
     if (typeof window.queuePracticeAutoSave === 'function') {
       window.queuePracticeAutoSave();
@@ -5029,8 +4956,6 @@ function toggleDone(syncKey) {
 }
 
 function addEfficiency(syncKey) {
-  const downstreamTargets = getOutgoingTargets(syncKey);
-  const affectedKeys = [syncKey, ...downstreamTargets];
   const item = getSyncData(syncKey);
   if (!item.done) {
     alert("Please check the practice first before adding efficiency percentages.");
@@ -5039,15 +4964,12 @@ function addEfficiency(syncKey) {
   
   openEfficiencyModal(syncKey, "Add session efficiency (0–100%)", (eff) => {
     pushState();
-    affectedKeys.forEach(k => {
-      const d = getSyncData(k);
-      d.done = true;
-      d.efficiencies.push(eff);
-    });
+    const d = getSyncData(syncKey);
+    d.done = true;
+    d.efficiencies.push(eff);
     saveLogsToLocal();
     renderUI();
     handleSearch(searchQuery);
-    triggerPulse(affectedKeys);
 
     if (typeof window.queuePracticeAutoSave === 'function') {
       window.queuePracticeAutoSave();
@@ -5057,22 +4979,17 @@ function addEfficiency(syncKey) {
 
 function removeEfficiency(syncKey, index) {
   pushState();
-  const downstreamTargets = getOutgoingTargets(syncKey);
-  const affectedKeys = [syncKey, ...downstreamTargets];
-  affectedKeys.forEach(k => {
-    const d = getSyncData(k);
-    if (d && d.efficiencies && d.efficiencies.length > index) {
-      d.efficiencies.splice(index, 1);
-      if (d.efficiencies.length === 0) {
-        d.done = false;
-      }
+  const d = getSyncData(syncKey);
+  if (d && d.efficiencies && d.efficiencies.length > index) {
+    d.efficiencies.splice(index, 1);
+    if (d.efficiencies.length === 0) {
+      d.done = false;
     }
-  });
+  }
   
   saveLogsToLocal();
   renderUI();
   handleSearch(searchQuery);
-  triggerPulse(affectedKeys);
 
   if (typeof window.queuePracticeAutoSave === 'function') {
     window.queuePracticeAutoSave();
@@ -5116,12 +5033,6 @@ function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilte
  const avgEff = (isDone && efficiencies.length > 0) ? Math.round(efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length) : 0;
  const dimmedClass = !isDone ? 'unchecked-dimmed' : '';
 
- const { toCount, fromCount, total } = getPracticeLinkCounts(p.syncKey);
- const isLinked = total > 0;
- const linkBadgeLabel = isLinked ? `${toCount} | ${fromCount}` : '🔗';
- const linkBadgeTitle = isLinked
-   ? `Link to: ${toCount} | Link from: ${fromCount}`
-   : 'Connect to other practices';
 
  practicesHtml += `
  <li class="practice-item" data-sync-key="${p.syncKey}" style="--item-domain-color: ${domainColorInfo.varName}; --item-glow-color: ${domainColorInfo.glow};">
@@ -5133,11 +5044,6 @@ function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilte
  <div class="practice-desc">${p.desc}</div>
  </div>
  </label>
- <div class="action-group">
- <span class="link-badge ${isLinked ? 'is-linked' : ''}" onclick="openLinkModal('${p.syncKey}')" title="${linkBadgeTitle}">
-   ${linkBadgeLabel}
- </span>
- </div>
  </div>
  
  <div class="duration-section ${dimmedClass}">
@@ -5170,7 +5076,7 @@ function renderCategoryUI(domainKey, categoryList, targetContainer, currentFilte
  card.className = `indriya-card ${isCollapsed ? 'collapsed' : ''}`;
  
  let html = `
- <div class="indriya-header" onpointerdown="if(event.button === 0) toggleGroupCollapse('${groupKey}', this, event)">
+ <div class="indriya-header" onclick="toggleGroupCollapse('${groupKey}', this, event)">
    <div class="indriya-header-title">
      <span class="collapse-indicator">▼</span>
      <span>${group.name}</span>
@@ -5202,6 +5108,9 @@ function renderUI() {
  }
 
  updateDynamicCounts();
+ if (searchQuery || showFrequentPractices || (completionFilter.home && completionFilter.home !== 'all')) {
+   handleSearch(searchQuery);
+ }
 }
 window.renderUI = renderUI;
 
