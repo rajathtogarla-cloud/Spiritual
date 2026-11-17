@@ -489,6 +489,52 @@
  z-index: 60;
  }
 
+ .freq-filter-badge {
+ cursor: pointer;
+ font-family: inherit;
+ font-size: 0.8rem;
+ font-weight: 700;
+ padding: 4px 11px;
+ border-radius: 8px;
+ transition: all 0.2s ease;
+ user-select: none;
+ -webkit-user-select: none;
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ min-width: 36px;
+ }
+
+ .freq-filter-badge:hover {
+ transform: translateY(-1px);
+ filter: brightness(1.1);
+ }
+
+ .freq-filter-badge:active {
+ transform: scale(0.95);
+ }
+
+ .freq-filter-badge.filter-all {
+ border-color: var(--accent-gold);
+ color: var(--accent-gold);
+ background: rgba(251, 191, 36, 0.14);
+ box-shadow: 0 2px 8px rgba(251, 191, 36, 0.18);
+ }
+
+ .freq-filter-badge.filter-done {
+ border-color: var(--success);
+ color: var(--success);
+ background: rgba(16, 185, 129, 0.16);
+ box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+ }
+
+ .freq-filter-badge.filter-pending {
+ border-color: var(--accent-karm);
+ color: var(--accent-karm);
+ background: rgba(244, 63, 94, 0.16);
+ box-shadow: 0 2px 8px rgba(244, 63, 94, 0.2);
+ }
+
  .domain-tag-chip {
  display: inline-flex;
  align-items: center;
@@ -2838,6 +2884,7 @@ let completionFilter = { home: 'all', jnan: 'all', karm: 'all', arish: 'all', ma
 let collapsedGroups = {};
 let searchQuery = '';
 let showFrequentPractices = false;
+let frequentFilterMode = 'all'; // 'all' (yellow) | 'done' (green) | 'pending' (red)
 let ledgerSearchQuery = '';
 let activeChartInstance = null;
 let domainBalanceChartInstance = null;
@@ -4436,8 +4483,19 @@ function deletePractice(syncKey) {
 
 function toggleFrequentPractices() {
  showFrequentPractices = !showFrequentPractices;
+ if (showFrequentPractices) {
+   frequentFilterMode = 'all';
+ }
  const btn = document.getElementById('frequentPracticesBtn');
  if (btn) btn.classList.toggle('active', showFrequentPractices);
+ handleSearch(searchQuery);
+}
+
+function cycleFrequentFilter(event) {
+ if (event) event.stopPropagation();
+ const order = ['all', 'done', 'pending'];
+ const nextIdx = (order.indexOf(frequentFilterMode) + 1) % order.length;
+ frequentFilterMode = order[nextIdx];
  handleSearch(searchQuery);
 }
 
@@ -4562,16 +4620,34 @@ function renderFrequentPracticesView(resultsContainer, hubGrid, homeFilter) {
 
  const filteredItems = items.filter(p => {
    const data = getSyncData(p.syncKey);
-   if (homeFilter === 'selected' && !data.done) return false;
-   if (homeFilter === 'unselected' && data.done) return false;
+   if (frequentFilterMode === 'done' && !data.done) return false;
+   if (frequentFilterMode === 'pending' && data.done) return false;
    return true;
  });
+
+ const filterClassMap = {
+   all: 'filter-all',
+   done: 'filter-done',
+   pending: 'filter-pending'
+ };
+
+ const filterTitleMap = {
+   all: 'Showing all practices (Click to show toggled)',
+   done: 'Showing toggled practices (Click to show untoggled)',
+   pending: 'Showing untoggled practices (Click to show all)'
+ };
+
+ const emptyStateLabelMap = {
+   all: 'all',
+   done: 'toggled',
+   pending: 'untoggled'
+ };
 
  const card = document.createElement('div');
  card.className = 'indriya-card';
 
  const sessionInfoText = sessionWindowCount > 0
-   ? `Shows practices completed across your last ${sessionWindowCount} logged ${sessionWindowCount === 1 ? 'session' : 'sessions'}, ranked by frequency. Long-press any practice to reveal its domain, group, and session count.`
+   ? `Shows practices completed across your last ${sessionWindowCount} logged ${sessionWindowCount === 1 ? 'session' : 'sessions'}, ranked by frequency. Long-press any practice to reveal its domain, group, and session count. Click the counter badge on the right to cycle between Yellow (All), Green (Toggled), and Red (Untoggled) states.`
    : `Shows practices completed across your last 7 logged sessions, ranked by frequency.`;
 
  let html = `
@@ -4583,7 +4659,7 @@ function renderFrequentPracticesView(resultsContainer, hubGrid, homeFilter) {
        <div class="info-tooltip-content header-info-tooltip">${sessionInfoText}</div>
      </span>
    </div>
-   <span class="count-badge" style="border-color: var(--accent-gold); color: var(--accent-gold);">${filteredItems.length}</span>
+   <button type="button" class="count-badge freq-filter-badge ${filterClassMap[frequentFilterMode]}" onclick="cycleFrequentFilter(event)" title="${filterTitleMap[frequentFilterMode]}">${filteredItems.length}</button>
  </div>`;
 
  if (sessionWindowCount === 0) {
@@ -4594,7 +4670,7 @@ function renderFrequentPracticesView(resultsContainer, hubGrid, homeFilter) {
  }
 
  if (filteredItems.length === 0) {
-   html += `<div style="text-align: center; padding: 25px; color: var(--text-sub); font-size: 0.9rem;">No frequent practices match the current completion filter (${homeFilter}).</div>`;
+   html += `<div style="text-align: center; padding: 25px; color: var(--text-sub); font-size: 0.9rem;">No ${emptyStateLabelMap[frequentFilterMode]} practices in the frequently visited list.</div>`;
    card.innerHTML = html;
    resultsContainer.appendChild(card);
    return;
