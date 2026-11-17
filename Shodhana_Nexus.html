@@ -443,12 +443,50 @@
  box-shadow: 0 2px 10px rgba(251, 191, 36, 0.15);
  }
 
+ .frequent-practice-item {
+ position: relative;
+ padding-left: 24px;
+ user-select: none;
+ -webkit-user-select: none;
+ -webkit-touch-callout: none;
+ }
+
+ .frequent-practice-item::before {
+ content: "";
+ position: absolute;
+ left: 8px;
+ top: 10px;
+ bottom: 10px;
+ width: 3px;
+ border-radius: 3px;
+ background-color: var(--item-domain-color, var(--accent-gold));
+ pointer-events: none;
+ }
+
  .frequent-tags-row {
- display: flex;
+ display: none;
  flex-wrap: wrap;
  align-items: center;
  gap: 6px;
- margin-top: 6px;
+ margin-top: 8px;
+ animation: fadeInMeta 0.16s ease-out;
+ }
+
+ .frequent-practice-item.show-meta .frequent-tags-row {
+ display: flex;
+ }
+
+ @keyframes fadeInMeta {
+ from { opacity: 0; transform: translateY(-3px); }
+ to { opacity: 1; transform: translateY(0); }
+ }
+
+ .indriya-header .info-tooltip-content.header-info-tooltip {
+ bottom: auto;
+ top: 135%;
+ left: 50%;
+ transform: translateX(-50%);
+ z-index: 60;
  }
 
  .domain-tag-chip {
@@ -4103,6 +4141,12 @@ function handleBodyClick(event) {
  });
  }
 
+ if (!event.target.closest('.frequent-practice-item')) {
+ document.querySelectorAll('.frequent-practice-item.show-meta').forEach(el => {
+ el.classList.remove('show-meta');
+ });
+ }
+
  if (!event.target.closest('#practiceLedgerBody tr')) {
  document.querySelectorAll('.ledger-tooltip-content.active').forEach(el => {
  el.classList.remove('active');
@@ -4457,6 +4501,58 @@ function getFrequentPracticesLast7Sessions() {
  };
 }
 
+let freqLongPressTimer = null;
+let freqLongPressTriggered = false;
+let freqPressStartX = 0;
+let freqPressStartY = 0;
+
+function handleFreqItemPointerDown(event, liEl) {
+  if (event.button !== undefined && event.button !== 0) return;
+  if (event.target.closest('button, .remove-btn, .info-icon, .info-tooltip-content')) return;
+
+  freqLongPressTriggered = false;
+  freqPressStartX = event.clientX || 0;
+  freqPressStartY = event.clientY || 0;
+
+  clearTimeout(freqLongPressTimer);
+  freqLongPressTimer = setTimeout(() => {
+    freqLongPressTriggered = true;
+    const wasShown = liEl.classList.contains('show-meta');
+    document.querySelectorAll('.frequent-practice-item.show-meta').forEach(el => {
+      if (el !== liEl) el.classList.remove('show-meta');
+    });
+    liEl.classList.toggle('show-meta', !wasShown);
+    if (navigator.vibrate) {
+      try { navigator.vibrate(25); } catch (e) {}
+    }
+  }, 450);
+}
+
+function handleFreqItemPointerMove(event) {
+  if (!freqLongPressTimer) return;
+  const dx = Math.abs((event.clientX || 0) - freqPressStartX);
+  const dy = Math.abs((event.clientY || 0) - freqPressStartY);
+  if (dx > 8 || dy > 8) {
+    clearTimeout(freqLongPressTimer);
+    freqLongPressTimer = null;
+  }
+}
+
+function handleFreqItemPointerUp() {
+  if (freqLongPressTimer) {
+    clearTimeout(freqLongPressTimer);
+    freqLongPressTimer = null;
+  }
+}
+
+function handleFreqItemClickCapture(event) {
+  if (freqLongPressTriggered) {
+    event.preventDefault();
+    event.stopPropagation();
+    freqLongPressTriggered = false;
+  }
+}
+
 function renderFrequentPracticesView(resultsContainer, hubGrid, homeFilter) {
  hubGrid.style.display = 'none';
  resultsContainer.style.display = 'block';
@@ -4474,11 +4570,18 @@ function renderFrequentPracticesView(resultsContainer, hubGrid, homeFilter) {
  const card = document.createElement('div');
  card.className = 'indriya-card';
 
+ const sessionInfoText = sessionWindowCount > 0
+   ? `Shows practices completed across your last ${sessionWindowCount} logged ${sessionWindowCount === 1 ? 'session' : 'sessions'}, ranked by frequency. Long-press any practice to reveal its domain, group, and session count.`
+   : `Shows practices completed across your last 7 logged sessions, ranked by frequency.`;
+
  let html = `
  <div class="indriya-header" style="cursor: default; color: var(--accent-gold); border-bottom-color: var(--border);">
    <div class="indriya-header-title">
      <span>⚡ Frequently Visited Practices</span>
-     <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-sub);">(Last ${sessionWindowCount} logged ${sessionWindowCount === 1 ? 'session' : 'sessions'} • ${formatDateDDMMYY(currentDate)})</span>
+     <span class="info-tooltip-container" onclick="event.stopPropagation()">
+       <span class="info-icon" onclick="toggleInfoTooltip(event, this)">ⓘ</span>
+       <div class="info-tooltip-content header-info-tooltip">${sessionInfoText}</div>
+     </span>
    </div>
    <span class="count-badge" style="border-color: var(--accent-gold); color: var(--accent-gold);">${filteredItems.length}</span>
  </div>`;
@@ -4509,8 +4612,14 @@ function renderFrequentPracticesView(resultsContainer, hubGrid, homeFilter) {
    const groupEmoji = getGroupEmoji(p.groupName);
 
    html += `
-   <li class="practice-item" data-sync-key="${p.syncKey}" style="border-left: 4px solid ${domainColorInfo.varName}; --item-domain-color: ${domainColorInfo.varName}; --item-glow-color: ${domainColorInfo.glow};">
-     <div class="practice-main">
+   <li class="practice-item frequent-practice-item" data-sync-key="${p.syncKey}"
+       style="--item-domain-color: ${domainColorInfo.varName}; --item-glow-color: ${domainColorInfo.glow};"
+       onpointerdown="handleFreqItemPointerDown(event, this)"
+       onpointermove="handleFreqItemPointerMove(event)"
+       onpointerup="handleFreqItemPointerUp()"
+       onpointercancel="handleFreqItemPointerUp()"
+       oncontextmenu="event.preventDefault()">
+     <div class="practice-main" onclick="handleFreqItemClickCapture(event)">
        <label class="checkbox-label">
          <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${p.syncKey}')">
          <div>
