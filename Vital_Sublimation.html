@@ -589,10 +589,10 @@
         <div class="space-y-1">
           <div class="flex items-center space-x-2 font-mono font-bold text-sm sm:text-base text-amber-600 dark:text-amber-400">
             <span>⚠️</span>
-            <span>HIGH-SEAL AUDIT PENDING</span>
+            <span>SEAL-TIER AUDIT PENDING</span>
           </div>
           <p id="unevaluatedDashboardMessage" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-            You have elapsed containment days held under the normal seal that have not yet been evaluated for High Seal.
+            You have elapsed containment days held under the normal seal that have not yet been evaluated for Soft or High Seal.
           </p>
         </div>
         <button onclick="triggerPendingSealAudit()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-mono font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95 whitespace-nowrap">
@@ -788,7 +788,7 @@
           <div class="flex flex-wrap items-center gap-2">
             <button onclick="openSequentialSealReview()" class="px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 font-mono text-xs font-bold transition flex items-center space-x-1.5 shadow-sm active:scale-95">
               <span>✨</span>
-              <span>Review Past Days (High vs Normal)</span>
+              <span>Review Past Days (Seal Tiers)</span>
             </button>
           </div>
 
@@ -3236,16 +3236,23 @@
         } else if (canToggleSeal) {
           if (sealTier === 'high') {
             footerLabel = `
-              <button onclick="toggleSingleDateSeal('${dayISO}', event)" title="Click to switch to Sealed" class="group flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-600 dark:text-cyan-400 transition-all active:scale-95">
+              <button onclick="toggleSingleDateSeal('${dayISO}', event)" title="Click to switch to Normal Sealed" class="group flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-600 dark:text-cyan-400 transition-all active:scale-95">
                 <span class="text-rose-500 group-hover:scale-125 transition-transform">❤️</span>
                 <span class="font-black text-xs">High-Sealed</span>
                 <span class="text-[10px] text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition">⇄</span>
               </button>`;
+          } else if (sealTier === 'soft') {
+            footerLabel = `
+              <button onclick="toggleSingleDateSeal('${dayISO}', event)" title="Click to upgrade to High-Sealed" class="group flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-600 dark:text-sky-400 transition-all active:scale-95">
+                <span class="group-hover:scale-125 transition-transform">💙</span>
+                <span class="font-extrabold text-xs">Soft-Sealed</span>
+                <span class="text-[10px] text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition">⇄</span>
+              </button>`;
           } else {
             footerLabel = `
-              <button onclick="toggleSingleDateSeal('${dayISO}', event)" title="Click to upgrade to High-Sealed" class="group flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 transition-all active:scale-95">
+              <button onclick="toggleSingleDateSeal('${dayISO}', event)" title="Click to upgrade to Soft-Sealed" class="group flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 transition-all active:scale-95">
                 <span class="text-emerald-500 font-bold group-hover:scale-125 transition-transform">✓</span>
-                <span class="font-bold text-xs">Sealed</span>
+                <span class="font-bold text-xs">Normal Sealed</span>
                 <span class="text-[10px] text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition">⇄</span>
               </button>`;
           }
@@ -4161,7 +4168,7 @@
           banner.classList.remove('hidden');
           banner.classList.add('flex');
           if (bannerMsg) {
-            bannerMsg.innerHTML = `You have <strong>${unevaluated.length} past containment day${unevaluated.length > 1 ? 's' : ''}</strong> held with normal seal pending High-Seal evaluation.`;
+            bannerMsg.innerHTML = `You have <strong>${unevaluated.length} past containment day${unevaluated.length > 1 ? 's' : ''}</strong> held with normal seal pending Soft or High-Seal evaluation.`;
           }
         }
       } else {
@@ -4278,6 +4285,9 @@
       if (currentTier === 'high') {
         statusLabel.textContent = '❤️ High-Sealed';
         statusLabel.className = 'text-xs font-mono font-bold text-cyan-500';
+      } else if (currentTier === 'soft') {
+        statusLabel.textContent = '💙 Soft-Sealed';
+        statusLabel.className = 'text-xs font-mono font-bold text-sky-500';
       } else if (isExplicitlyRecorded) {
         statusLabel.textContent = '✓ Normal Sealed';
         statusLabel.className = 'text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400';
@@ -4299,7 +4309,7 @@
 
       pushHistorySnapshot();
       const currentTier = cycle.dailySeals[dateISO] || 'normal';
-      const newTier = (currentTier === 'high') ? 'normal' : 'high';
+      const newTier = (currentTier === 'normal') ? 'soft' : (currentTier === 'soft') ? 'high' : 'normal';
       cycle.dailySeals[dateISO] = newTier;
 
       saveState();
@@ -4315,6 +4325,14 @@
           setTimeout(() => cardEl.classList.remove('celebrate-high-seal'), 600);
         }
         showToast(`❤️ ${formatNumericDate(parseISODate(dateISO))} upgraded to High-Sealed!`);
+      } else if (newTier === 'soft') {
+        playTone('beep');
+        if (cardEl) {
+          cardEl.classList.remove('celebrate-high-seal');
+          cardEl.classList.add('pulse-flat-seal');
+          setTimeout(() => cardEl.classList.remove('pulse-flat-seal'), 300);
+        }
+        showToast(`💙 ${formatNumericDate(parseISODate(dateISO))} upgraded to Soft-Sealed!`);
       } else {
         playTone('click');
         if (cardEl) {
@@ -4322,7 +4340,7 @@
           cardEl.classList.add('pulse-flat-seal');
           setTimeout(() => cardEl.classList.remove('pulse-flat-seal'), 300);
         }
-        showToast(`✓ ${formatNumericDate(parseISODate(dateISO))} set to Sealed.`);
+        showToast(`✓ ${formatNumericDate(parseISODate(dateISO))} set to Normal Sealed.`);
       }
     }
 
@@ -4352,9 +4370,19 @@
           targetBox.classList.remove('modal-pulse-flat');
           targetBox.classList.add('modal-celebrate-high');
         }
+      } else if (tier === 'soft') {
+        if (statusLabel) {
+          statusLabel.textContent = '💙 Soft-Sealed';
+          statusLabel.className = 'text-xs font-mono font-black text-sky-400 scale-105 transition-all';
+        }
+        playTone('beep');
+        if (targetBox) {
+          targetBox.classList.remove('modal-celebrate-high');
+          targetBox.classList.add('modal-pulse-flat');
+        }
       } else {
         if (statusLabel) {
-          statusLabel.textContent = '✓ Just Sealed';
+          statusLabel.textContent = '✓ Normal Sealed';
           statusLabel.className = 'text-xs font-mono font-bold text-emerald-500 transition-all';
         }
         playTone('click');
@@ -4368,7 +4396,7 @@
       renderApp();
 
       isReviewTransitioning = true;
-      const transitionDelay = (tier === 'high') ? 420 : 220;
+      const transitionDelay = (tier === 'high') ? 420 : (tier === 'soft') ? 300 : 220;
 
       setTimeout(() => {
         if (targetBox) {
@@ -4465,11 +4493,11 @@
   </script>
 
   <!-- Modal: Daily Seal Tier Sequential Review Overlay -->
-  <div id="dailySealReviewModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-    <div class="glass-card bg-white dark:bg-slate-900 border border-cyan-500/40 max-w-lg w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl relative">
+  <div id="dailySealReviewModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
+    <div class="glass-card bg-white dark:bg-slate-900 border border-cyan-500/40 max-w-lg w-full max-h-[92vh] flex flex-col rounded-3xl p-5 sm:p-6 space-y-3.5 shadow-2xl relative">
       
       <!-- Header with Step Indicator -->
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5 flex-shrink-0">
         <div class="flex items-center space-x-2">
           <span class="text-xl">✨</span>
           <div>
@@ -4481,10 +4509,10 @@
       </div>
 
       <!-- Active Review Target Day Details -->
-      <div id="sealModalTargetBox" class="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+      <div id="sealModalTargetBox" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 flex items-center justify-between flex-shrink-0">
         <div>
           <span id="sealModalDayTag" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-700 dark:text-cyan-300">DAY 4</span>
-          <h4 id="sealModalTargetDate" class="text-sm font-black font-mono text-slate-900 dark:text-white mt-1">04/11/2026</h4>
+          <h4 id="sealModalTargetDate" class="text-sm font-black font-mono text-slate-900 dark:text-white mt-0.5">04/11/2026</h4>
         </div>
         <div class="text-right">
           <span class="text-[10px] font-mono text-slate-400 block">Current Status</span>
@@ -4492,39 +4520,68 @@
         </div>
       </div>
 
-      <!-- Recommendation Tier Explanations -->
-      <div class="space-y-3 text-xs leading-relaxed">
-        <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-slate-700 dark:text-slate-200 space-y-2">
-          <div class="flex items-center justify-between font-bold text-cyan-700 dark:text-cyan-300">
+      <!-- Recommendation Tier Explanations (Scrollable Container) -->
+      <div class="text-xs leading-relaxed flex-1 min-h-0 flex flex-col">
+        <div class="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-slate-700 dark:text-slate-200 flex flex-col min-h-0 space-y-2.5">
+          <div class="flex items-center justify-between font-bold text-cyan-700 dark:text-cyan-300 flex-shrink-0">
             <span class="flex items-center space-x-1.5 font-mono text-xs">
-              <span>❤️</span>
-              <span>Recommended: High-Sealed Edition</span>
+              <span>✨</span>
+              <span>Recommended: Seal Tiers</span>
             </span>
-            <span class="text-[10px] uppercase font-mono px-2 py-0.2 rounded bg-cyan-500/20">Optional</span>
+            <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-cyan-500/20">Optional</span>
           </div>
-          <p class="text-[11px] text-slate-600 dark:text-slate-300">
-            <strong>Conditions:</strong> I did not voluntarily or deliberately entertain any kind of sexually arousing actions or representations. Even when required to engage through external circumstances, I did not view them through an <strong>Erotic Lens</strong>.
-          </p>
-          
-          <!-- Erotic Lens Definition Box -->
-          <div class="p-3 rounded-xl bg-slate-900/90 border border-rose-500/40 text-[11px] text-slate-200 space-y-1">
-            <div class="font-bold text-rose-400 flex items-center space-x-1">
-              <span>❤️‍🔥</span>
-              <span>The Erotic Lens (Beautiful / Desirable / Sensual):</span>
+
+          <div class="overflow-y-auto max-h-[30vh] pr-1.5 space-y-2.5">
+            <!-- Mid Tier: Soft-Sealed -->
+            <div class="p-3 rounded-xl bg-sky-500/10 border border-sky-400/30 space-y-1">
+              <div class="font-bold text-sky-700 dark:text-sky-300 flex items-center space-x-1.5 font-mono text-[11px]">
+                <span>💙</span>
+                <span>Mid-Tier • Soft-Sealed:</span>
+              </div>
+              <p class="text-[11px] text-slate-600 dark:text-slate-300">
+                All permitted except representations depicting another person’s nudity or revealed private parts.
+              </p>
             </div>
-            <p class="text-slate-300 italic">
-              "Consciously desiring or engaging to cultivate, amplify, or indulge in sexual arousal—beyond what is objectively presented—for one's own sexual satisfaction."
-            </p>
-            <span class="text-[10px] text-slate-400 block font-mono">Note: Encompasses both physical and/or mental gratification.</span>
+
+            <!-- High Tier: High-Sealed -->
+            <div class="p-3 rounded-xl bg-teal-500/10 border border-teal-400/30 space-y-1">
+              <div class="font-bold text-teal-700 dark:text-teal-300 flex items-center space-x-1.5 font-mono text-[11px]">
+                <span>❤️</span>
+                <span>High-Tier • High-Sealed:</span>
+              </div>
+              <p class="text-[11px] text-slate-600 dark:text-slate-300">
+                No voluntary or deliberate entertaining of any sexually arousing actions or representations—even under externally imposed engagement, no viewing through an <strong>erotic lens</strong>.
+              </p>
+            </div>
+            
+            <!-- Erotic Lens Definition Box -->
+            <div class="p-3 rounded-xl bg-slate-900/90 border border-rose-500/40 text-[11px] text-slate-200 space-y-1">
+              <div class="font-bold text-rose-400 flex items-center space-x-1">
+                <span>❤️‍🔥</span>
+                <span>The Erotic Lens (Beautiful / Desirable / Sensual):</span>
+              </div>
+              <p class="text-slate-300 italic">
+                "Consciously desiring or engaging to cultivate, amplify, or indulge in sexual arousal—beyond what is objectively presented—for one's own sexual satisfaction."
+              </p>
+              <span class="text-[10px] text-slate-400 block font-mono">Note: Encompasses both physical and/or mental gratification.</span>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Tier Choice Buttons -->
-      <div class="grid grid-cols-2 gap-3 pt-1">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-0.5 flex-shrink-0">
         <button onclick="applySealDecision('normal')" class="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-left transition active:scale-95">
-          <div class="font-bold text-slate-800 dark:text-white text-xs mb-0.5 font-mono">✅ Just Sealed</div>
+          <div class="font-bold text-slate-800 dark:text-white text-xs mb-0.5 font-mono">✅ Normal Sealed</div>
           <span class="text-[10px] text-slate-500 dark:text-slate-300 block leading-tight">Physical boundaries intact. Standard protocol containment.</span>
+        </button>
+
+        <button onclick="applySealDecision('soft')" class="p-3 rounded-2xl bg-gradient-to-br from-sky-800 via-blue-600 to-indigo-600 hover:from-sky-600 hover:to-indigo-500 text-white border border-sky-400/40 text-left transition shadow-lg shadow-sky-600/20 active:scale-95">
+          <div class="font-bold text-xs mb-0.5 font-mono flex items-center space-x-1">
+            <span>💙</span>
+            <span>Soft-Sealed</span>
+          </div>
+          <span class="text-[10px] text-sky-100 block leading-tight">Everything allowed except nudity or revealing private parts.</span>
         </button>
 
         <button onclick="applySealDecision('high')" class="p-3 rounded-2xl bg-gradient-to-br from-cyan-900 via-teal-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white border border-cyan-400/40 text-left transition shadow-lg shadow-cyan-600/25 active:scale-95">
@@ -4537,7 +4594,7 @@
       </div>
 
       <!-- Navigation / Skip / Auto-Advance Footer -->
-      <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800 text-[11px] font-mono">
+      <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800 text-[11px] font-mono flex-shrink-0">
         <button onclick="stepReviewQueue(-1)" id="btnPrevQueueDay" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 disabled:opacity-30">
           ← Previous Day
         </button>
@@ -4546,7 +4603,7 @@
         </button>
       </div>
       <!-- Quick Batch Normal Seal Option -->
-      <div class="pt-2 text-center">
+      <div class="pt-1 text-center flex-shrink-0">
         <button onclick="batchConfirmRemainingAsNormal()" class="text-[11px] font-mono text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 underline transition">
           Confirm remaining unevaluated days as Normal Seal
         </button>
