@@ -495,7 +495,8 @@
  animation: fadeInMeta 0.16s ease-out;
  }
 
- .frequent-practice-item.show-meta .frequent-tags-row {
+ .frequent-practice-item.show-meta .frequent-tags-row,
+ .daily-progress-item.show-meta .frequent-tags-row {
  display: flex;
  }
 
@@ -4320,8 +4321,8 @@ function handleBodyClick(event) {
  });
  }
 
- if (!event.target.closest('.frequent-practice-item')) {
- document.querySelectorAll('.frequent-practice-item.show-meta').forEach(el => {
+ if (!event.target.closest('.frequent-practice-item, .daily-progress-item')) {
+ document.querySelectorAll('.frequent-practice-item.show-meta, .daily-progress-item.show-meta').forEach(el => {
  el.classList.remove('show-meta');
  });
  }
@@ -4769,7 +4770,7 @@ function handleFreqItemPointerDown(event, liEl) {
   freqLongPressTimer = setTimeout(() => {
     freqLongPressTriggered = true;
     const wasShown = liEl.classList.contains('show-meta');
-    document.querySelectorAll('.frequent-practice-item.show-meta').forEach(el => {
+    document.querySelectorAll('.frequent-practice-item.show-meta, .daily-progress-item.show-meta').forEach(el => {
       if (el !== liEl) el.classList.remove('show-meta');
     });
     liEl.classList.toggle('show-meta', !wasShown);
@@ -5320,20 +5321,28 @@ function renderDailyProgressModal() {
      : '';
 
    const card = document.createElement('div');
-   card.className = 'target-item';
+   card.className = 'target-item daily-progress-item';
    card.style.flexDirection = 'column';
    card.style.alignItems = 'stretch';
    card.style.cursor = 'default';
    card.style.borderLeft = `4px solid ${dInfo.varName}`;
+   card.style.userSelect = 'none';
+   card.style.webkitUserSelect = 'none';
+   card.style.webkitTouchCallout = 'none';
+   card.setAttribute('onpointerdown', 'handleFreqItemPointerDown(event, this)');
+   card.setAttribute('onpointermove', 'handleFreqItemPointerMove(event)');
+   card.setAttribute('onpointerup', 'handleFreqItemPointerUp()');
+   card.setAttribute('onpointercancel', 'handleFreqItemPointerUp()');
+   card.setAttribute('oncontextmenu', 'event.preventDefault()');
 
    card.innerHTML = `
-     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;" onclick="handleFreqItemClickCapture(event)">
        <label class="checkbox-label" style="margin: 0;">
          <input type="checkbox" checked onchange="toggleDone('${p.syncKey}')">
          <div>
            <div class="practice-name" style="color: var(--text-main);">${p.name}</div>
            ${p.desc ? `<div class="practice-desc">${p.desc}</div>` : ''}
-           <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px;">
+           <div class="frequent-tags-row">
              <span class="domain-tag-chip" style="color: ${dInfo.varName}; border-color: ${dInfo.varName}; background: ${dInfo.glow}; cursor: default;">
                <span>${dInfo.emoji}</span>
                <span>${p.domain}</span>
