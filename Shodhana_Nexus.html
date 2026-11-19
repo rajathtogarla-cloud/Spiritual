@@ -188,6 +188,27 @@
  gap: 10px;
  }
 
+ .daily-progress-card {
+ margin-bottom: 15px;
+ padding: 10px 12px;
+ background: var(--card-sub-bg);
+ border-radius: 8px;
+ border: 1px solid var(--border);
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ cursor: pointer;
+ transition: border-color 0.2s ease, transform 0.15s ease;
+ }
+
+ .daily-progress-card:hover {
+ border-color: var(--accent-gold);
+ }
+
+ .daily-progress-card:active {
+ transform: scale(0.98);
+ }
+
  .nav-item {
  display: flex;
  align-items: center;
@@ -1939,8 +1960,8 @@
  <h2>Navigation Menu</h2>
  <button class="sidebar-close-btn" onclick="closeSidebar()">&times;</button>
  </div>
- <div style="margin-bottom: 15px; padding: 8px 12px; background: var(--card-sub-bg); border-radius: 8px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-  <span style="font-size: 0.85rem; color: var(--text-sub); font-weight: 600;">Daily Progress</span>
+ <div class="daily-progress-card" onclick="openDailyProgressModal()" title="View toggled practices (latest first)">
+  <span style="font-size: 0.85rem; color: var(--text-sub); font-weight: 600;">Daily Progress ➔</span>
   <span id="sidebarPracticeCount" style="font-size: 0.85rem; font-weight: 700; color: var(--accent-gold);">0/0</span>
  </div>
  <nav class="sidebar-nav">
@@ -1987,7 +2008,7 @@
 
  <div class="frequent-bar-home">
  <button type="button" id="frequentPracticesBtn" class="frequent-toggle-btn" onclick="toggleFrequentPractices()">
- <span>⚡ Frequently Visited Practices (Last 7 Sessions)</span>
+ <span>⚡ Frequently Visited Practices</span>
  </button>
  </div>
 
@@ -2428,6 +2449,26 @@
       <button class="analytics-btn" style="color: var(--accent-manas);" onclick="openAnalyticsChart('manas'); document.getElementById('deepDiveModalOverlay').classList.remove('active')">💭 Manas</button>
       <button class="analytics-btn" style="color: var(--accent-arish);" onclick="openAnalyticsChart('arish'); document.getElementById('deepDiveModalOverlay').classList.remove('active')">🐦‍🔥 Arishadvargas</button>
       <button class="analytics-btn" style="color: var(--accent-ident);" onclick="openAnalyticsChart('identification'); document.getElementById('deepDiveModalOverlay').classList.remove('active')">🪞 Identification</button>
+    </div>
+  </div>
+</div>
+
+<!-- Daily Progress Sequence Modal (Latest First) -->
+<div class="link-modal-overlay" id="dailyProgressModalOverlay" onclick="closeDailyProgressModal(event)">
+  <div class="link-modal-card" onclick="event.stopPropagation()" style="max-width: 660px;">
+    <div class="link-modal-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="color: var(--accent-gold);">⚡ Daily Progress</span>
+        <span class="count-badge" id="dailyProgressModalBadge" style="border-color: var(--accent-gold); color: var(--accent-gold);">0/0</span>
+      </div>
+      <button class="add-duration-btn" onclick="closeDailyProgressModal()">&times;</button>
+    </div>
+    <p id="dailyProgressModalSubtitle" style="font-size: 0.8rem; color: var(--text-sub); margin-top: -6px;">
+      Toggled practices in latest-first sequence
+    </p>
+    <div class="target-list" id="dailyProgressModalList" style="max-height: 440px;"></div>
+    <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+      <button class="auth-btn" style="width: auto; padding: 6px 18px; margin: 0;" onclick="closeDailyProgressModal()">Done</button>
     </div>
   </div>
 </div>
@@ -3191,7 +3232,7 @@ function resetDomainExpandedGroups(domainKey, domainTitle) {
 
     expandedGroups.forEach(group => {
       (group.practices || []).forEach(p => {
-        logs[currentDate][p.syncKey] = { done: false, efficiencies: [] };
+        logs[currentDate][p.syncKey] = { done: false, efficiencies: [], toggledAt: null };
       });
     });
 
@@ -4119,6 +4160,12 @@ window.addEventListener('popstate', (event) => {
  const modifyModal = document.getElementById('modifyItemModalOverlay');
  const distModal = document.getElementById('distPracticesModalOverlay');
  const bulkModal = document.getElementById('bulkJsonModalOverlay');
+ const dailyProgressModal = document.getElementById('dailyProgressModalOverlay');
+
+ if (dailyProgressModal && dailyProgressModal.classList.contains('active')) {
+   closeDailyProgressModal();
+   return;
+ }
 
  if (bulkModal && bulkModal.classList.contains('active')) {
    closeBulkJsonModal();
@@ -5198,12 +5245,124 @@ function saveLogsToLocal() {
 function getSyncData(syncKey) {
  if (!logs[currentDate]) logs[currentDate] = {};
  if (!logs[currentDate][syncKey]) {
- logs[currentDate][syncKey] = { done: false, efficiencies: [] };
+ logs[currentDate][syncKey] = { done: false, efficiencies: [], toggledAt: null };
  }
  if (logs[currentDate][syncKey].durations && !logs[currentDate][syncKey].efficiencies) {
  logs[currentDate][syncKey].efficiencies = [];
  }
  return logs[currentDate][syncKey];
+}
+
+function openDailyProgressModal() {
+ closeSidebar();
+ pushModalHistoryState();
+ renderDailyProgressModal();
+ const overlay = document.getElementById('dailyProgressModalOverlay');
+ if (overlay) overlay.classList.add('active');
+}
+
+function closeDailyProgressModal(event) {
+ const overlay = document.getElementById('dailyProgressModalOverlay');
+ if (!overlay) return;
+ if (!event || event.target === overlay || event.type === 'click') {
+   overlay.classList.remove('active');
+ }
+}
+
+function renderDailyProgressModal() {
+ const listEl = document.getElementById('dailyProgressModalList');
+ const badgeEl = document.getElementById('dailyProgressModalBadge');
+ const subEl = document.getElementById('dailyProgressModalSubtitle');
+ if (!listEl) return;
+
+ const allFlat = getAllPracticesFlat();
+ const dayLog = logs[currentDate] || {};
+ const insertionOrder = Object.keys(dayLog);
+
+ const toggledPractices = [];
+ allFlat.forEach(p => {
+   const entry = dayLog[p.syncKey];
+   if (entry && entry.done) {
+     toggledPractices.push({
+       ...p,
+       efficiencies: entry.efficiencies || [],
+       toggledAt: typeof entry.toggledAt === 'number' ? entry.toggledAt : 0,
+       logOrder: insertionOrder.indexOf(p.syncKey)
+     });
+   }
+ });
+
+ // Sort strictly latest-first (timestamp descending, with reverse insertion order as fallback)
+ toggledPractices.sort((a, b) => {
+   if (b.toggledAt !== a.toggledAt) return b.toggledAt - a.toggledAt;
+   return b.logOrder - a.logOrder;
+ });
+
+ if (badgeEl) badgeEl.textContent = `${toggledPractices.length}/${allFlat.length}`;
+ if (subEl) {
+   subEl.innerHTML = `Showing <strong>${toggledPractices.length}</strong> toggled ${toggledPractices.length === 1 ? 'practice' : 'practices'} on <strong>${formatDateDDMMYY(currentDate)}</strong> in latest-first sequence.`;
+ }
+
+ listEl.innerHTML = '';
+
+ if (toggledPractices.length === 0) {
+   listEl.innerHTML = `<div style="text-align: center; padding: 30px 15px; color: var(--text-sub); font-size: 0.88rem;">No practices toggled for ${formatDateDDMMYY(currentDate)} yet.</div>`;
+   return;
+ }
+
+ toggledPractices.forEach((p) => {
+   const dInfo = getDomainColorInfo(p.domainKey);
+   const gEmoji = getGroupEmoji(p.groupName);
+   const effs = p.efficiencies;
+   const avgEff = effs.length > 0 ? Math.round(effs.reduce((a, b) => a + b, 0) / effs.length) : 0;
+   const timeStr = p.toggledAt > 0
+     ? new Date(p.toggledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+     : '';
+
+   const card = document.createElement('div');
+   card.className = 'target-item';
+   card.style.flexDirection = 'column';
+   card.style.alignItems = 'stretch';
+   card.style.cursor = 'default';
+   card.style.borderLeft = `4px solid ${dInfo.varName}`;
+
+   card.innerHTML = `
+     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+       <label class="checkbox-label" style="margin: 0;">
+         <input type="checkbox" checked onchange="toggleDone('${p.syncKey}')">
+         <div>
+           <div class="practice-name" style="color: var(--text-main);">${p.name}</div>
+           ${p.desc ? `<div class="practice-desc">${p.desc}</div>` : ''}
+           <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px;">
+             <span class="domain-tag-chip" style="color: ${dInfo.varName}; border-color: ${dInfo.varName}; background: ${dInfo.glow}; cursor: default;">
+               <span>${dInfo.emoji}</span>
+               <span>${p.domain}</span>
+             </span>
+             <span class="group-tag-chip" style="cursor: default;">
+               <span>${gEmoji}</span>
+               <span>${p.groupName}</span>
+             </span>
+             ${timeStr ? `<span class="freq-session-chip" style="cursor: default;">🕒 ${timeStr}</span>` : ''}
+           </div>
+         </div>
+       </label>
+     </div>
+     <div class="duration-section" style="margin-top: 4px;">
+       <span>Efficiency:</span>
+       <div class="durations-wrapper">
+         ${effs.map((eff, eIdx) => `
+           <div class="duration-chip">
+             <span>${eff}%</span>
+             <span class="remove-btn" onclick="removeEfficiency('${p.syncKey}', ${eIdx})">&times;</span>
+           </div>
+         `).join('')}
+         <button class="add-duration-btn" onclick="addEfficiency('${p.syncKey}')">+ Add</button>
+       </div>
+       ${effs.length > 0 ? `<span class="total-duration">(Avg: ${avgEff}%)</span>` : ''}
+     </div>
+   `;
+   listEl.appendChild(card);
+ });
 }
 
 /* --- Domain-Colored Efficiency Overlay Handlers --- */
@@ -5335,9 +5494,13 @@ function toggleDone(syncKey) {
       const d = getSyncData(syncKey);
       d.done = true;
       d.efficiencies = [eff];
+      d.toggledAt = Date.now();
       saveLogsToLocal();
       renderUI();
       handleSearch(searchQuery);
+      if (document.getElementById('dailyProgressModalOverlay')?.classList.contains('active')) {
+        renderDailyProgressModal();
+      }
 
       if (typeof window.queuePracticeAutoSave === 'function') {
         window.queuePracticeAutoSave();
@@ -5345,15 +5508,22 @@ function toggleDone(syncKey) {
     }, () => {
       renderUI();
       handleSearch(searchQuery);
+      if (document.getElementById('dailyProgressModalOverlay')?.classList.contains('active')) {
+        renderDailyProgressModal();
+      }
     });
   } else {
     pushState();
     const d = getSyncData(syncKey);
     d.done = false;
     d.efficiencies = [];
+    d.toggledAt = null;
     saveLogsToLocal();
     renderUI();
     handleSearch(searchQuery);
+    if (document.getElementById('dailyProgressModalOverlay')?.classList.contains('active')) {
+      renderDailyProgressModal();
+    }
 
     if (typeof window.queuePracticeAutoSave === 'function') {
       window.queuePracticeAutoSave();
@@ -5373,9 +5543,13 @@ function addEfficiency(syncKey) {
     const d = getSyncData(syncKey);
     d.done = true;
     d.efficiencies.push(eff);
+    if (!d.toggledAt) d.toggledAt = Date.now();
     saveLogsToLocal();
     renderUI();
     handleSearch(searchQuery);
+    if (document.getElementById('dailyProgressModalOverlay')?.classList.contains('active')) {
+      renderDailyProgressModal();
+    }
 
     if (typeof window.queuePracticeAutoSave === 'function') {
       window.queuePracticeAutoSave();
@@ -5390,12 +5564,16 @@ function removeEfficiency(syncKey, index) {
     d.efficiencies.splice(index, 1);
     if (d.efficiencies.length === 0) {
       d.done = false;
+      d.toggledAt = null;
     }
   }
   
   saveLogsToLocal();
   renderUI();
   handleSearch(searchQuery);
+  if (document.getElementById('dailyProgressModalOverlay')?.classList.contains('active')) {
+    renderDailyProgressModal();
+  }
 
   if (typeof window.queuePracticeAutoSave === 'function') {
     window.queuePracticeAutoSave();
