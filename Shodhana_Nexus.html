@@ -411,7 +411,7 @@
  justify-content: center;
  align-items: center;
  max-width: 580px;
- margin: 18px auto 0 auto;
+ margin: 30px auto 0 auto;
  }
 
  .frequent-toggle-btn {
@@ -430,10 +430,12 @@
  transition: all 0.2s ease;
  }
 
- .frequent-toggle-btn:hover {
- border-color: var(--accent-gold);
- color: var(--accent-gold);
- background: var(--card-sub-bg);
+ @media (hover: hover) {
+   .frequent-toggle-btn:hover {
+     border-color: var(--accent-gold);
+     color: var(--accent-gold);
+     background: var(--card-sub-bg);
+   }
  }
 
  .frequent-toggle-btn.active {
@@ -657,7 +659,7 @@
  display: grid;
  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
  gap: 20px;
- margin-top: 18px;
+ margin-top: 40px;
  }
 
  .hub-card {
@@ -1989,7 +1991,7 @@
  </button>
  </div>
 
- <div id="search-results-container" style="display: none; margin-top: 18px;"></div>
+ <div id="search-results-container" style="display: none; margin-top: 25px;"></div>
 
  <div class="hub-grid" id="main-hub-grid">
  <div class="hub-card" onclick="openView('jnan-view')">
@@ -4574,7 +4576,10 @@ function toggleFrequentPractices() {
    showFreqSessionPicker = false;
  }
  const btn = document.getElementById('frequentPracticesBtn');
- if (btn) btn.classList.toggle('active', showFrequentPractices);
+ if (btn) {
+   btn.classList.toggle('active', showFrequentPractices);
+   if (!showFrequentPractices) btn.blur();
+ }
  handleSearch(searchQuery);
 }
 
