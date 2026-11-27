@@ -446,6 +446,16 @@
           </span>
         </div>
 
+        <!-- Firestore Profile Switcher -->
+        <div class="flex items-center space-x-2">
+          <select id="firebaseProfileSelect" onchange="switchFirebaseProfile(this.value)" class="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 outline-none focus:border-cyan-500">
+            <option value="default">default (vital-sublimation)</option>
+          </select>
+          <button onclick="openFirebaseProfileModal()" title="Add or Edit Firestore Config" class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-cyan-500 text-xs transition">
+            ⚙️
+          </button>
+        </div>
+
         <div id="authUserInfo" class="hidden text-xs font-mono p-2.5 rounded-xl bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20">
           Logged in as: <strong id="authUserEmail">user@firestore.io</strong>
         </div>
@@ -1253,6 +1263,40 @@
   <!-- MODALS                                                                    -->
   <!-- ========================================================================= -->
 
+  <!-- Modal: Manage Firestore Config Profiles -->
+  <div id="firebaseProfileModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card bg-white dark:bg-slate-900 border max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">Firestore Config Profile</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Store secondary project credentials locally</p>
+        </div>
+        <button onclick="closeModal('firebaseProfileModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs font-mono">
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 mb-1">Profile ID (e.g., <code>alt</code> — no spaces)</label>
+          <input type="text" id="newProfileIdInput" placeholder="alt" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-cyan-600 dark:text-cyan-400 font-bold outline-none focus:border-cyan-500">
+        </div>
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 mb-1">Paste <code>firebaseConfig</code> object from Firebase Console:</label>
+          <textarea id="newProfileConfigInput" rows="6" placeholder='{
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "..."
+}' class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white outline-none focus:border-cyan-500"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2 pt-2">
+        <button id="btnDeleteProfile" onclick="deleteCurrentFirebaseProfile()" class="hidden py-2.5 px-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-xs font-mono font-bold text-rose-500">Delete</button>
+        <button onclick="closeModal('firebaseProfileModal')" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-mono font-bold text-slate-700 dark:text-slate-300">Cancel</button>
+        <button onclick="saveFirebaseProfile()" class="flex-1 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold transition shadow-md shadow-cyan-600/25">Save &amp; Switch</button>
+      </div>
+    </div>
+  </div>
+  
   <!-- Modal: Firestore Login (Stub for configuration) -->
   <div id="authLoginModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
     <div class="glass-card bg-white dark:bg-slate-900 border max-w-sm w-full rounded-3xl p-6 sm:p-7 space-y-4 shadow-2xl">
@@ -1627,8 +1671,12 @@
       setDoc 
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // --- FIREBASE CONFIGURATION ---
-    const firebaseConfig = {
+    // --- MULTI-PROFILE FIREBASE CONFIGURATION ---
+    const PROFILES_META_KEY = 'vital_sublimation_firebase_profiles_v1';
+    const ACTIVE_PROFILE_KEY = 'vital_sublimation_active_profile_v1';
+
+    const DEFAULT_FIREBASE_CONFIG = {
+      label: "Rajath_vitalSublimation", // <-- desired name in dropdown
       apiKey: "AIzaSyD3w6j6SfljmvP1IstkA_6uljKnu8D2I6A",
       authDomain: "vital-sublimation.firebaseapp.com",
       projectId: "vital-sublimation",
@@ -1638,15 +1686,54 @@
       measurementId: "G-XSKFDPNYHS"
     };
 
-    const app = initializeApp(firebaseConfig);
+    const BUILT_IN_PROFILES = {
+      alt: {
+        label: "Ranjith_vitalSublimation", // <-- desired name in dropdown
+        apiKey: "AIzaSyBI8CAFgB_I7DQx0OUUSmTpQXuiFQbRybA",
+        authDomain: "vitalsublimation.firebaseapp.com",
+        projectId: "vitalsublimation",
+        storageBucket: "vitalsublimation.firebasestorage.app",
+        messagingSenderId: "915369545895",
+        appId: "1:915369545895:web:f0e1b15507ac0aba3c4b82",
+        measurementId: "G-1RZYT77GFJ"
+      }
+    };
+
+    function getSavedProfiles() {
+      try {
+        const custom = JSON.parse(localStorage.getItem(PROFILES_META_KEY)) || {};
+        return { ...BUILT_IN_PROFILES, ...custom };
+      } catch {
+        return { ...BUILT_IN_PROFILES };
+      }
+    }
+
+    const urlProfile = new URLSearchParams(window.location.search).get('profile');
+    const savedProfiles = getSavedProfiles();
+    let activeProfileId = (urlProfile && (urlProfile === 'default' || savedProfiles[urlProfile]))
+      ? urlProfile
+      : (localStorage.getItem(ACTIVE_PROFILE_KEY) || 'default');
+
+    if (activeProfileId !== 'default' && !savedProfiles[activeProfileId]) {
+      activeProfileId = 'default';
+    }
+    localStorage.setItem(ACTIVE_PROFILE_KEY, activeProfileId);
+
+    const firebaseConfig = (activeProfileId === 'default')
+      ? DEFAULT_FIREBASE_CONFIG
+      : savedProfiles[activeProfileId];
+
+    // Named app instance isolates Firebase Auth persistence per profile
+    const app = initializeApp(firebaseConfig, activeProfileId);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const STORAGE_KEY_CYCLES = 'containment_cycles_collection_v10';
-    const STORAGE_KEY_SELECTED_INDEX = 'containment_selected_cycle_index_v10';
+    const keySuffix = (activeProfileId === 'default') ? '' : `_${activeProfileId}`;
+    const STORAGE_KEY_CYCLES = 'containment_cycles_collection_v10' + keySuffix;
+    const STORAGE_KEY_SELECTED_INDEX = 'containment_selected_cycle_index_v10' + keySuffix;
     const STORAGE_KEY_THEME = 'containment_theme_mode_v10';
-    const STORAGE_KEY_SIM_DATE = 'containment_simulated_date_v10';
-    const STORAGE_KEY_SIM_SANDBOX = 'containment_sim_sandbox_v10';
+    const STORAGE_KEY_SIM_DATE = 'containment_simulated_date_v10' + keySuffix;
+    const STORAGE_KEY_SIM_SANDBOX = 'containment_sim_sandbox_v10' + keySuffix;
 
     let currentTab = 'dashboard';
     let cycles = [];
@@ -1786,7 +1873,97 @@
       }
     }
 
+    function populateProfileDropdown() {
+      const sel = document.getElementById('firebaseProfileSelect');
+      if (!sel) return;
+      const profiles = getSavedProfiles();
+      sel.innerHTML = '';
+
+      const defaultTitle = DEFAULT_FIREBASE_CONFIG.label || DEFAULT_FIREBASE_CONFIG.projectId;
+      const defOpt = document.createElement('option');
+      defOpt.value = 'default';
+      defOpt.textContent = defaultTitle;
+      sel.appendChild(defOpt);
+
+      Object.entries(profiles).forEach(([id, cfg]) => {
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = cfg.label || cfg.projectId || id;
+        sel.appendChild(opt);
+      });
+
+      sel.value = activeProfileId;
+    }
+
+    function switchFirebaseProfile(profileId) {
+      localStorage.setItem(ACTIVE_PROFILE_KEY, profileId);
+      const url = new URL(window.location.href);
+      if (profileId === 'default') url.searchParams.delete('profile');
+      else url.searchParams.set('profile', profileId);
+      window.location.href = url.toString();
+    }
+
+    function openFirebaseProfileModal() {
+      closeSidebar();
+      const idInput = document.getElementById('newProfileIdInput');
+      const cfgInput = document.getElementById('newProfileConfigInput');
+      const delBtn = document.getElementById('btnDeleteProfile');
+      const profiles = getSavedProfiles();
+
+      if (activeProfileId !== 'default' && profiles[activeProfileId]) {
+        idInput.value = activeProfileId;
+        cfgInput.value = JSON.stringify(profiles[activeProfileId], null, 2);
+        delBtn.classList.remove('hidden');
+      } else {
+        idInput.value = '';
+        cfgInput.value = '';
+        delBtn.classList.add('hidden');
+      }
+      openModal('firebaseProfileModal');
+    }
+
+    function saveFirebaseProfile() {
+      const rawId = document.getElementById('newProfileIdInput').value.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+      const rawText = document.getElementById('newProfileConfigInput').value.trim();
+
+      if (!rawId || rawId === 'default') {
+        showToast('⚠️ Enter a unique profile ID (not "default").');
+        return;
+      }
+
+      try {
+        const objMatch = rawText.match(/\{[\s\S]*\}/);
+        if (!objMatch) throw new Error('No config object found');
+        const jsonReady = objMatch[0]
+          .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
+          .replace(/'/g, '"')
+          .replace(/,\s*}/g, '}');
+        const parsed = JSON.parse(jsonReady);
+
+        if (!parsed.apiKey || !parsed.projectId) {
+          throw new Error('Missing apiKey or projectId');
+        }
+
+        const profiles = getSavedProfiles();
+        profiles[rawId] = parsed;
+        localStorage.setItem(PROFILES_META_KEY, JSON.stringify(profiles));
+        switchFirebaseProfile(rawId);
+      } catch (err) {
+        showToast('⚠️ Invalid config: ' + err.message);
+      }
+    }
+
+    function deleteCurrentFirebaseProfile() {
+      if (activeProfileId === 'default') return;
+      if (!confirm(`Delete profile "${activeProfileId}"?`)) return;
+      const profiles = getSavedProfiles();
+      delete profiles[activeProfileId];
+      localStorage.setItem(PROFILES_META_KEY, JSON.stringify(profiles));
+      switchFirebaseProfile('default');
+    }
+
     function renderAuthUI() {
+      populateProfileDropdown();
       const pill = document.getElementById('authStatusPill');
       const userInfo = document.getElementById('authUserInfo');
       const userEmail = document.getElementById('authUserEmail');
@@ -4218,7 +4395,7 @@
     let reviewQueue = [];
     let reviewQueueCurrentIndex = 0;
 
-    function buildCycleReviewQueue(cycle) {
+    function buildCycleReviewQueue(cycle, includeDateISO = null) {
       if (!cycle) return [];
       if (!cycle.dailySeals) cycle.dailySeals = {};
 
@@ -4233,8 +4410,9 @@
         const dayISO = formatISODate(dayDate);
         const isBlockedByResolution = Boolean(resolvedObj && (dayISO === cycle.resolvedDate || (isPremature && diffDays(dayDate, resolvedObj) > 0)));
 
-        // Skip resolution date and post-breach locked days from review queue
-        if (!isBlockedByResolution && diffDays(dayDate, metrics.inspectionDate) <= 0) {
+        // Only queue untagged days (or the specific date clicked for direct editing)
+        const isUntagged = !cycle.dailySeals[dayISO];
+        if (!isBlockedByResolution && diffDays(dayDate, metrics.inspectionDate) <= 0 && (isUntagged || dayISO === includeDateISO)) {
           queue.push({
             dayNumber: day,
             date: dayDate,
@@ -4245,6 +4423,20 @@
       }
       queue.sort((a, b) => b.date - a.date);
       return queue;
+    }
+
+    function openSealReviewForDate(dateISO, event) {
+      if (event) event.stopPropagation();
+      const cycle = getSelectedCycle();
+      if (!cycle) return;
+      if (!cycle.dailySeals) cycle.dailySeals = {};
+
+      reviewQueue = buildCycleReviewQueue(cycle, dateISO);
+      if (reviewQueue.length === 0) return;
+      const idx = reviewQueue.findIndex(item => item.dateISO === dateISO);
+      reviewQueueCurrentIndex = idx >= 0 ? idx : 0;
+      renderCurrentQueueItem();
+      document.getElementById('dailySealReviewModal').classList.remove('hidden');
     }
 
     function openSequentialSealReview() {
@@ -4258,20 +4450,6 @@
         return;
       }
       reviewQueueCurrentIndex = 0;
-      renderCurrentQueueItem();
-      document.getElementById('dailySealReviewModal').classList.remove('hidden');
-    }
-
-    function openSealReviewForDate(dateISO, event) {
-      if (event) event.stopPropagation();
-      const cycle = getSelectedCycle();
-      if (!cycle) return;
-      if (!cycle.dailySeals) cycle.dailySeals = {};
-
-      reviewQueue = buildCycleReviewQueue(cycle);
-      if (reviewQueue.length === 0) return;
-      const idx = reviewQueue.findIndex(item => item.dateISO === dateISO);
-      reviewQueueCurrentIndex = idx >= 0 ? idx : 0;
       renderCurrentQueueItem();
       document.getElementById('dailySealReviewModal').classList.remove('hidden');
     }
@@ -4496,6 +4674,10 @@
     window.submitHighSuccessSession = submitHighSuccessSession;
     window.passPhysioFilterToSuccessModal = passPhysioFilterToSuccessModal;
     window.abortAndRolloverFromGate = abortAndRolloverFromGate;
+    window.switchFirebaseProfile = switchFirebaseProfile;
+    window.openFirebaseProfileModal = openFirebaseProfileModal;
+    window.saveFirebaseProfile = saveFirebaseProfile;
+    window.deleteCurrentFirebaseProfile = deleteCurrentFirebaseProfile;
 
     /* Initialize App */
     loadState();
