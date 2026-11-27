@@ -2017,6 +2017,14 @@
         </span>
       </div>
 
+      <!-- Firestore Profile Switcher -->
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:10px;">
+        <select id="firebaseProfileSelect" onchange="switchFirebaseProfile(this.value)" class="form-input" style="padding:8px 10px; font-size:11.5px; font-weight:800; flex:1;">
+          <option value="default">default (vital-sublimation)</option>
+        </select>
+        <button onclick="openFirebaseProfileModal()" class="btn-icon" style="width:36px; height:36px; font-size:14px; flex-shrink:0;" title="Add or Edit Firestore Config">⚙️</button>
+      </div>
+
       <div id="authUserInfo" style="display:none; font-size:12px; padding:8px 10px; border-radius:12px; background:var(--cyan-soft); border:1px solid var(--cyan-border); color:var(--cyan); margin-bottom:10px; word-break:break-all;">
         Logged in as: <strong id="authUserEmail">user@firestore.io</strong>
       </div>
@@ -2080,6 +2088,40 @@
       </div>
     </div>
   </aside>
+
+  <!-- Modal: Manage Firestore Config Profiles -->
+  <div id="modalFirebaseProfile" class="modal-backdrop" onclick="closeModalOnBackdrop(event, 'modalFirebaseProfile')">
+    <div class="modal-sheet mono">
+      <div class="sheet-pill-bar"></div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+        <div>
+          <div class="sheet-title" style="font-size:18px; font-weight:900;">Firestore Config Profile</div>
+          <div class="sheet-sub" style="font-size:12px; margin-bottom:0;">Store secondary project credentials locally</div>
+        </div>
+        <button class="btn-icon" style="width:32px; height:32px; font-size:14px;" onclick="closeModal('modalFirebaseProfile')">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Profile ID (e.g., <code>alt</code> — no spaces)</label>
+        <input type="text" id="newProfileIdInput" placeholder="alt" class="form-input" style="color:var(--cyan); font-weight:800;">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Paste <code>firebaseConfig</code> object from Firebase Console:</label>
+        <textarea id="newProfileConfigInput" rows="6" placeholder='{
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "..."
+}' class="form-input" style="font-size:12px; line-height:1.4;"></textarea>
+      </div>
+
+      <div class="sheet-action-row">
+        <button id="btnDeleteProfile" class="btn-sheet-cancel" style="display:none; color:var(--rose); border-color:var(--rose-border);" onclick="deleteCurrentFirebaseProfile()">Delete</button>
+        <button class="btn-sheet-cancel" onclick="closeModal('modalFirebaseProfile')">Cancel</button>
+        <button class="btn-sheet-primary" onclick="saveFirebaseProfile()">Save &amp; Switch</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal: Firestore Login -->
   <div id="authLoginModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event, 'authLoginModal')">
@@ -2480,8 +2522,12 @@
       setDoc 
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // --- FIREBASE CONFIGURATION ---
-    const firebaseConfig = {
+    // --- MULTI-PROFILE FIREBASE CONFIGURATION ---
+    const PROFILES_META_KEY = 'vital_sublimation_firebase_profiles_v1';
+    const ACTIVE_PROFILE_KEY = 'vital_sublimation_active_profile_v1';
+
+    const DEFAULT_FIREBASE_CONFIG = {
+      label: "Rajath_vitalSublimation", // <-- desired name in dropdown
       apiKey: "AIzaSyD3w6j6SfljmvP1IstkA_6uljKnu8D2I6A",
       authDomain: "vital-sublimation.firebaseapp.com",
       projectId: "vital-sublimation",
@@ -2491,15 +2537,54 @@
       measurementId: "G-XSKFDPNYHS"
     };
 
-    const app = initializeApp(firebaseConfig);
+    const BUILT_IN_PROFILES = {
+      alt: {
+        label: "Ranjith_vitalSublimation", // <-- desired name in dropdown
+        apiKey: "AIzaSyBI8CAFgB_I7DQx0OUUSmTpQXuiFQbRybA",
+        authDomain: "vitalsublimation.firebaseapp.com",
+        projectId: "vitalsublimation",
+        storageBucket: "vitalsublimation.firebasestorage.app",
+        messagingSenderId: "915369545895",
+        appId: "1:915369545895:web:f0e1b15507ac0aba3c4b82",
+        measurementId: "G-1RZYT77GFJ"
+      }
+    };
+
+    function getSavedProfiles() {
+      try {
+        const custom = JSON.parse(localStorage.getItem(PROFILES_META_KEY)) || {};
+        return { ...BUILT_IN_PROFILES, ...custom };
+      } catch {
+        return { ...BUILT_IN_PROFILES };
+      }
+    }
+
+    const urlProfile = new URLSearchParams(window.location.search).get('profile');
+    const savedProfiles = getSavedProfiles();
+    let activeProfileId = (urlProfile && (urlProfile === 'default' || savedProfiles[urlProfile]))
+      ? urlProfile
+      : (localStorage.getItem(ACTIVE_PROFILE_KEY) || 'default');
+
+    if (activeProfileId !== 'default' && !savedProfiles[activeProfileId]) {
+      activeProfileId = 'default';
+    }
+    localStorage.setItem(ACTIVE_PROFILE_KEY, activeProfileId);
+
+    const firebaseConfig = (activeProfileId === 'default')
+      ? DEFAULT_FIREBASE_CONFIG
+      : savedProfiles[activeProfileId];
+
+    // Named app instance isolates Firebase Auth persistence per profile
+    const app = initializeApp(firebaseConfig, activeProfileId);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const STORAGE_KEY = 'containment_mobile_cycles_v3';
-    const STORAGE_KEY_INDEX = 'containment_mobile_selected_idx_v3';
+    const keySuffix = (activeProfileId === 'default') ? '' : `_${activeProfileId}`;
+    const STORAGE_KEY = 'containment_mobile_cycles_v3' + keySuffix;
+    const STORAGE_KEY_INDEX = 'containment_mobile_selected_idx_v3' + keySuffix;
     const THEME_KEY = 'containment_mobile_theme_v3';
-    const SIM_KEY = 'containment_mobile_sim_v3';
-    const SIM_SANDBOX_KEY = 'containment_mobile_sim_sandbox_v3';
+    const SIM_KEY = 'containment_mobile_sim_v3' + keySuffix;
+    const SIM_SANDBOX_KEY = 'containment_mobile_sim_sandbox_v3' + keySuffix;
 
     let currentTab = 'dashboard';
     let cycles = [];
@@ -3037,7 +3122,97 @@
       }
     }
 
+    function populateProfileDropdown() {
+      const sel = document.getElementById('firebaseProfileSelect');
+      if (!sel) return;
+      const profiles = getSavedProfiles();
+      sel.innerHTML = '';
+
+      const defaultTitle = DEFAULT_FIREBASE_CONFIG.label || DEFAULT_FIREBASE_CONFIG.projectId;
+      const defOpt = document.createElement('option');
+      defOpt.value = 'default';
+      defOpt.textContent = defaultTitle;
+      sel.appendChild(defOpt);
+
+      Object.entries(profiles).forEach(([id, cfg]) => {
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = cfg.label || cfg.projectId || id;
+        sel.appendChild(opt);
+      });
+
+      sel.value = activeProfileId;
+    }
+
+    function switchFirebaseProfile(profileId) {
+      localStorage.setItem(ACTIVE_PROFILE_KEY, profileId);
+      const url = new URL(window.location.href);
+      if (profileId === 'default') url.searchParams.delete('profile');
+      else url.searchParams.set('profile', profileId);
+      window.location.href = url.toString();
+    }
+
+    function openFirebaseProfileModal() {
+      closeSidebar();
+      const idInput = document.getElementById('newProfileIdInput');
+      const cfgInput = document.getElementById('newProfileConfigInput');
+      const delBtn = document.getElementById('btnDeleteProfile');
+      const profiles = getSavedProfiles();
+
+      if (activeProfileId !== 'default' && profiles[activeProfileId]) {
+        idInput.value = activeProfileId;
+        cfgInput.value = JSON.stringify(profiles[activeProfileId], null, 2);
+        delBtn.style.display = 'block';
+      } else {
+        idInput.value = '';
+        cfgInput.value = '';
+        delBtn.style.display = 'none';
+      }
+      openModal('modalFirebaseProfile');
+    }
+
+    function saveFirebaseProfile() {
+      const rawId = document.getElementById('newProfileIdInput').value.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+      const rawText = document.getElementById('newProfileConfigInput').value.trim();
+
+      if (!rawId || rawId === 'default') {
+        showToast('⚠️ Enter a unique profile ID (not "default").');
+        return;
+      }
+
+      try {
+        const objMatch = rawText.match(/\{[\s\S]*\}/);
+        if (!objMatch) throw new Error('No config object found');
+        const jsonReady = objMatch[0]
+          .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
+          .replace(/'/g, '"')
+          .replace(/,\s*}/g, '}');
+        const parsed = JSON.parse(jsonReady);
+
+        if (!parsed.apiKey || !parsed.projectId) {
+          throw new Error('Missing apiKey or projectId');
+        }
+
+        const profiles = getSavedProfiles();
+        profiles[rawId] = parsed;
+        localStorage.setItem(PROFILES_META_KEY, JSON.stringify(profiles));
+        switchFirebaseProfile(rawId);
+      } catch (err) {
+        showToast('⚠️ Invalid config: ' + err.message);
+      }
+    }
+
+    function deleteCurrentFirebaseProfile() {
+      if (activeProfileId === 'default') return;
+      if (!confirm(`Delete profile "${activeProfileId}"?`)) return;
+      const profiles = getSavedProfiles();
+      delete profiles[activeProfileId];
+      localStorage.setItem(PROFILES_META_KEY, JSON.stringify(profiles));
+      switchFirebaseProfile('default');
+    }
+
     function renderAuthUI() {
+      populateProfileDropdown();
       const pill = document.getElementById('authStatusPill');
       const userInfo = document.getElementById('authUserInfo');
       const userEmail = document.getElementById('authUserEmail');
@@ -3319,14 +3494,20 @@
     function openAuditModalForDay(dayNumber) {
       const cycle = getSelected();
       if (!cycle) return;
+      if (!cycle.dailySeals) cycle.dailySeals = {};
       const m = getMetrics(cycle);
       const maxDay = Math.max(m.totalSealedDays, m.daysPassed);
       if (dayNumber <= 0 || dayNumber > maxDay) return;
 
+      // Only include untagged days in the sequence (plus the clicked day if editing an already-tagged day)
       auditDayList = [];
       for (let day = maxDay; day >= 1; day--) {
-        auditDayList.push(day);
+        const dISO = toISO(addDays(m.startDate, day));
+        if (!cycle.dailySeals[dISO] || day === dayNumber) {
+          auditDayList.push(day);
+        }
       }
+
       auditCurrentIndex = auditDayList.indexOf(dayNumber);
       if (auditCurrentIndex === -1) auditCurrentIndex = 0;
 
@@ -5088,6 +5269,10 @@
       startAuditFromBanner,
       confirmRemainingAsNormalSeal,
       passPhysioFilterToSuccessModal,
+      switchFirebaseProfile,
+      openFirebaseProfileModal,
+      saveFirebaseProfile,
+      deleteCurrentFirebaseProfile,
       abortAndRolloverFromGate
     });
 
